@@ -70,19 +70,12 @@ async function loadBookings() {
         bookings.forEach(b => {
             const row = document.createElement('tr');
 
-            // Admin Override for Bookings
-            let bookingAction = '-';
-            if (b.status === 'pending') {
-                bookingAction = `<button class="btn-small" onclick="approveBooking(${b.id})" style="background:#166534; color:white; padding:4px 8px; border:none; border-radius:4px; cursor:pointer;">Approve</button>`;
-            }
-
             row.innerHTML = `
                 <td>${b.id}</td>
                 <td>${b.service_name}</td>
                 <td>${b.booking_date}</td>
                 <td><span class="badge ${b.status}">${b.status}</span></td>
                 <td>${b.total_amount}</td>
-                <td>${bookingAction}</td>
             `;
             list.appendChild(row);
         });
@@ -103,13 +96,4 @@ async function verifyProvider(providerId) {
     }
 }
 
-async function approveBooking(bookingId) {
-    if (!confirm('Force approve this booking?')) return;
-    try {
-        await API.request(`/bookings/${bookingId}/status?new_status=confirmed`, 'PATCH');
-        loadBookings(); // Refresh
-        alert('Booking Approved!');
-    } catch (err) {
-        alert(err.message);
-    }
-}
+
