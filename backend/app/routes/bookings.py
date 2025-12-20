@@ -28,6 +28,7 @@ def create_booking(booking: BookingCreate, customer_id: int, db: Session = Depen
         booking_time=booking.booking_time,
         duration_hours=booking.duration_hours,
         total_amount=total_amount,
+        address=booking.address,
         notes=booking.notes,
         status="pending"
     )

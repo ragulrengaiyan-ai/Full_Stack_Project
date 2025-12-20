@@ -21,6 +21,10 @@ def create_review(review: ReviewCreate, customer_id: int, db: Session = Depends(
     if booking.customer_id != customer_id:
         raise HTTPException(status_code=403, detail="Not authorized")
     
+    # Only completed services can be reviewed
+    if booking.status != "completed":
+        raise HTTPException(status_code=400, detail="Only completed bookings can be reviewed")
+    
     # Check if review already exists
     existing_review = db.query(Review).filter(Review.booking_id == review.booking_id).first()
     if existing_review:

@@ -1,23 +1,23 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Check for Login Form
+ 
     const loginForm = document.querySelector('.login-container form');
     if (loginForm) {
         handleLogin(loginForm);
     }
 
-    // Check for Customer Signup Form
+
     const customerForm = document.getElementById('customerFormElement');
     if (customerForm) {
         handleCustomerSignup(customerForm);
     }
 
-    // Check for Provider Signup Form
+   
     const providerForm = document.getElementById('providerFormElement');
     if (providerForm) {
         handleProviderSignup(providerForm);
     }
 
-    // Check for Logout Button (if any)
+  
     const logoutBtn = document.getElementById('logoutBtn');
     if (logoutBtn) {
         logoutBtn.addEventListener('click', (e) => {
@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Update UI based on Auth State
+  
     updateNavAuth();
 });
 

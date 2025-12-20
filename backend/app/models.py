@@ -79,6 +79,7 @@ class Booking(Base):
     total_amount = Column(Float, nullable=False)
 
     status = Column(String(20), default="pending")
+    address = Column(Text, nullable=True)
     notes = Column(Text)
 
     created_at = Column(DateTime, default=datetime.utcnow)
@@ -97,6 +98,7 @@ class Booking(Base):
     )
 
     review = relationship("Review", back_populates="booking", uselist=False)
+    complaints = relationship("Complaint", back_populates="booking")
 
 
 class Review(Base):
@@ -113,6 +115,22 @@ class Review(Base):
 
     booking = relationship("Booking", back_populates="review")
     provider = relationship("Provider", back_populates="reviews")
+
+
+class Complaint(Base):
+    __tablename__ = "complaints"
+
+    id = Column(Integer, primary_key=True, index=True)
+    booking_id = Column(Integer, ForeignKey("bookings.id"), nullable=False)
+    customer_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    subject = Column(String(200), nullable=False)
+    description = Column(Text, nullable=False)
+    status = Column(String(20), default="pending")  # pending, resolved
+    resolution = Column(Text)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    booking = relationship("Booking", back_populates="complaints")
 
 
 # ✅ SIMPLIFIED Service model - no provider relationship

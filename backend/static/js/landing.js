@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Carousel Logic
+
     const carousel = document.getElementById('serviceCarousel');
     const leftBtn = document.querySelector('.scroll-btn.left');
     const rightBtn = document.querySelector('.scroll-btn.right');
@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Search Logic
+  
     const searchBtn = document.querySelector('.search-button');
     const serviceSelect = document.querySelector('.service-select');
     const locationInput = document.querySelector('.location-input input');
@@ -29,20 +29,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            // Map service names to filenames if needed, or simple lowercase
-            // filenames: babysitter.html, cook.html, housekeeper.html, gardener.html, security.html
-            // options: Babysitter, Cook, Housekeeper, Gardener, Security
+       
 
             const validServices = ['babysitter', 'cook', 'housekeeper', 'gardener', 'security'];
             if (validServices.includes(service)) {
                 let targetUrl = `htmlpages/${service}.html`;
-                // If location is provided, we could pass it? 
-                // Currently pages don't filter by location via URL, but we can add it for future.
+           
                 if (location) {
                     targetUrl += `?location=${encodeURIComponent(location)}`;
                 }
-                window.location.href = targetUrl; // This assumes we are on index.html at root or static/index.html
-                // Since index.html is in static/, htmlpages/service.html is correct.
+                window.location.href = targetUrl; 
             } else {
                 alert('Service page not found.');
             }

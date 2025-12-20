@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', async () => {
-    // SERVICE_TYPE should be defined in the HTML file before this script
+
     if (typeof SERVICE_TYPE === 'undefined') {
         console.error('SERVICE_TYPE is not defined');
         return;
@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     await loadProviders(SERVICE_TYPE);
 
-    // Initialise Modal logic
+
     setupBookingModal();
 });
 
@@ -17,7 +17,7 @@ async function loadProviders(serviceType) {
         const container = document.querySelector('.providers-list');
 
         if (!container) return;
-        container.innerHTML = ''; // Clear placeholder
+        container.innerHTML = '';
 
         if (providers.length === 0) {
             container.innerHTML = '<p>No providers found for this service.</p>';
@@ -38,7 +38,7 @@ function createProviderCard(provider) {
     const card = document.createElement('div');
     card.className = 'provider-card';
 
-    // Status Logic
+
     const isAvailable = provider.availability_status === 'available';
     const statusClass = isAvailable ? 'available' : 'busy';
     const statusText = isAvailable ? 'Available' : 'Busy';
@@ -77,7 +77,7 @@ function createProviderCard(provider) {
 }
 
 function setupBookingModal() {
-    // Inject Modal HTML into body if not present
+
     if (!document.getElementById('bookingModal')) {
         const modalHTML = `
             <div id="bookingModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100vh; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
@@ -115,6 +115,10 @@ function setupBookingModal() {
                             <input type="number" id="bookingDuration" value="1" min="1" required style="width:100%; padding:8px;">
                         </div>
                          <div class="form-group" style="margin-bottom:1rem;">
+                            <label>Address</label>
+                            <textarea id="bookingAddress" required style="width:100%; padding:8px;" placeholder="Enter your full service address"></textarea>
+                        </div>
+                         <div class="form-group" style="margin-bottom:1rem;">
                             <label>Notes</label>
                             <textarea id="bookingNotes" style="width:100%; padding:8px;"></textarea>
                         </div>
@@ -129,7 +133,7 @@ function setupBookingModal() {
         document.body.insertAdjacentHTML('beforeend', modalHTML);
     }
 
-    // Modal Form Submit
+
     const form = document.getElementById('bookingForm');
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -151,22 +155,16 @@ function setupBookingModal() {
                 document.getElementById('timePeriod').value
             ),
             duration_hours: document.getElementById('bookingDuration').value,
+            address: document.getElementById('bookingAddress').value,
             notes: document.getElementById('bookingNotes').value
         };
 
         try {
-            // Need to pass customer_id? 
-            // In our modified bookings.py, it expects `create_booking(booking: BookingCreate, customer_id: int)` 
-            // But usually customer_id is extracted from token.
-            // Since we modified to simple auth, we might need to send it as query param or update the backend to accept it in body.
-            // Let's check bookings.py again. It uses `customer_id: int` as a path/query param or dependency.
-            // Wait, standard FastAPI `customer_id: int` without `Body(...)` and not in path `{}` means query param.
-
             await API.post(`/bookings/?customer_id=${user.id}`, data);
 
             alert('Booking created successfully!');
             closeBookingModal();
-            // Maybe redirect to dashboard
+
             window.location.href = '../htmlpages/dashboard.html';
         } catch (err) {
             alert(err.message);

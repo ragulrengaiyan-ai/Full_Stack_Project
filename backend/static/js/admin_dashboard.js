@@ -1,7 +1,6 @@
 document.addEventListener('DOMContentLoaded', async () => {
     const user = JSON.parse(localStorage.getItem('user'));
 
-    // Security Check
     if (!user || user.role !== 'admin') {
         alert('Access Denied');
         window.location.href = '../index.html';
@@ -18,6 +17,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     await loadStats();
     await loadUsers();
     await loadBookings();
+    await loadComplaints();
 });
 
 async function loadStats() {
@@ -40,7 +40,7 @@ async function loadUsers() {
         users.forEach(u => {
             const row = document.createElement('tr');
 
-            // Verification button for providers
+
             let actionBtn = '-';
             if (u.role === 'provider') {
                 actionBtn = `<button class="btn-small" onclick="verifyProvider(${u.provider_profile?.id || 'null'})" style="background:#2563eb; color:white; padding:4px 8px; border:none; border-radius:4px; cursor:pointer;">Verify</button>`;
@@ -89,7 +89,7 @@ async function verifyProvider(providerId) {
     if (!confirm('Verify this provider?')) return;
     try {
         await API.request(`/providers/${providerId}/verify`, 'PATCH');
-        loadUsers(); // Refresh
+        loadUsers();
         alert('Provider Verified!');
     } catch (err) {
         alert(err.message);
@@ -97,3 +97,43 @@ async function verifyProvider(providerId) {
 }
 
 
+async function loadComplaints() {
+    try {
+        const complaints = await API.get('/complaints');
+        const list = document.getElementById('complaintsList');
+        if (!list) return;
+        list.innerHTML = '';
+
+        complaints.forEach(c => {
+            const row = document.createElement('tr');
+            let actionBtn = '-';
+            if (c.status === 'pending') {
+                actionBtn = `<button class="btn-small" onclick="resolveComplaint(${c.id})" style="background:#166534; color:white; padding:4px 8px; border:none; border-radius:4px; cursor:pointer;">Resolve</button>`;
+            }
+
+            row.innerHTML = `
+                <td>${c.id}</td>
+                <td>Booking #${c.booking_id}</td>
+                <td><strong>${c.subject}</strong><br><small>${c.description}</small></td>
+                <td><span class="badge ${c.status}">${c.status}</span></td>
+                <td>${actionBtn}</td>
+            `;
+            list.appendChild(row);
+        });
+    } catch (err) {
+        console.error('Failed to load complaints', err);
+    }
+}
+
+async function resolveComplaint(id) {
+    const resolution = prompt('Enter resolution for this complaint:');
+    if (!resolution) return;
+
+    try {
+        await API.request(`/complaints/${id}/resolve`, 'PATCH', { resolution });
+        loadComplaints();
+        alert('Complaint resolved!');
+    } catch (err) {
+        alert(err.message);
+    }
+}

@@ -6,10 +6,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
-    // Update Profile Info
+
     updateProfileUI(user);
 
-    // Fetch and Display Bookings
+
     console.log('Loading dashboard for user:', user.id);
     if (user.role === 'customer') {
         await loadCustomerDashboard(user.id);
@@ -18,15 +18,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         await loadProviderDashboard(user.id);
     }
 
-    // Setup Settings Form
+
     setupSettingsForm(user);
 
-    // Setup Navigation Tabs (already works via CSS/JS in index/dashboard but verifying)
+
     setupTabs();
 });
 
 function updateProfileUI(user) {
-    // Update Sidebar/Header names
+
     const profileNames = document.querySelectorAll('.user-profile span');
     profileNames.forEach(el => el.textContent = user.name);
 }
@@ -39,15 +39,14 @@ function setupTabs() {
         link.addEventListener('click', (e) => {
             const targetId = link.getAttribute('data-page');
             if (targetId === 'bookings' || targetId === 'providers') {
-                // These might be links to other pages (fixed in previous step to be #bookings)
-                // But if they are just scrolling/showing sections:
+
                 e.preventDefault();
 
-                // Hide all pages
+
                 pages.forEach(p => p.classList.remove('active'));
                 links.forEach(l => l.classList.remove('active'));
 
-                // Show target
+
                 const targetPage = document.getElementById(targetId + '-page');
                 if (targetPage) {
                     targetPage.classList.add('active');
@@ -71,7 +70,7 @@ async function loadCustomerDashboard(userId) {
     try {
         const bookings = await API.get(`/bookings/customer/${userId}`);
 
-        // Update Stats
+
         const pending = bookings.filter(b => b.status === 'pending').length;
         const confirmed = bookings.filter(b => b.status === 'confirmed').length;
 
@@ -86,10 +85,12 @@ async function loadCustomerDashboard(userId) {
             bookings.forEach(booking => {
                 const row = document.createElement('tr');
 
-                // Review Button for Completed Bookings
+
                 let actionBtn = '-';
                 if (booking.status === 'completed') {
                     actionBtn = `<button class="btn-small" onclick="openReviewModal(${booking.id}, ${booking.provider_id})">Review</button>`;
+                } else if (booking.status === 'confirmed' || booking.status === 'pending') {
+                    actionBtn = `<button class="btn-small" style="background:#dc2626;" onclick="openComplaintModal(${booking.id})">Complaint</button>`;
                 }
 
                 row.innerHTML = `
@@ -120,7 +121,7 @@ async function loadCustomerReviews(userId) {
         const container = document.querySelector('.reviews-container');
         if (!container) return;
 
-        container.innerHTML = ''; // Clear mock data
+        container.innerHTML = '';
 
         if (reviews.length === 0) {
             container.innerHTML = '<p>You haven\'t written any reviews yet.</p>';
@@ -159,7 +160,7 @@ function setupSettingsForm(user) {
     const inputs = form.querySelectorAll('input');
     inputs[0].value = user.name;
     inputs[1].value = user.email;
-    inputs[2].value = user.phone || ''; // Assuming phone is 3rd input per HTML structure
+    inputs[2].value = user.phone || '';
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -172,8 +173,6 @@ function setupSettingsForm(user) {
         try {
             const updatedUser = await API.put(`/users/${user.id}`, data);
 
-            // Update LocalStorage
-            // Need to merge with role and id since API might just return UserOut
             const newUserState = { ...user, ...updatedUser };
             localStorage.setItem('user', JSON.stringify(newUserState));
 
@@ -184,7 +183,6 @@ function setupSettingsForm(user) {
         }
     });
 
-    // Delete Account (Danger Zone)
     const deleteBtn = document.querySelector('.btn-danger');
     if (deleteBtn) {
         deleteBtn.addEventListener('click', () => {
@@ -193,9 +191,9 @@ function setupSettingsForm(user) {
     }
 }
 
-// Review Modal Logic
+
 function openReviewModal(bookingId, providerId) {
-    // Inject Modal if not exists
+
     if (!document.getElementById('reviewModal')) {
         const modalHTML = `
             <div id="reviewModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100vh; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
@@ -227,7 +225,7 @@ function openReviewModal(bookingId, providerId) {
         `;
         document.body.insertAdjacentHTML('beforeend', modalHTML);
 
-        // Form Handler
+
         document.getElementById('reviewForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const data = {
@@ -237,9 +235,7 @@ function openReviewModal(bookingId, providerId) {
             };
 
             try {
-                // Must pass customer_id since API requires it? The wrapper API calls pass headers? 
-                // Ah, the endpoint is def create_review(review, customer_id, db).
-                // API.post('/reviews/?customer_id=' + user.id, data);
+
                 const user = JSON.parse(localStorage.getItem('user'));
                 await API.post(`/reviews/?customer_id=${user.id}`, data);
                 alert('Review submitted!');
@@ -256,8 +252,56 @@ function openReviewModal(bookingId, providerId) {
 }
 
 async function loadProviderDashboard(userId) {
-    // We can reuse provider_dashboard.js logic or redirect
-    // Since we redirect in auth.js, this might not be reached often if dashboard.html is only for customers.
-    // But strict logic suggests handling it or logging.
+
     console.log('Provider dashboard loaded via dashboard.js specific logic');
+}
+
+function openComplaintModal(bookingId) {
+    if (!document.getElementById('complaintModal')) {
+        const modalHTML = `
+            <div id="complaintModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100vh; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
+                <div class="modal-content" style="background:white; padding:2rem; border-radius:8px; max-width:500px; width:90%;">
+                    <h2>Raise a Complaint</h2>
+                    <form id="complaintForm">
+                        <input type="hidden" id="complaintBookingId">
+                        <div class="form-group" style="margin-bottom:1rem;">
+                            <label>Subject</label>
+                            <input type="text" id="complaintSubject" style="width:100%; padding:8px;" required placeholder="Brief summary of the issue">
+                        </div>
+                         <div class="form-group" style="margin-bottom:1rem;">
+                            <label>Description</label>
+                            <textarea id="complaintDescription" style="width:100%; padding:8px;" rows="4" required placeholder="Detailed description of the problem"></textarea>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; margin-top:20px;">
+                            <button type="button" onclick="document.getElementById('complaintModal').style.display='none'" style="padding:10px 20px; border:none; background:#ccc; cursor:pointer;">Cancel</button>
+                            <button type="submit" style="padding:10px 20px; border:none; background:#dc2626; color:white; cursor:pointer;">Submit Complaint</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        `;
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+        document.getElementById('complaintForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const user = JSON.parse(localStorage.getItem('user'));
+            const data = {
+                booking_id: document.getElementById('complaintBookingId').value,
+                subject: document.getElementById('complaintSubject').value,
+                description: document.getElementById('complaintDescription').value
+            };
+
+            try {
+                await API.post(`/complaints/?customer_id=${user.id}`, data);
+                alert('Complaint submitted successfully. Our team will review it.');
+                document.getElementById('complaintModal').style.display = 'none';
+                location.reload();
+            } catch (err) {
+                alert(err.message);
+            }
+        });
+    }
+
+    document.getElementById('complaintBookingId').value = bookingId;
+    document.getElementById('complaintModal').style.display = 'flex';
 }

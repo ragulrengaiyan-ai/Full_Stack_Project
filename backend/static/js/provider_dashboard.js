@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
-    // 1. Find Provider ID
+
     let providerId = null;
     try {
         const providers = await API.get('/providers/');
@@ -14,16 +14,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         if (myProfile) {
             providerId = myProfile.id;
-            // Update Stats UI
+       
             document.getElementById('total-jobs').textContent = myProfile.total_bookings;
-            // Calculate earnings roughly or fetch from bookings
+          
         } else {
             console.error('Provider profile not found for user', user.id);
             alert('Error: Provider profile not found.');
             return;
         }
 
-        // 2. Fetch Bookings
         await loadProviderBookings(providerId);
 
     } catch (err) {
@@ -44,14 +43,14 @@ async function loadProviderBookings(providerId) {
         }
 
         bookings.forEach(booking => {
-            // Calculate earnings logic (mock or real)
+          
             if (booking.status === 'completed') {
                 totalEarnings += booking.total_amount;
             }
 
             const row = document.createElement('tr');
 
-            // Actions based on status
+           
             let actions = '';
             if (booking.status === 'pending') {
                 actions = `
@@ -66,10 +65,7 @@ async function loadProviderBookings(providerId) {
                 actions = '-';
             }
 
-            // Determine Customer Name (API returns customer_id, we'd need to fetch user, but for now show ID)
-            // Or if BookingOut included customer object... schemas.py BookingOut only has customer_id.
-            // We can't easily show customer name without fetching it.
-            // Let's show "Customer #{id}"
+          
             const customerDisplay = `Customer #${booking.customer_id}`;
 
             row.innerHTML = `
@@ -93,7 +89,7 @@ async function updateStatus(bookingId, status) {
     if (!confirm(`Mark booking as ${status}?`)) return;
     try {
         await API.request(`/bookings/${bookingId}/status?new_status=${status}`, 'PATCH');
-        location.reload(); // Reload to refresh list
+        location.reload(); 
     } catch (err) {
         alert(err.message);
     }

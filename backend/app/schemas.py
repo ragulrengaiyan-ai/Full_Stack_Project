@@ -75,6 +75,7 @@ class BookingCreate(BaseModel):
     booking_date: date
     booking_time: time
     duration_hours: int = 1
+    address: Optional[str] = None
     notes: Optional[str] = None
 
 
@@ -88,6 +89,7 @@ class BookingOut(BaseModel):
     duration_hours: int
     total_amount: float
     status: str
+    address: Optional[str]
     created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
@@ -107,6 +109,26 @@ class ReviewOut(BaseModel):
     customer_id: int
     rating: float
     comment: Optional[str]
+    created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+# Complaint Schemas
+class ComplaintCreate(BaseModel):
+    booking_id: int
+    subject: str = Field(..., max_length=200)
+    description: str
+
+
+class ComplaintOut(BaseModel):
+    id: int
+    booking_id: int
+    customer_id: int
+    subject: str
+    description: str
+    status: str
+    resolution: Optional[str] = None
     created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
