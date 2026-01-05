@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>All in One - Household Services</title>
-    <link rel="stylesheet" href="../static/style.css">
+    <link rel="stylesheet" href="/csspages/style.css">
 </head>
 
 <body>
@@ -14,12 +14,11 @@
             <h1>ALL IN ONE</h1>
         </div>
         <nav>
-            <a href="index.html">Home</a>
-            <a href="htmlpages/dashboard.html">Profile</a>
-            <a href="htmlpages/about.html">About</a>
-            <a href="htmlpages/contact.html">Contact</a>
-            <a href="htmlpages/login.html">Sign in</a>
-            <a href="htmlpages/join.html">Join Now</a>
+            <a href="/">Home</a>
+            <a href="/about.html">About</a>
+            <a href="/contact.html">Contact</a>
+            <a href="/login.html" id="signInNav">Sign in</a>
+            <a href="/join.html" id="joinNav">Join Now</a>
         </nav>
     </header>
 
@@ -101,145 +100,184 @@
         <div class="carousel-wrapper">
             <button class="scroll-btn left">❮</button>
             <div class="services-grid" id="serviceCarousel">
-                <a href="../static/htmlpages/babysitter.html" class="service-link">
-                    <div class="service-card">
-                        <div class="service-image">
-                            <img src="https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=500&h=300&fit=crop"
-                                alt="Babysitter">
-                            <div class="service-icon">
-                                <svg fill="#2563eb" viewBox="0 0 24 24">
-                                    <path
-                                        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z" />
-                                </svg>
-                            </div>
-                        </div>
-                        <div class="service-content">
-                            <h3 class="service-title">Babysitter</h3>
-                            <p class="service-description">Trusted childcare professionals for your peace of mind</p>
-                            <div class="service-meta">
-                                <div class="providers-count"><strong>250+</strong> providers</div>
-                                <div class="service-price">
-                                    <div class="price-label">From</div>
-                                    <div class="price-amount">₹350/hour</div>
+                <div class="service-card" data-service="babysitter">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <div class="service-image">
+                                <img src="https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=500&h=300&fit=crop"
+                                    alt="Babysitter">
+                                <div class="service-icon icon-blue">
+                                    <svg viewBox="0 0 24 24">
+                                        <path
+                                            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z" />
+                                    </svg>
                                 </div>
                             </div>
-                            <div class="service-rating"><span class="star">⭐</span><span class="rating-text">4.8
-                                    rating</span></div>
+                            <div class="service-content">
+                                <h3 class="service-title">Babysitter</h3>
+                                <div class="service-meta">
+                                    <span class="price-amount">₹350/h</span>
+                                    <div class="service-rating">⭐ 4.8</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-back">
+                            <h3>Childcare Experts</h3>
+                            <p>Verified professionals providing safe, educational, and fun environments for your little
+                                ones.</p>
+                            <ul class="back-features">
+                                <li>✓ Background Verified</li>
+                                <li>✓ First Aid Trained</li>
+                                <li>✓ Flexible Schedules</li>
+                            </ul>
+                            <button class="btn-flip-action" onclick="window.location.href='/babysitter.html'">Go to
+                                Service</button>
                         </div>
                     </div>
-                </a>
+                </div>
 
-                <a href="../static/htmlpages/cook.html" class="service-link">
-                    <div class="service-card">
-                        <div class="service-image">
-                            <img src="https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=500&h=300&fit=crop"
-                                alt="Cook">
-                            <div class="service-icon">
-                                <svg fill="#10b981" viewBox="0 0 24 24">
-                                    <path
-                                        d="M18.06 22.99h1.66c.84 0 1.53-.64 1.63-1.46L23 5.05h-5V1h-1.97v4.05h-4.97l.3 2.34c1.71.47 3.31 1.32 4.27 2.26 1.44 1.42 2.43 2.89 2.43 5.29v8.05zM1 21.99V21h15.03v.99c0 .55-.45 1-1.01 1H2.01c-.56 0-1.01-.45-1.01-1zm15.03-7c0-8-15.03-8-15.03 0h15.03zM1.02 17h15v2h-15z" />
-                                </svg>
-                            </div>
-                        </div>
-                        <div class="service-content">
-                            <h3 class="service-title">Cook</h3>
-                            <p class="service-description">Professional chefs and home cooks for delicious meals</p>
-                            <div class="service-meta">
-                                <div class="providers-count"><strong>180+</strong> providers</div>
-                                <div class="service-price">
-                                    <div class="price-label">From</div>
-                                    <div class="price-amount">₹450/hour</div>
+                <div class="service-card" data-service="cook">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <div class="service-image">
+                                <img src="https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=500&h=300&fit=crop"
+                                    alt="Cook">
+                                <div class="service-icon icon-green">
+                                    <svg viewBox="0 0 24 24">
+                                        <path
+                                            d="M18.06 22.99h1.66c.84 0 1.53-.64 1.63-1.46L23 5.05h-5V1h-1.97v4.05h-4.97l.3 2.34c1.71.47 3.31 1.32 4.27 2.26 1.44 1.42 2.43 2.89 2.43 5.29v8.05zM1 21.99V21h15.03v.99c0 .55-.45 1-1.01 1H2.01c-.56 0-1.01-.45-1.01-1zm15.03-7c0-8-15.03-8-15.03 0h15.03zM1.02 17h15v2h-15z" />
+                                    </svg>
                                 </div>
                             </div>
-                            <div class="service-rating"><span class="star">⭐</span><span class="rating-text">4.8
-                                    rating</span></div>
+                            <div class="service-content">
+                                <h3 class="service-title">Professional Cook</h3>
+                                <div class="service-meta">
+                                    <span class="price-amount">₹450/h</span>
+                                    <div class="service-rating">⭐ 4.9</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-back">
+                            <h3>Kitchen Professionals</h3>
+                            <p>From daily home meals to special event catering. Authentic taste with hygiene guaranteed.
+                            </p>
+                            <ul class="back-features">
+                                <li>✓ Multi-Cuisine Experts</li>
+                                <li>✓ Nutritional Planning</li>
+                                <li>✓ Clean & Hygienic</li>
+                            </ul>
+                            <button class="btn-flip-action" onclick="window.location.href='/cook.html'">Go to
+                                Service</button>
                         </div>
                     </div>
-                </a>
+                </div>
 
-                <a href="../static/htmlpages/housekeeper.html" class="service-link">
-                    <div class="service-card">
-                        <div class="service-image">
-                            <img src="https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=500&h=300&fit=crop"
-                                alt="Housekeeper">
-                            <div class="service-icon">
-                                <svg fill="#8b5cf6" viewBox="0 0 24 24">
-                                    <path
-                                        d="M19.36 2.72l1.42 1.42-5.72 5.71c1.07 1.54 1.22 3.39.32 4.59L9.06 8.12c1.2-.9 3.05-.75 4.59.32l5.71-5.72M5.93 17.57c-2.01-2.01-3.24-4.41-3.58-6.65l4.88-2.09 7.44 7.44-2.09 4.88c-2.24-.34-4.64-1.57-6.65-3.58z" />
-                                </svg>
-                            </div>
-                        </div>
-                        <div class="service-content">
-                            <h3 class="service-title">Housekeeper</h3>
-                            <p class="service-description">Professional cleaning services for a spotless home</p>
-                            <div class="service-meta">
-                                <div class="providers-count"><strong>320+</strong> providers</div>
-                                <div class="service-price">
-                                    <div class="price-label">From</div>
-                                    <div class="price-amount">₹418/hour</div>
+                <div class="service-card" data-service="housekeeper">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <div class="service-image">
+                                <img src="https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=500&h=300&fit=crop"
+                                    alt="Housekeeper">
+                                <div class="service-icon icon-purple">
+                                    <svg viewBox="0 0 24 24">
+                                        <path
+                                            d="M19.36 2.72l1.42 1.42-5.72 5.71c1.07 1.54 1.22 3.39.32 4.59L9.06 8.12c1.2-.9 3.05-.75 4.59.32l5.71-5.72M5.93 17.57c-2.01-2.01-3.24-4.41-3.58-6.65l4.88-2.09 7.44 7.44-2.09 4.88c-2.24-.34-4.64-1.57-6.65-3.58z" />
+                                    </svg>
                                 </div>
                             </div>
-                            <div class="service-rating"><span class="star">⭐</span><span class="rating-text">4.8
-                                    rating</span></div>
+                            <div class="service-content">
+                                <h3 class="service-title">Housekeeper</h3>
+                                <div class="service-meta">
+                                    <span class="price-amount">₹400/h</span>
+                                    <div class="service-rating">⭐ 4.7</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-back">
+                            <h3>Home maintenance</h3>
+                            <p>Experience a spotless home with our professional cleaning and organization services.</p>
+                            <ul class="back-features">
+                                <li>✓ Deep Cleaning</li>
+                                <li>✓ Eco-friendly Products</li>
+                                <li>✓ Trusted Professionals</li>
+                            </ul>
+                            <button class="btn-flip-action" onclick="window.location.href='/housekeeper.html'">Go to
+                                Service</button>
                         </div>
                     </div>
-                </a>
+                </div>
 
-                <a href="../static/htmlpages/gardener.html" class="service-link">
-                    <div class="service-card">
-                        <div class="service-image">
-                            <img src="https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=500&h=300&fit=crop"
-                                alt="Gardener">
-                            <div class="service-icon">
-                                <svg fill="#10b981" viewBox="0 0 24 24">
-                                    <path
-                                        d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.34.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8z" />
-                                </svg>
-                            </div>
-                        </div>
-                        <div class="service-content">
-                            <h3 class="service-title">Gardener</h3>
-                            <p class="service-description">Green thumb experts for beautiful outdoor spaces</p>
-                            <div class="service-meta">
-                                <div class="providers-count"><strong>140+</strong> providers</div>
-                                <div class="service-price">
-                                    <div class="price-label">From</div>
-                                    <div class="price-amount">₹625/hour</div>
+                <div class="service-card" data-service="gardener">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <div class="service-image">
+                                <img src="https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=500&h=300&fit=crop"
+                                    alt="Gardener">
+                                <div class="service-icon icon-green">
+                                    <svg viewBox="0 0 24 24">
+                                        <path
+                                            d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.34.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8z" />
+                                    </svg>
                                 </div>
                             </div>
-                            <div class="service-rating"><span class="star">⭐</span><span class="rating-text">4.8
-                                    rating</span></div>
+                            <div class="service-content">
+                                <h3 class="service-title">Gardener</h3>
+                                <div class="service-meta">
+                                    <span class="price-amount">₹625/h</span>
+                                    <div class="service-rating">⭐ 4.8</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-back">
+                            <h3>Garden Experts</h3>
+                            <p>Beautiful outdoor spaces curated by professionals. Maintenance, landscaping, and more.
+                            </p>
+                            <ul class="back-features">
+                                <li>✓ Lawn Maintenance</li>
+                                <li>✓ Landscape Design</li>
+                                <li>✓ Seasonal Planting</li>
+                            </ul>
+                            <button class="btn-flip-action" onclick="window.location.href='/gardener.html'">Go to
+                                Service</button>
                         </div>
                     </div>
-                </a>
+                </div>
 
-                <a href="../static/htmlpages/security.html" class="service-link">
-                    <div class="service-card">
-                        <div class="service-image">
-                            <img src="https://images.unsplash.com/photo-1590856029826-c7a73142bbf1?w=500&h=300&fit=crop"
-                                alt="Security">
-                            <div class="service-icon">
-                                <svg fill="#ef4444" viewBox="0 0 24 24">
-                                    <path
-                                        d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z" />
-                                </svg>
-                            </div>
-                        </div>
-                        <div class="service-content">
-                            <h3 class="service-title">Security</h3>
-                            <p class="service-description">Professional security personnel for your safety</p>
-                            <div class="service-meta">
-                                <div class="providers-count"><strong>95+</strong> providers</div>
-                                <div class="service-price">
-                                    <div class="price-label">From</div>
-                                    <div class="price-amount">₹500/hour</div>
+                <div class="service-card" data-service="security">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <div class="service-image">
+                                <img src="https://images.unsplash.com/photo-1590856029826-c7a73142bbf1?w=500&h=300&fit=crop"
+                                    alt="Security">
+                                <div class="service-icon icon-red">
+                                    <svg viewBox="0 0 24 24">
+                                        <path
+                                            d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z" />
+                                    </svg>
                                 </div>
                             </div>
-                            <div class="service-rating"><span class="star">⭐</span><span class="rating-text">4.8
-                                    rating</span></div>
+                            <div class="service-content">
+                                <h3 class="service-title">Security</h3>
+                                <div class="service-meta">
+                                    <span class="price-amount">₹500/h</span>
+                                    <div class="service-rating">⭐ 4.9</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-back">
+                            <h3>Safety Solutions</h3>
+                            <p>Protect your home and family with trained, reliable, and background-verified personnel.
+                            </p>
+                            <ul class="back-features">
+                                <li>✓ 24/7 Monitoring</li>
+                                <li>✓ Verified Training</li>
+                                <li>✓ Swift Response</li>
+                            </ul>
+                            <button class="btn-flip-action" onclick="window.location.href='/security.html'">Go to
+                                Service</button>
                         </div>
                     </div>
-                </a>
+                </div>
             </div>
             <button class="scroll-btn right">❯</button>
         </div>
@@ -317,7 +355,7 @@
                 through All in One.</p>
             <div class="cta-buttons">
                 <button class="btn-browse">Browse Services</button>
-                <button class="btn-provider"><a href='../static/htmlpages/join.html'>Become a Provider</a></button>
+                <button class="btn-provider"><a href='/join.html'>Become a Provider</a></button>
             </div>
         </div>
     </section>

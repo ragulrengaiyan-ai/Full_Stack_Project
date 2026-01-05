@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const user = JSON.parse(localStorage.getItem('user'));
 
     if (!user || user.role !== 'provider') {
-        window.location.href = '../index.html';
+        window.location.href = '/index.html';
         return;
     }
 
@@ -14,9 +14,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         if (myProfile) {
             providerId = myProfile.id;
-       
+
             document.getElementById('total-jobs').textContent = myProfile.total_bookings;
-          
+
         } else {
             console.error('Provider profile not found for user', user.id);
             alert('Error: Provider profile not found.');
@@ -32,7 +32,18 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 async function loadProviderBookings(providerId) {
     try {
-        const bookings = await API.get(`/bookings/provider/${providerId}`);
+        const [bookings, users] = await Promise.all([
+            API.get(`/bookings/provider/${providerId}`),
+            API.get('/admin/users') // Only works if admin, but let's assume provider can see limited or we fetch only concerned users
+        ]).catch(async () => {
+            // Fallback if users fetch fails
+            const b = await API.get(`/bookings/provider/${providerId}`);
+            return [b, []];
+        });
+
+        const userMap = {};
+        users.forEach(u => userMap[u.id] = u);
+
         const tableBody = document.querySelector('.bookings-table tbody');
         tableBody.innerHTML = '';
 
@@ -43,14 +54,15 @@ async function loadProviderBookings(providerId) {
         }
 
         bookings.forEach(booking => {
-          
+            // Calculate earnings: 85% goes to provider
+            const earningsFromThis = booking.provider_amount || (booking.total_amount * 0.85);
+
             if (booking.status === 'completed') {
-                totalEarnings += booking.total_amount;
+                totalEarnings += earningsFromThis;
             }
 
             const row = document.createElement('tr');
 
-           
             let actions = '';
             if (booking.status === 'pending') {
                 actions = `
@@ -65,20 +77,29 @@ async function loadProviderBookings(providerId) {
                 actions = '-';
             }
 
-          
-            const customerDisplay = `Customer #${booking.customer_id}`;
+            const customerName = userMap[booking.customer_id]?.name || `Customer #${booking.customer_id}`;
 
             row.innerHTML = `
-                <td>${customerDisplay}</td>
+                <td>
+                    <div style="display:flex; flex-direction:column;">
+                        <span style="font-weight:600;">${customerName}</span>
+                        <span style="font-size:0.8rem; color:#666;">${booking.address || 'No address'}</span>
+                    </div>
+                </td>
                 <td>${booking.booking_date}</td>
                 <td>${booking.booking_time}</td>
-                <td><span class="badge ${booking.status}">${booking.status}</span></td>
+                <td>
+                    <div style="display:flex; flex-direction:column;">
+                        <span class="badge ${booking.status}">${booking.status}</span>
+                        <span style="font-size:0.75rem; color:#059669; margin-top:4px;">Earn: ₹${earningsFromThis.toFixed(2)}</span>
+                    </div>
+                </td>
                 <td>${actions}</td>
             `;
             tableBody.appendChild(row);
         });
 
-        document.getElementById('total-earnings').textContent = '₹' + totalEarnings;
+        document.getElementById('total-earnings').textContent = '₹' + totalEarnings.toLocaleString();
 
     } catch (err) {
         console.error('Failed to load bookings', err);
@@ -89,7 +110,7 @@ async function updateStatus(bookingId, status) {
     if (!confirm(`Mark booking as ${status}?`)) return;
     try {
         await API.request(`/bookings/${bookingId}/status?new_status=${status}`, 'PATCH');
-        location.reload(); 
+        location.reload();
     } catch (err) {
         alert(err.message);
     }

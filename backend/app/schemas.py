@@ -38,7 +38,8 @@ class ProviderCreate(BaseModel):
     service_type: str
     experience_years: int = 0
     hourly_rate: float
-    location: Optional[str] = None # <--- Optional, but required if sent
+    location: Optional[str] = None
+    address: Optional[str] = None
     bio: Optional[str] = None
 
 class ProviderOut(BaseModel):
@@ -48,8 +49,10 @@ class ProviderOut(BaseModel):
     experience_years: int
     hourly_rate: float
     location: Optional[str]
+    address: Optional[str]
     rating: float
     total_bookings: int
+    earnings: float
     availability_status: str
     background_verified: str
     user: UserOut
@@ -90,6 +93,8 @@ class BookingOut(BaseModel):
     total_amount: float
     status: str
     address: Optional[str]
+    commission_amount: float
+    provider_amount: float
     created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)

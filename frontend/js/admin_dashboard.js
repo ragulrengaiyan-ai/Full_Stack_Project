@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (!user || user.role !== 'admin') {
         alert('Access Denied');
-        window.location.href = '../index.html';
+        window.location.href = '/index.html';
         return;
     }
 
@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('logoutBtn').addEventListener('click', (e) => {
         e.preventDefault();
         localStorage.removeItem('user');
-        window.location.href = '../index.html';
+        window.location.href = '/index.html';
     });
 
     await loadStats();
@@ -26,6 +26,8 @@ async function loadStats() {
         document.getElementById('totalUsers').textContent = stats.users;
         document.getElementById('totalProviders').textContent = stats.providers;
         document.getElementById('totalBookings').textContent = stats.bookings;
+        document.getElementById('totalSales').textContent = `₹${stats.total_sales.toLocaleString()}`;
+        document.getElementById('platformRevenue').textContent = `₹${stats.platform_revenue.toLocaleString()}`;
     } catch (err) {
         console.error('Failed to load stats', err);
     }
@@ -40,24 +42,47 @@ async function loadUsers() {
         users.forEach(u => {
             const row = document.createElement('tr');
 
+            let actionBtns = '';
+            if (u.role === 'provider' && u.provider_profile?.background_verified === 'pending') {
+                actionBtns += `<button class="btn-small" onclick="viewProfile(${u.provider_profile?.id}, true)" style="background:#475569; color:white; margin-right:5px;">Inspect</button>`;
+                actionBtns += `<button class="btn-small" onclick="verifyProvider(${u.provider_profile?.id || 'null'})" style="background:#2563eb; color:white; margin-right:5px;">Verify</button>`;
+            }
 
-            let actionBtn = '-';
-            if (u.role === 'provider') {
-                actionBtn = `<button class="btn-small" onclick="verifyProvider(${u.provider_profile?.id || 'null'})" style="background:#2563eb; color:white; padding:4px 8px; border:none; border-radius:4px; cursor:pointer;">Verify</button>`;
+            // Only allow deleting non-admin users to prevent self-deletion or locking out the admin account easily
+            if (u.role !== 'admin') {
+                actionBtns += `<button class="btn-small" onclick="deleteUser(${u.id})" style="background:#ef4444; color:white;">Delete</button>`;
+            }
+
+            let info = u.role;
+            if (u.role === 'provider' && u.provider_profile) {
+                info = `<div><strong>${u.provider_profile.service_type}</strong></div>
+                        <div style="font-size:0.8rem; color:#94a3b8;">${u.provider_profile.address || 'No address'}</div>`;
             }
 
             row.innerHTML = `
                 <td>${u.id}</td>
                 <td>${u.name}</td>
                 <td>${u.email}</td>
-                <td>${u.role}</td>
+                <td>${info}</td>
                 <td>${new Date(u.created_at).toLocaleDateString()}</td>
-                <td>${actionBtn}</td>
+                <td><div style="display:flex;">${actionBtns || '-'}</div></td>
             `;
             list.appendChild(row);
         });
     } catch (err) {
         console.error('Failed to load users', err);
+    }
+}
+
+async function deleteUser(userId) {
+    if (!confirm('Are you sure you want to delete this user and all associated profile data? This action cannot be undone.')) return;
+    try {
+        await API.request(`/admin/users/${userId}`, 'DELETE');
+        alert('User removed successfully.');
+        loadUsers();
+        await loadStats(); // Update counts
+    } catch (err) {
+        alert(err.message);
     }
 }
 
@@ -136,4 +161,10 @@ async function resolveComplaint(id) {
     } catch (err) {
         alert(err.message);
     }
+}
+
+function viewProfile(id, isAdminReview = false) {
+    let url = `/profile.html?id=${id}`;
+    if (isAdminReview) url += '&admin_review=true';
+    window.open(url, '_blank');
 }

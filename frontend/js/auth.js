@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
- 
+
     const loginForm = document.querySelector('.login-container form');
     if (loginForm) {
         handleLogin(loginForm);
@@ -11,13 +11,13 @@ document.addEventListener('DOMContentLoaded', () => {
         handleCustomerSignup(customerForm);
     }
 
-   
+
     const providerForm = document.getElementById('providerFormElement');
     if (providerForm) {
         handleProviderSignup(providerForm);
     }
 
-  
+
     const logoutBtn = document.getElementById('logoutBtn');
     if (logoutBtn) {
         logoutBtn.addEventListener('click', (e) => {
@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-  
+
     updateNavAuth();
 });
 
@@ -41,16 +41,19 @@ async function handleLogin(form) {
 
             // Store User in LocalStorage (Simple Auth)
             localStorage.setItem('user', JSON.stringify(res.user));
+            if (res.access_token) {
+                localStorage.setItem('token', res.access_token);
+            }
 
             alert('Login successful!');
 
             // Redirect based on role
             if (res.user.role === 'provider') {
-                window.location.href = '/static/htmlpages/provider_dashboard.html';
+                window.location.href = '/provider_dashboard.html';
             } else if (res.user.role === 'admin') {
-                window.location.href = '/static/htmlpages/admin_dashboard.html';
+                window.location.href = '/admin_dashboard.html';
             } else {
-                window.location.href = '/static/htmlpages/dashboard.html';
+                window.location.href = '/dashboard.html';
             }
         } catch (err) {
             alert(err.message);
@@ -67,7 +70,7 @@ async function handleCustomerSignup(form) {
         try {
             const res = await API.post('/users/register/customer', data);
             alert('Customer account created! Please sign in.');
-            window.location.href = '/static/htmlpages/login.html';
+            window.location.href = '/login.html';
         } catch (err) {
             alert(err.message);
         }
@@ -84,14 +87,14 @@ async function handleProviderSignup(form) {
         data.hourly_rate = Number(data.hourly_rate);
         data.experience_years = Number(data.experience_years);
 
-        // Add hardcoded location/bio if missing (though hidden inputs should handle it)
+        // Add hardcoded location/bio if missing
         if (!data.location) data.location = "Chennai";
-        if (!data.bio) data.bio = "Service provider";
+        if (!data.bio) data.bio = "Dedicated service provider";
 
         try {
             const res = await API.post('/users/register/provider', data);
             alert('Provider account created! Please sign in.');
-            window.location.href = '/static/htmlpages/login.html';
+            window.location.href = '/login.html';
         } catch (err) {
             alert(err.message);
         }
@@ -103,41 +106,38 @@ function updateNavAuth() {
     const nav = document.querySelector('nav');
 
     if (user && nav) {
-        // Find "Sign in" and "Join Now" links and replace with "Profile" / "Logout"
         const links = nav.querySelectorAll('a');
         let signInLink = null;
         let joinLink = null;
 
         links.forEach(link => {
-            if (link.textContent.includes('Sign in')) signInLink = link;
-            if (link.textContent.includes('Join Now')) joinLink = link;
+            if (link.textContent.includes('Sign in') || link.textContent === user.name.split(' ')[0]) signInLink = link;
+            if (link.textContent.includes('Join Now') || link.textContent === 'Logout') joinLink = link;
         });
 
         if (signInLink) {
-            signInLink.textContent = user.name.split(' ')[0]; // Show First Name
-            // If we are in index.html (root/static), path to dashboard is htmlpages/dashboard.html
-            // If we are in htmlpages/, path is dashboard.html
-            // Simple heuristic: check current path
-            const dashboardPath = user.role === 'provider' ?
-                '/static/htmlpages/provider_dashboard.html' :
-                '/static/htmlpages/dashboard.html';
-
+            signInLink.textContent = user.name.split(' ')[0];
+            let dashboardPath = '/dashboard.html';
+            if (user.role === 'provider') {
+                dashboardPath = '/provider_dashboard.html';
+            } else if (user.role === 'admin') {
+                dashboardPath = '/admin_dashboard.html';
+            }
             signInLink.href = dashboardPath;
         }
 
         if (joinLink) {
             joinLink.textContent = 'Logout';
             joinLink.href = '#';
-            joinLink.addEventListener('click', (e) => {
+            joinLink.onclick = (e) => {
                 e.preventDefault();
                 logout();
-            });
+            };
         }
     }
 }
 
 function logout() {
     localStorage.removeItem('user');
-    // If in htmlpages, go up; if in index, stay
-    window.location.href = '/static/index.html';
+    window.location.href = '/index.html';
 }

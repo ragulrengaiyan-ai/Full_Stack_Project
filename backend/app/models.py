@@ -18,6 +18,7 @@ class User(Base):
     password = Column(String(255), nullable=False)
     phone = Column(String(20))
     role = Column(String(20), default="customer")
+    wallet_balance = Column(Float, default=0.0)
     created_at = Column(DateTime, default=datetime.utcnow)
 
     bookings_as_customer = relationship(
@@ -29,8 +30,11 @@ class User(Base):
     provider_profile = relationship(
         "Provider",
         back_populates="user",
-        uselist=False
+        uselist=False,
+        cascade="all, delete-orphan"
     )
+
+    transactions = relationship("Transaction", back_populates="user", cascade="all, delete-orphan")
 
 
 class Provider(Base):
@@ -43,10 +47,12 @@ class Provider(Base):
     experience_years = Column(Integer, default=0)
     hourly_rate = Column(Float, nullable=False)
     location = Column(String(100))
+    address = Column(Text, nullable=False)
     bio = Column(Text)
 
     rating = Column(Float, default=0.0)
     total_bookings = Column(Integer, default=0)
+    earnings = Column(Float, default=0.0)  # Total earnings for provider
     availability_status = Column(String(20), default="available")
     background_verified = Column(String(20), default="pending")
     created_at = Column(DateTime, default=datetime.utcnow)
@@ -59,10 +65,11 @@ class Provider(Base):
     bookings = relationship(
         "Booking",
         foreign_keys="Booking.provider_id",
-        back_populates="provider"
+        back_populates="provider",
+        cascade="all, delete-orphan"
     )
 
-    reviews = relationship("Review", back_populates="provider")
+    reviews = relationship("Review", back_populates="provider", cascade="all, delete-orphan")
 
 
 class Booking(Base):
@@ -79,8 +86,13 @@ class Booking(Base):
     total_amount = Column(Float, nullable=False)
 
     status = Column(String(20), default="pending")
+    payment_status = Column(String(20), default="unpaid")
     address = Column(Text, nullable=True)
     notes = Column(Text)
+    
+    # Tracking split
+    commission_amount = Column(Float, default=0.0)
+    provider_amount = Column(Float, default=0.0)
 
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
@@ -97,8 +109,8 @@ class Booking(Base):
         back_populates="bookings"
     )
 
-    review = relationship("Review", back_populates="booking", uselist=False)
-    complaints = relationship("Complaint", back_populates="booking")
+    review = relationship("Review", back_populates="booking", uselist=False, cascade="all, delete-orphan")
+    complaints = relationship("Complaint", back_populates="booking", cascade="all, delete-orphan")
 
 
 class Review(Base):
@@ -143,3 +155,18 @@ class Service(Base):
     base_price = Column(Float, nullable=False)
     category = Column(String(50))
     created_at = Column(DateTime, default=datetime.utcnow)
+
+
+class Transaction(Base):
+    __tablename__ = "transactions"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    amount = Column(Float, nullable=False)
+    type = Column(String(20), nullable=False)  # credit, debit
+    description = Column(String(255))
+    reference_id = Column(String(100))
+    status = Column(String(20), default="completed")
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    user = relationship("User", back_populates="transactions")

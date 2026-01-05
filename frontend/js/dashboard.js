@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const user = JSON.parse(localStorage.getItem('user'));
 
     if (!user) {
-        window.location.href = '../htmlpages/login.html';
+        window.location.href = '/login.html';
         return;
     }
 
@@ -68,50 +68,126 @@ function setupTabs() {
 
 async function loadCustomerDashboard(userId) {
     try {
-        const bookings = await API.get(`/bookings/customer/${userId}`);
+        // Fetch all necessary data
+        const [bookings, providers] = await Promise.all([
+            API.get(`/bookings/customer/${userId}`),
+            API.get('/providers/')
+        ]);
 
+        const providerMap = {};
+        providers.forEach(p => providerMap[p.id] = p);
 
+        // 1. Stats Overview
         const pending = bookings.filter(b => b.status === 'pending').length;
         const confirmed = bookings.filter(b => b.status === 'confirmed').length;
+        const completedBookings = bookings.filter(b => b.status === 'completed');
+        const monthlySpend = completedBookings.reduce((sum, b) => sum + b.total_amount, 0);
 
-        const tableBody = document.querySelector('.bookings-table tbody');
-        if (tableBody) {
-            tableBody.innerHTML = '';
+        document.getElementById('stat-pending-bookings').textContent = pending;
+        document.getElementById('stat-confirmed-bookings').textContent = confirmed;
+        document.getElementById('stat-active-providers').textContent = providers.length;
+        document.getElementById('stat-monthly-spend').textContent = `₹${monthlySpend.toLocaleString()}`;
 
-            if (bookings.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="5">No bookings found.</td></tr>';
-            }
-
-            bookings.forEach(booking => {
-                const row = document.createElement('tr');
-
-
-                let actionBtn = '-';
-                if (booking.status === 'completed') {
-                    actionBtn = `<button class="btn-small" onclick="openReviewModal(${booking.id}, ${booking.provider_id})">Review</button>`;
-                } else if (booking.status === 'confirmed' || booking.status === 'pending') {
-                    actionBtn = `<button class="btn-small" style="background:#dc2626;" onclick="openComplaintModal(${booking.id})">Complaint</button>`;
-                }
-
-                row.innerHTML = `
-                    <td>${booking.service_name}</td>
-                    <td>Provider #${booking.provider_id}</td> 
-                    <td>${booking.booking_date}</td>
-                    <td><span class="badge ${booking.status}">${booking.status}</span></td>
-                    <td>${actionBtn}</td>
+        // 2. Recent Bookings (Overview Tab)
+        const recentBody = document.getElementById('recent-bookings-body');
+        if (recentBody) {
+            recentBody.innerHTML = '';
+            const recent = bookings.slice(-5).reverse(); // Last 5
+            recent.forEach(b => {
+                const pName = providerMap[b.provider_id]?.user.name || `Provider #${b.provider_id}`;
+                recentBody.innerHTML += `
+                    <tr>
+                        <td>${b.service_name}</td>
+                        <td>${pName}</td>
+                        <td>${new Date(b.booking_date).toLocaleDateString()}</td>
+                        <td><span class="badge ${b.status}">${b.status}</span></td>
+                    </tr>
                 `;
-                tableBody.appendChild(row);
             });
         }
 
-        const statValues = document.querySelectorAll('.stat-value');
-        if (statValues.length >= 2) {
-            statValues[0].textContent = pending;
-            statValues[1].textContent = confirmed;
+        // 3. Top Providers List (Overview Tab)
+        const topProvidersContainer = document.getElementById('top-providers-list');
+        if (topProvidersContainer) {
+            topProvidersContainer.innerHTML = '';
+            const top = [...providers].sort((a, b) => b.rating - a.rating).slice(0, 3);
+            top.forEach(p => {
+                topProvidersContainer.innerHTML += `
+                    <div class="provider-item" onclick="viewProfile(${p.id})" style="cursor:pointer;">
+                        <img src="https://ui-avatars.com/api/?name=${p.user.name}&background=random" alt="Provider">
+                        <div class="provider-info">
+                            <p class="provider-name">${p.user.name}</p>
+                            <p class="provider-service">${p.service_type}</p>
+                        </div>
+                        <div class="provider-rating">
+                            <span class="rating">${p.rating}</span>
+                            <span class="star">★</span>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // 4. All Bookings Page
+        const allBookingsBody = document.getElementById('all-bookings-body') || document.querySelector('#bookings-page .full-table tbody');
+        if (allBookingsBody) {
+            allBookingsBody.innerHTML = '';
+            bookings.reverse().forEach(b => {
+                const pName = providerMap[b.provider_id]?.user.name || `Provider #${b.provider_id}`;
+                let actionBtn = '';
+                if (b.status === 'completed') {
+                    actionBtn += `<button class="btn-small" onclick="openReviewModal(${b.id}, ${b.provider_id})" style="margin-right:5px;">Review</button>`;
+                }
+
+                if (b.status !== 'cancelled') {
+                    actionBtn += `<button class="btn-small" onclick="openComplaintModal(${b.id})" style="background:#f97316; color:white; margin-right:5px;">Complaint</button>`;
+                }
+
+                if (b.status === 'pending' || b.status === 'confirmed') {
+                    actionBtn += `<button class="btn-small btn-danger" onclick="cancelBooking(${b.id})" style="background:#dc2626; color:white;">Cancel</button>`;
+                }
+
+                if (!actionBtn) actionBtn = '-';
+
+                allBookingsBody.innerHTML += `
+                    <tr>
+                        <td>#B${b.id.toString().padStart(3, '0')}</td>
+                        <td>${b.service_name}</td>
+                        <td>${pName}</td>
+                        <td>${JSON.parse(localStorage.getItem('user')).name}</td>
+                        <td>${b.booking_date} ${b.booking_time}</td>
+                        <td>₹${b.total_amount}</td>
+                        <td><span class="badge ${b.status}">${b.status}</span></td>
+                        <td>${actionBtn}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        // 5. Payments Page
+        const transactionsBody = document.getElementById('transactions-body') || document.querySelector('#payments-page .full-table tbody');
+        if (transactionsBody) {
+            transactionsBody.innerHTML = '';
+            const paid = bookings.filter(b => b.status === 'completed' || b.status === 'confirmed');
+            paid.forEach(b => {
+                transactionsBody.innerHTML += `
+                    <tr>
+                        <td>#TXN${b.id.toString().padStart(3, '0')}</td>
+                        <td>${b.service_name} Payment</td>
+                        <td>₹${b.total_amount}</td>
+                        <td>${new Date(b.created_at).toLocaleDateString()}</td>
+                        <td><span class="badge completed">Paid</span></td>
+                    </tr>
+                `;
+            });
+
+            document.getElementById('payment-total').textContent = `₹${monthlySpend.toLocaleString()}`;
+            document.getElementById('payment-month').textContent = `₹${monthlySpend.toLocaleString()}`; // Simplified
+            document.getElementById('payment-pending').textContent = `₹${bookings.filter(b => b.status === 'pending').reduce((sum, b) => sum + b.total_amount, 0).toLocaleString()}`;
         }
 
     } catch (err) {
-        console.error('Failed to load bookings:', err);
+        console.error('Failed to load customer dashboard:', err);
     }
 }
 
@@ -304,4 +380,19 @@ function openComplaintModal(bookingId) {
 
     document.getElementById('complaintBookingId').value = bookingId;
     document.getElementById('complaintModal').style.display = 'flex';
+}
+
+async function cancelBooking(bookingId) {
+    if (!confirm('Are you sure you want to cancel this booking?')) return;
+    try {
+        await API.request(`/bookings/${bookingId}`, 'DELETE');
+        alert('Booking cancelled.');
+        location.reload();
+    } catch (err) {
+        alert(err.message);
+    }
+}
+
+function viewProfile(id) {
+    window.location.href = `/profile.html?id=${id}`;
 }

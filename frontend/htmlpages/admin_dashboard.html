@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Admin - All in One</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Premium Admin CSS -->
+    <link rel="stylesheet" href="/csspages/admin.css">
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="admin-logo">All in One ADMIN</div>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-link active">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                    </svg>
+                    <span>Overview</span>
+                </a>
+                <a href="/index.html" class="nav-link">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="12" x2="12" y2="16"></line>
+                        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                    <span>Public View</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="admin-header">
+                <div class="header-title">
+                    <h1>Command Center</h1>
+                </div>
+                <div class="admin-user">
+                    <span id="adminName">Loading...</span>
+                    <a href="#" id="logoutBtn" class="logout-btn">Sign Out</a>
+                </div>
+            </header>
+
+            <div class="admin-section">
+                <h2 class="section-title">Global Growth</h2>
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <span class="stat-value" id="totalUsers">-</span>
+                        <span class="stat-label">Verified Users</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-value" id="totalProviders">-</span>
+                        <span class="stat-label">Active Professionals</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-value" id="totalBookings">-</span>
+                        <span class="stat-label">Total Engagements</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-value" id="totalSales" style="color: #10b981;">₹0</span>
+                        <span class="stat-label">Gross Transaction Value</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-value" id="platformRevenue" style="color: #a855f7;">₹0</span>
+                        <span class="stat-label">Platform Net Revenue</span>
+                    </div>
+                </div>
+
+                <h2 class="section-title">User Roster</h2>
+                <div class="data-card">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Identity</th>
+                                <th>Communication</th>
+                                <th>Role / Status</th>
+                                <th>Enrolled</th>
+                                <th>Operations</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersList">
+                            <!-- Populated by admin_dashboard.js -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2 class="section-title">Deployment History</h2>
+                <div class="data-card">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Engagement ID</th>
+                                <th>Service Sector</th>
+                                <th>Timeline</th>
+                                <th>Execution Status</th>
+                                <th>Economic Value</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bookingsList">
+                            <!-- Populated by admin_dashboard.js -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2 class="section-title">Resolution Center</h2>
+                <div class="data-card">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Ticket ID</th>
+                                <th>Reference Engagement</th>
+                                <th>Subject Content</th>
+                                <th>Service Status</th>
+                                <th>Administrative Logic</th>
+                            </tr>
+                        </thead>
+                        <tbody id="complaintsList">
+                            <!-- Populated by admin_dashboard.js -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/js/config.js"></script>
+    <script src="/js/api.js"></script>
+    <script src="/js/admin_dashboard.js"></script>
+</body>
+
+</html>

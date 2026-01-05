@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - All in One</title>
-    <link rel="stylesheet" href="../csspages/dashboard.css">
+    <link rel="stylesheet" href="/csspages/dashboard.css">
 </head>
 
 <body>
@@ -13,7 +13,7 @@
 
         <aside class="sidebar">
             <div class="sidebar-header">
-                <a href="/static/index.html">All in One</a>
+                <a href="/">All in One</a>
             </div>
             <nav class="sidebar-nav">
                 <a href="#" class="nav-link active" data-page="overview">
@@ -67,6 +67,13 @@
                     </svg>
                     <span>Settings</span>
                 </a>
+                <a href="/" class="nav-link">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                    </svg>
+                    <span>Back to Home</span>
+                </a>
             </nav>
         </aside>
 
@@ -118,7 +125,7 @@
                             </div>
                             <div class="stat-content">
                                 <p class="stat-label">Pending Bookings</p>
-                                <p class="stat-value">12</p>
+                                <p class="stat-value" id="stat-pending-bookings">0</p>
                             </div>
                         </div>
 
@@ -130,7 +137,7 @@
                             </div>
                             <div class="stat-content">
                                 <p class="stat-label">Confirmed Bookings</p>
-                                <p class="stat-value">28</p>
+                                <p class="stat-value" id="stat-confirmed-bookings">0</p>
                             </div>
                         </div>
 
@@ -145,7 +152,7 @@
                             </div>
                             <div class="stat-content">
                                 <p class="stat-label">Active Providers</p>
-                                <p class="stat-value">156</p>
+                                <p class="stat-value" id="stat-active-providers">-</p>
                             </div>
                         </div>
 
@@ -155,7 +162,7 @@
                             </div>
                             <div class="stat-content">
                                 <p class="stat-label">Monthly Spend</p>
-                                <p class="stat-value">24.5K</p>
+                                <p class="stat-value" id="stat-monthly-spend">₹0</p>
                             </div>
                         </div>
                     </div>
@@ -176,7 +183,7 @@
                                             <th>Status</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
+                                    <tbody id="recent-bookings-body">
                                         <tr>
                                             <td>Babysitting</td>
                                             <td>Sarah Johnson</td>
@@ -212,7 +219,7 @@
                                 <a href="#" class="view-all">View All</a>
                             </div>
                             <div class="card-body">
-                                <div class="provider-list">
+                                <div class="provider-list" id="top-providers-list">
                                     <div class="provider-item">
                                         <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=50&h=50&fit=crop"
                                             alt="Provider">
@@ -259,7 +266,7 @@
                 <section id="bookings-page" class="page">
                     <div class="page-header">
                         <h2>Manage Bookings</h2>
-                        <a href="/static/index.html" class="btn-primary" style="text-decoration:none;">New Booking</a>
+                        <a href="/" class="btn-primary" style="text-decoration:none;">New Booking</a>
                     </div>
                     <div class="card">
                         <div class="card-header">
@@ -330,7 +337,7 @@
                         <h2>Service Providers</h2>
                         <button class="btn-primary">Add Provider</button>
                     </div>
-                    <div class="providers-grid">
+                    <div class="providers-grid" id="providers-grid">
                         <div class="provider-card">
                             <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300&h=300&fit=crop"
                                 alt="Provider">
@@ -480,15 +487,15 @@
                     <div class="payment-stats">
                         <div class="payment-stat-card">
                             <p class="label">Total Payments</p>
-                            <p class="amount">45,280</p>
+                            <p class="amount" id="payment-total">₹0</p>
                         </div>
                         <div class="payment-stat-card">
                             <p class="label">This Month</p>
-                            <p class="amount">8,450</p>
+                            <p class="amount" id="payment-month">₹0</p>
                         </div>
                         <div class="payment-stat-card">
                             <p class="label">Pending</p>
-                            <p class="amount">1,200</p>
+                            <p class="amount" id="payment-pending">₹0</p>
                         </div>
                     </div>
                     <div class="card">
@@ -594,11 +601,10 @@
         </main>
     </div>
 
-    <script src="../js/config.js"></script>
-    <script src="../js/api.js"></script>
-    <script src="../js/auth.js"></script>
-       
-    <script src="../js/dashboard.js"></script>
+    <script src="/js/config.js"></script>
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/dashboard.js"></script>
 </body>
 </body>
 

@@ -5,14 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>All in One - Login</title>
-    <link rel="stylesheet" href="../csspages/login.css">
+    <link rel="stylesheet" href="/csspages/login.css">
 
 </head>
 
 <body>
     <div class="login-container">
         <div class="logo-section">
-            <a href="/static/index.html" style="text-decoration: none; color: inherit;">
+            <a href="/" style="text-decoration: none; color: inherit;">
                 <div class="logo-title">All in One</div>
             </a>
             <div class="logo-subtitle">Household Services</div>
@@ -23,26 +23,36 @@
             <p>Sign in to your account</p>
         </div>
 
-        <form>
+        <form id="loginForm">
             <div class="form-group">
-                <label for="email">Email</label>
+                <label for="email">Email Address</label>
                 <div class="input-wrapper">
-                    <span class="input-icon">✉</span>
-                    <input type="email" id="email" placeholder="Enter your email" required>
+                    <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                        <polyline points="22,6 12,13 2,6"></polyline>
+                    </svg>
+                    <input type="email" id="email" placeholder="example@domain.com" required>
                 </div>
             </div>
 
             <div class="form-group">
                 <label for="password">Password</label>
                 <div class="input-wrapper">
-                    <span class="input-icon"></span>
-                    <input type="password" id="password" placeholder="Enter your password" required>
+                    <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                    <input type="password" id="password" placeholder="••••••••" required>
                     <button type="button" class="toggle-password" onclick="togglePassword()">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
                         </svg>
                     </button>
                 </div>
@@ -53,7 +63,7 @@
                     <input type="checkbox" id="remember">
                     <label for="remember">Remember me</label>
                 </div>
-                <a href="../htmlpages/dashboard.html" class="forgot-password">Forgot password?</a>
+                <a href="/dashboard.html" class="forgot-password">Forgot password?</a>
             </div>
 
             <button type="submit" class="sign-in-btn">Sign In</button>
@@ -86,13 +96,13 @@
         </button>
 
         <div class="signup-link">
-            Don't have an account? <a href="/static/htmlpages/join.html">Sign up</a>
+            Don't have an account? <a href="/join.html">Sign up</a>
         </div>
     </div>
 
-    <script src="../js/config.js"></script>
-    <script src="../js/api.js"></script>
-    <script src="../js/auth.js"></script>
+    <script src="/js/config.js"></script>
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
     <script>
         function togglePassword() {
             const passwordInput = document.getElementById('password');

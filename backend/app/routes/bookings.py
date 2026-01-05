@@ -70,6 +70,17 @@ def update_booking_status(booking_id: int, new_status: str, db: Session = Depend
     if not booking:
         raise HTTPException(status_code=404, detail="Booking not found")
     
+    # If moving to completed, calculate split
+    if new_status == "completed" and booking.status != "completed":
+        commission_rate = 0.15
+        booking.commission_amount = booking.total_amount * commission_rate
+        booking.provider_amount = booking.total_amount - booking.commission_amount
+        
+        # Update provider's total earnings
+        provider = db.query(Provider).filter(Provider.id == booking.provider_id).first()
+        if provider:
+            provider.earnings += booking.provider_amount
+            
     booking.status = new_status
     booking.updated_at = datetime.utcnow()
     db.commit()

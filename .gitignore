@@ -5,4 +5,20 @@ __pycache__/
 env/
 venv/
 node_modules/
+
+# Logs and Databases
+*.log
+*.db
+*.sqlite3
+
+# Editor directories
+.vscode/
+.idea/
+
+# OS generated
 .DS_Store
+Thumbs.db
+
+# Build artifacts
+dist/
+build/

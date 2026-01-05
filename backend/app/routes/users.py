@@ -7,7 +7,7 @@ from pydantic import BaseModel, EmailStr
 from app.database import get_db
 from app.schemas import UserCreate, UserOut, UserLogin, ProviderCreate, ProviderOut
 from app.models import User, Provider
-from app.auth import generate_password_hash, verify_password
+from app.auth import generate_password_hash, verify_password, create_access_token
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
@@ -65,6 +65,7 @@ def register_provider(provider_data: ProviderCreate, db: Session = Depends(get_d
         experience_years=provider_data.experience_years,
         hourly_rate=provider_data.hourly_rate,
         location=provider_data.location,
+        address=provider_data.address,
         bio=provider_data.bio
     )
     db.add(new_provider)
@@ -83,9 +84,13 @@ def login(credentials: UserLogin, db: Session = Depends(get_db)):
     if not verify_password(credentials.password, user.password):
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
-    # Return user object directly for simple frontend handling
+    # Generate token
+    access_token = create_access_token(data={"sub": user.email})
+
     return {
         "message": "Login successful",
+        "access_token": access_token, 
+        "token_type": "bearer",
         "user": {
             "id": user.id,
             "name": user.name,
