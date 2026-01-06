@@ -43,11 +43,11 @@
                         <div class="select-wrapper">
                             <select id="serviceSelect" class="service-select">
                                 <option value="">Select Service</option>
-                                <option value="cleaning">Housecleaning</option>
-                                <option value="cooking">Professional Cook</option>
-                                <option value="gardening">Gardening</option>
+                                <option value="housekeeper">Housecleaning</option>
+                                <option value="cook">Professional Cook</option>
+                                <option value="gardener">Gardening</option>
                                 <option value="security">Home Security</option>
-                                <option value="babysitting">Babysitting</option>
+                                <option value="babysitter">Babysitting</option>
                             </select>
                         </div>
                         <div class="location-input">
@@ -290,11 +290,11 @@
 
             // Map internal values to page names
             const pageMap = {
-                'cleaning': 'housekeeper.html',
-                'cooking': 'cook.html',
-                'gardening': 'gardener.html',
+                'housekeeper': 'housekeeper.html',
+                'cook': 'cook.html',
+                'gardener': 'gardener.html',
                 'security': 'security.html',
-                'babysitting': 'babysitter.html'
+                'babysitter': 'babysitter.html'
             };
 
             const page = pageMap[service];
@@ -321,27 +321,16 @@
                 'security': 'security.html',
                 'gardener': 'gardener.html'
             };
-            window.location.href = pageMap[service] || 'index.html';
-        }
 
-        // Update Nav based on Auth
-        const user = JSON.parse(localStorage.getItem('user'));
-        if (user) {
-            const signInLink = document.getElementById('signInLink');
-            const joinBtn = document.getElementById('joinBtn');
-
-            signInLink.textContent = 'Dashboard';
-            signInLink.href = user.role === 'admin' ? 'admin_dashboard.html' :
-                user.role === 'provider' ? 'provider_dashboard.html' : 'dashboard.html';
-
-            joinBtn.textContent = 'Sign Out';
-            joinBtn.href = '#';
-            joinBtn.onclick = (e) => {
-                e.preventDefault();
-                localStorage.removeItem('user');
-                localStorage.removeItem('token');
-                window.location.reload();
-            };
+            const page = pageMap[service];
+            if (page) {
+                const date = document.getElementById('dateInput').value;
+                let url = page;
+                if (date) url += `?date=${date}`;
+                window.location.href = url;
+            } else {
+                window.location.href = 'index.html';
+            }
         }
     </script>
 </body>

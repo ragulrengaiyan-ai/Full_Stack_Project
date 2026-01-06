@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (!user || user.role !== 'admin') {
         alert('Access Denied');
-        window.location.href = '/index.html';
+        window.location.href = 'index.html';
         return;
     }
 
@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('logoutBtn').addEventListener('click', (e) => {
         e.preventDefault();
         localStorage.removeItem('user');
-        window.location.href = '/index.html';
+        window.location.href = 'index.html';
     });
 
     await loadStats();
@@ -164,7 +164,7 @@ async function resolveComplaint(id) {
 }
 
 function viewProfile(id, isAdminReview = false) {
-    let url = `/profile.html?id=${id}`;
+    let url = `profile.html?id=${id}`;
     if (isAdminReview) url += '&admin_review=true';
     window.open(url, '_blank');
 }

@@ -117,11 +117,11 @@ function updateNavAuth() {
 
         if (signInLink) {
             signInLink.textContent = user.name.split(' ')[0];
-            let dashboardPath = '/dashboard.html';
+            let dashboardPath = 'dashboard.html';
             if (user.role === 'provider') {
-                dashboardPath = '/provider_dashboard.html';
+                dashboardPath = 'provider_dashboard.html';
             } else if (user.role === 'admin') {
-                dashboardPath = '/admin_dashboard.html';
+                dashboardPath = 'admin_dashboard.html';
             }
             signInLink.href = dashboardPath;
         }
@@ -131,7 +131,9 @@ function updateNavAuth() {
             joinLink.href = '#';
             joinLink.onclick = (e) => {
                 e.preventDefault();
-                logout();
+                localStorage.removeItem('user');
+                localStorage.removeItem('token');
+                window.location.href = 'index.html';
             };
         }
     }
