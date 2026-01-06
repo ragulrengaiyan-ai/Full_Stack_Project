@@ -95,6 +95,15 @@ class Complaint(Base):
     # Relationships
     booking = relationship("Booking", back_populates="complaints")
 
+class Service(Base):
+    __tablename__ = "services"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, unique=True, index=True)
+    description = Column(Text)
+    base_price = Column(Float)
+    image_url = Column(String, nullable=True)
+
 class Item(Base):
     __tablename__ = "items"
 
