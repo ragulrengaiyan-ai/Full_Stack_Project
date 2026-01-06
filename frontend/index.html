@@ -54,6 +54,10 @@
                             <i data-lucide="map-pin" class="location-icon"></i>
                             <input type="text" id="locationInput" placeholder="Enter your city/area" value="Chennai">
                         </div>
+                        <div class="date-input">
+                            <i data-lucide="calendar" class="calendar-icon"></i>
+                            <input type="date" id="dateInput">
+                        </div>
                         <button id="searchBtn" class="search-button">
                             <i data-lucide="search" class="search-icon"></i>
                             Search
@@ -89,104 +93,121 @@
             <div class="carousel-wrapper">
                 <button class="scroll-btn left" id="scrollLeft"><i data-lucide="chevron-left"></i></button>
                 <div class="services-grid" id="servicesGrid">
-                    <!-- Service Card 1 -->
+                    <!-- Housekeeping Card -->
                     <div class="service-card" onclick="this.classList.toggle('flipped')">
                         <div class="card-inner">
-                            <div class="card-front">
-                                <div class="service-icon icon-blue">
-                                    <i data-lucide="home"></i>
-                                </div>
-                                <div class="service-image">
-                                    <img src="https://images.unsplash.com/photo-1581578731548-c64695cc6958?auto=format&fit=crop&w=800&q=80"
-                                        alt="Housekeeping">
-                                </div>
-                                <div class="service-content">
-                                    <h3 class="service-title">Housekeeping</h3>
-                                    <div class="service-meta">
-                                        <span class="price-amount">₹450/hr</span>
-                                        <span class="service-rating">4.9 ★</span>
+                            <div class="carousel-front">
+                                <img src="https://images.unsplash.com/photo-1581578731548-c64695cc6958?w=400&h=300&fit=crop"
+                                    alt="Housekeeping">
+                                <div class="card-badge">Popular</div>
+                                <div class="card-overlay">
+                                    <h3>Housekeeping</h3>
+                                    <div class="rating">
+                                        <i data-lucide="star"></i>
+                                        <span>4.9 (1.2k+)</span>
                                     </div>
                                 </div>
                             </div>
-                            <div class="card-back">
-                                <h3>Full Cleaning</h3>
-                                <p>Deep cleaning for your kitchen, bathrooms, and living areas.</p>
-                                <ul class="back-features">
-                                    <li><i data-lucide="check" size="16"></i> Verified Cleaners</li>
-                                    <li><i data-lucide="check" size="16"></i> Eco-friendly Products</li>
-                                    <li><i data-lucide="check" size="16"></i> 100% Satisfaction</li>
-                                </ul>
-                                <button class="btn-flip-action"
-                                    onclick="event.stopPropagation(); window.location.href='htmlpages/login.html'">Book
-                                    Now</button>
+                            <div class="carousel-back">
+                                <div class="back-content">
+                                    <h3>Standard Housecleaning</h3>
+                                    <p>Deep cleaning for your living spaces, kitchen, and bathrooms.</p>
+                                    <div class="back-details">
+                                        <span><i data-lucide="clock"></i> 3-4 Hours</span>
+                                        <span><i data-lucide="check-circle"></i> Certified Professional</span>
+                                    </div>
+                                    <button class="btn-flip-action"
+                                        onclick="event.stopPropagation(); goToService('housekeeper')">Book Now</button>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Service Card 2 -->
+                    <!-- Cooking Card -->
                     <div class="service-card" onclick="this.classList.toggle('flipped')">
                         <div class="card-inner">
-                            <div class="card-front">
-                                <div class="service-icon icon-green">
-                                    <i data-lucide="utensils"></i>
-                                </div>
-                                <div class="service-image">
-                                    <img src="https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=800&q=80"
-                                        alt="Cooking">
-                                </div>
-                                <div class="service-content">
-                                    <h3 class="service-title">Personal Cook</h3>
-                                    <div class="service-meta">
-                                        <span class="price-amount">₹600/hr</span>
-                                        <span class="service-rating">4.8 ★</span>
+                            <div class="carousel-front">
+                                <img src="https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=400&h=300&fit=crop"
+                                    alt="Cook">
+                                <div class="card-badge">Top Rated</div>
+                                <div class="card-overlay">
+                                    <h3>Professional Cook</h3>
+                                    <div class="rating">
+                                        <i data-lucide="star"></i>
+                                        <span>4.8 (850+)</span>
                                     </div>
                                 </div>
                             </div>
-                            <div class="card-back">
-                                <h3>Gourmet Meals</h3>
-                                <p>Professional cooks for everyday meals or special occasions.</p>
-                                <ul class="back-features">
-                                    <li><i data-lucide="check" size="16"></i> Diverse Cuisines</li>
-                                    <li><i data-lucide="check" size="16"></i> Hygiene Guaranteed</li>
-                                    <li><i data-lucide="check" size="16"></i> Customized Menu</li>
-                                </ul>
-                                <button class="btn-flip-action"
-                                    onclick="event.stopPropagation(); window.location.href='htmlpages/login.html'">Book
-                                    Now</button>
+                            <div class="carousel-back">
+                                <div class="back-content">
+                                    <h3>Daily & Event Cooking</h3>
+                                    <p>Home-cooked meals or party catering at your doorstep.</p>
+                                    <div class="back-details">
+                                        <span><i data-lucide="clock"></i> 2-3 Hours</span>
+                                        <span><i data-lucide="check-circle"></i> Verified Chefs</span>
+                                    </div>
+                                    <button class="btn-flip-action"
+                                        onclick="event.stopPropagation(); goToService('cook')">Book Now</button>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Service Card 3 -->
+                    <!-- Security Card -->
                     <div class="service-card" onclick="this.classList.toggle('flipped')">
                         <div class="card-inner">
-                            <div class="card-front">
-                                <div class="service-icon icon-purple">
-                                    <i data-lucide="shield"></i>
-                                </div>
-                                <div class="service-image">
-                                    <img src="https://images.unsplash.com/photo-1582139329536-e7284fece509?auto=format&fit=crop&w=800&q=80"
-                                        alt="Security">
-                                </div>
-                                <div class="service-content">
-                                    <h3 class="service-title">Security</h3>
-                                    <div class="service-meta">
-                                        <span class="price-amount">₹800/hr</span>
-                                        <span class="service-rating">5.0 ★</span>
+                            <div class="carousel-front">
+                                <img src="https://images.unsplash.com/photo-1582139329536-e7284fece509?w=400&h=300&fit=crop"
+                                    alt="Security">
+                                <div class="card-badge">Secure</div>
+                                <div class="card-overlay">
+                                    <h3>Home Security</h3>
+                                    <div class="rating">
+                                        <i data-lucide="star"></i>
+                                        <span>4.9 (420+)</span>
                                     </div>
                                 </div>
                             </div>
-                            <div class="card-back">
-                                <h3>Elite Protection</h3>
-                                <p>Professional security guards and monitoring services.</p>
-                                <ul class="back-features">
-                                    <li><i data-lucide="check" size="16"></i> Ex-military/Police</li>
-                                    <li><i data-lucide="check" size="16"></i> Background Checked</li>
-                                    <li><i data-lucide="check" size="16"></i> 24/7 Vigilance</li>
-                                </ul>
-                                <button class="btn-flip-action"
-                                    onclick="event.stopPropagation(); window.location.href='htmlpages/login.html'">Book
-                                    Now</button>
+                            <div class="carousel-back">
+                                <div class="back-content">
+                                    <h3>Verified Security Guards</h3>
+                                    <p>Professional security personnel for your home or community.</p>
+                                    <div class="back-details">
+                                        <span><i data-lucide="clock"></i> 24/7 Available</span>
+                                        <span><i data-lucide="shield-check"></i> Background Checked</span>
+                                    </div>
+                                    <button class="btn-flip-action"
+                                        onclick="event.stopPropagation(); goToService('security')">Book Now</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Gardener Card -->
+                    <div class="service-card" onclick="this.classList.toggle('flipped')">
+                        <div class="card-inner">
+                            <div class="carousel-front">
+                                <img src="https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=400&h=300&fit=crop"
+                                    alt="Gardener">
+                                <div class="card-overlay">
+                                    <h3>Expert Gardener</h3>
+                                    <div class="rating">
+                                        <i data-lucide="star"></i>
+                                        <span>4.7 (310+)</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="carousel-back">
+                                <div class="back-content">
+                                    <h3>Lawn & Garden Care</h3>
+                                    <p>Complete garden maintenance and landscaping services.</p>
+                                    <div class="back-details">
+                                        <span><i data-lucide="clock"></i> Flexible</span>
+                                        <span><i data-lucide="leaf"></i> Eco-Friendly</span>
+                                    </div>
+                                    <button class="btn-flip-action"
+                                        onclick="event.stopPropagation(); goToService('gardener')">Book Now</button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -255,6 +276,73 @@
         const grid = document.getElementById('servicesGrid');
         document.getElementById('scrollLeft').onclick = () => grid.scrollBy({ left: -350, behavior: 'smooth' });
         document.getElementById('scrollRight').onclick = () => grid.scrollBy({ left: 350, behavior: 'smooth' });
+
+        // Search Logic
+        document.getElementById('searchBtn').onclick = () => {
+            const service = document.getElementById('serviceSelect').value;
+            const location = document.getElementById('locationInput').value;
+            const date = document.getElementById('dateInput').value;
+
+            if (!service) {
+                alert('Please select a service first');
+                return;
+            }
+
+            // Map internal values to page names
+            const pageMap = {
+                'cleaning': 'housekeeper.html',
+                'cooking': 'cook.html',
+                'gardening': 'gardener.html',
+                'security': 'security.html',
+                'babysitting': 'babysitter.html'
+            };
+
+            const page = pageMap[service];
+            if (page) {
+                let url = `${page}?location=${encodeURIComponent(location)}`;
+                if (date) url += `&date=${date}`;
+                window.location.href = url;
+            }
+        };
+
+        // Set default date
+        const datePicker = document.getElementById('dateInput');
+        if (datePicker) {
+            const today = new Date().toISOString().split('T')[0];
+            datePicker.setAttribute('min', today);
+            datePicker.value = today;
+        }
+
+        // Service Card Redirection
+        function goToService(service) {
+            const pageMap = {
+                'housekeeper': 'housekeeper.html',
+                'cook': 'cook.html',
+                'security': 'security.html',
+                'gardener': 'gardener.html'
+            };
+            window.location.href = pageMap[service] || 'index.html';
+        }
+
+        // Update Nav based on Auth
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (user) {
+            const signInLink = document.getElementById('signInLink');
+            const joinBtn = document.getElementById('joinBtn');
+
+            signInLink.textContent = 'Dashboard';
+            signInLink.href = user.role === 'admin' ? 'admin_dashboard.html' :
+                user.role === 'provider' ? 'provider_dashboard.html' : 'dashboard.html';
+
+            joinBtn.textContent = 'Sign Out';
+            joinBtn.href = '#';
+            joinBtn.onclick = (e) => {
+                e.preventDefault();
+                localStorage.removeItem('user');
+                localStorage.removeItem('token');
+                window.location.reload();
+            };
+        }
     </script>
 </body>
 

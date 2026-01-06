@@ -196,6 +196,39 @@ nav a:hover::after {
     background-color: white;
 }
 
+.date-input {
+    flex: 0 0 200px;
+    display: flex;
+    align-items: center;
+    background-color: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 0 16px;
+    transition: all 0.3s ease;
+}
+
+.calendar-icon {
+    color: #6b7280;
+    margin-right: 8px;
+    flex-shrink: 0;
+}
+
+.date-input input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 12px 8px;
+    font-size: 1rem;
+    color: #1f2937;
+    outline: none;
+    font-family: inherit;
+}
+
+.date-input:focus-within {
+    border-color: #2563eb;
+    background-color: white;
+}
+
 .search-button {
     background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
     color: white;
@@ -331,7 +364,9 @@ nav a:hover::after {
 }
 
 .card-front,
-.card-back {
+.carousel-front,
+.card-back,
+.carousel-back {
     position: absolute;
     width: 100%;
     height: 100%;
@@ -343,26 +378,30 @@ nav a:hover::after {
 }
 
 /* Front Styling */
-.card-front {
+.card-front,
+.carousel-front {
     background: white;
     display: flex;
     flex-direction: column;
 }
 
-.card-front .service-image {
-    height: 65%;
+.card-front .service-image,
+.carousel-front {
+    height: 100%;
     position: relative;
     overflow: hidden;
 }
 
-.card-front .service-image img {
+.card-front .service-image img,
+.carousel-front img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     transition: transform 0.5s ease;
 }
 
-.service-card:hover .card-front .service-image img {
+.service-card:hover .card-front .service-image img,
+.service-card:hover .carousel-front img {
     transform: scale(1.1);
 }
 
@@ -376,7 +415,8 @@ nav a:hover::after {
 }
 
 /* Back Styling with Glassmorphism */
-.card-back {
+.card-back,
+.carousel-back {
     background: linear-gradient(135deg, rgba(37, 99, 235, 0.95), rgba(29, 78, 216, 0.95));
     color: white;
     transform: rotateY(180deg);

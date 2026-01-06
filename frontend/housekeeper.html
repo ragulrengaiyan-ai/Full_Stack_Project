@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Available Housekeeper</title>
-    <link rel="stylesheet" href="/csspages/housekeeper.css">
+    <link rel="stylesheet" href="csspages/housekeeper.css">
 </head>
 
 <body>
@@ -14,12 +14,12 @@
             <h1>ALL IN ONE</h1>
         </div>
 
-        <nav>
-            <a href="/">Home</a>
-            <a href="/about.html">About</a>
-            <a href="/contact.html">Contact</a>
-            <a href="/login.html">Sign in</a>
-            <a href="/join.html">Join Now</a>
+        <nav id="mainNav">
+            <a href="index.html">Home</a>
+            <a href="about.html">About</a>
+            <a href="contact.html">Contact</a>
+            <a href="login.html" id="signInLink">Sign in</a>
+            <a href="join.html" class="join-btn" id="joinBtn">Join Now</a>
         </nav>
     </header>
     <div class="container">
@@ -57,13 +57,8 @@
             </div>
 
             <div class="filter-group">
-                <label class="filter-label">Availability</label>
-                <select class="filter-select">
-                    <option>Any time</option>
-                    <option>Weekdays</option>
-                    <option>Weekends</option>
-                    <option>Evenings</option>
-                </select>
+                <label class="filter-label">Available on Day</label>
+                <input type="date" class="filter-date filter-input">
             </div>
 
             <button class="btn-apply-filters">Apply Filters</button>
@@ -94,12 +89,12 @@
             <p>&copy; 2025 All in One Household Services. All Rights Reserved</p>
         </div>
     </footer>
-    <script src="/js/config.js"></script>
-    <script src="/js/api.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
     <script>
         const SERVICE_TYPE = 'housekeeper';
     </script>
-    <script src="/js/providers.js"></script>
+    <script src="js/providers.js"></script>
 </body>
 
 </html>

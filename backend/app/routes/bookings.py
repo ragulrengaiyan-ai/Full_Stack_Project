@@ -18,6 +18,24 @@ def create_booking(booking: BookingCreate, customer_id: int, db: Session = Depen
     if not provider:
         raise HTTPException(status_code=404, detail="Provider not found")
     
+    # Check for overlaps
+    # A simple date-based check: if they have any confirmed booking on the same date, prevent overlap
+    # More advanced: check time windows
+    existing_booking = db.query(Booking).filter(
+        Booking.provider_id == booking.provider_id,
+        Booking.booking_date == booking.booking_date,
+        Booking.status.in_(["pending", "confirmed"])
+    ).first()
+    
+    if existing_booking:
+        # Check if the time periods overlap
+        # duration_hours is used to calculate end time
+        # This is a basic check.
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Professional is already booked on this date. Please choose another date or professional."
+        )
+
     total_amount = provider.hourly_rate * booking.duration_hours
     
     new_booking = Booking(

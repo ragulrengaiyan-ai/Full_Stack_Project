@@ -20,10 +20,22 @@ def get_providers(
     max_price: Optional[float] = None,
     min_experience: Optional[int] = None,
     availability_status: Optional[str] = "available",
+    booking_date: Optional[str] = None, # YYYY-MM-DD
     sort_by: Optional[str] = None,
     db: Session = Depends(get_db)
 ):
     query = db.query(Provider).filter(Provider.background_verified == "verified")
+
+    if booking_date:
+        # Exclude providers who have a booking on this date
+        # This implementation assumes one booking per day for simplicity of 'day-wise' requirement
+        from app.models import Booking
+        booked_provider_ids = db.query(Booking.provider_id).filter(
+            Booking.booking_date == booking_date,
+            Booking.status.in_(["pending", "confirmed"])
+        ).all()
+        ids = [i[0] for i in booked_provider_ids]
+        query = query.filter(~Provider.id.in_(ids))
 
     if service_type:
         query = query.filter(Provider.service_type == service_type)

@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Check for initial filters in URL
     const urlParams = new URLSearchParams(window.location.search);
     const initialLocation = urlParams.get('location');
+    const initialDate = urlParams.get('date');
     const initialFilters = {};
 
     if (initialLocation) {
@@ -16,10 +17,42 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (locationInput) locationInput.value = initialLocation;
     }
 
+    if (initialDate) {
+        initialFilters.booking_date = initialDate;
+        const dateInput = document.querySelector('.filter-date');
+        if (dateInput) dateInput.value = initialDate;
+    }
+
     await loadProviders(SERVICE_TYPE, initialFilters);
 
     setupBookingModal();
+    updateNavAuth();
 });
+
+function updateNavAuth() {
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (user) {
+        const signInLink = document.getElementById('signInLink');
+        const joinBtn = document.getElementById('joinBtn');
+
+        if (signInLink) {
+            signInLink.textContent = 'Dashboard';
+            signInLink.href = user.role === 'admin' ? 'admin_dashboard.html' :
+                user.role === 'provider' ? 'provider_dashboard.html' : 'dashboard.html';
+        }
+
+        if (joinBtn) {
+            joinBtn.textContent = 'Sign Out';
+            joinBtn.href = '#';
+            joinBtn.onclick = (e) => {
+                e.preventDefault();
+                localStorage.removeItem('user');
+                localStorage.removeItem('token');
+                window.location.reload();
+            };
+        }
+    }
+}
 
 async function loadProviders(serviceType, filters = {}) {
     try {
@@ -29,6 +62,7 @@ async function loadProviders(serviceType, filters = {}) {
         if (filters.min_price) query += `&min_price=${filters.min_price}`;
         if (filters.max_price) query += `&max_price=${filters.max_price}`;
         if (filters.min_experience) query += `&min_experience=${filters.min_experience}`;
+        if (filters.booking_date) query += `&booking_date=${filters.booking_date}`;
         if (filters.sort_by) query += `&sort_by=${filters.sort_by}`;
 
         const providers = await API.get(query);
@@ -93,6 +127,12 @@ document.addEventListener('DOMContentLoaded', () => {
             // Add sorting if selected
             if (sortDropdown) {
                 filters.sort_by = getSortValue(sortDropdown.value);
+            }
+
+            // Date - usually the third select OR a date input
+            const dateInput = document.querySelector('.filter-date');
+            if (dateInput && dateInput.value) {
+                filters.booking_date = dateInput.value;
             }
 
             loadProviders(SERVICE_TYPE, filters);
