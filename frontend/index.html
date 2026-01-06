@@ -4,41 +4,258 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Production Full Stack App</title>
-    <link rel="stylesheet" href="css/style.css">
+    <title>All in One - Professional Household Services</title>
+    <!-- Use the comprehensive stylesheet -->
+    <link rel="stylesheet" href="csspages/style.css">
+    <!-- Lucide Icons for modern look -->
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 
 <body>
-    <div class="container">
-        <header>
-            <h1>Production App</h1>
-            <p>Vercel + Netlify + PostgreSQL</p>
-        </header>
+    <header>
+        <div class="hero">
+            <h1>ALL IN ONE</h1>
+        </div>
+        <nav id="mainNav">
+            <a href="index.html">Home</a>
+            <a href="about.html">About</a>
+            <a href="contact.html">Contact</a>
+            <a href="login.html" id="signInLink">Sign in</a>
+            <a href="join.html" class="join-btn" id="joinBtn">Join Now</a>
+        </nav>
+    </header>
 
-        <main>
-            <div class="card">
-                <h2>Add Item</h2>
-                <form id="addItemForm">
-                    <div class="input-group">
-                        <label for="itemName">Name</label>
-                        <input type="text" id="itemName" required placeholder="Item Name">
+    <main>
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="hero-content">
+                <h1 class="hero-heading">
+                    Expert <span class="highlight-blue">Home Services</span>,<br>
+                    On <span class="highlight-green">Demand</span>.
+                </h1>
+                <p class="hero-subheading">
+                    From deep cleaning to expert repairs, find the best household professionals in your area.
+                    Verified, trusted, and ready to help.
+                </p>
+
+                <div class="search-container">
+                    <div class="search-box">
+                        <div class="select-wrapper">
+                            <select id="serviceSelect" class="service-select">
+                                <option value="">Select Service</option>
+                                <option value="cleaning">Housecleaning</option>
+                                <option value="cooking">Professional Cook</option>
+                                <option value="gardening">Gardening</option>
+                                <option value="security">Home Security</option>
+                                <option value="babysitting">Babysitting</option>
+                            </select>
+                        </div>
+                        <div class="location-input">
+                            <i data-lucide="map-pin" class="location-icon"></i>
+                            <input type="text" id="locationInput" placeholder="Enter your city/area" value="Chennai">
+                        </div>
+                        <button id="searchBtn" class="search-button">
+                            <i data-lucide="search" class="search-icon"></i>
+                            Search
+                        </button>
                     </div>
-                    <div class="input-group">
-                        <label for="itemDesc">Description</label>
-                        <input type="text" id="itemDesc" placeholder="Description">
+                </div>
+
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-number blue">5000+</div>
+                        <div class="stat-label">Verified Partners</div>
                     </div>
-                    <button type="submit" class="btn-primary">Create</button>
-                </form>
+                    <div class="stat-item">
+                        <div class="stat-number green">4.8★</div>
+                        <div class="stat-label">Service Rating</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number blue">24/7</div>
+                        <div class="stat-label">Support Available</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Services Section -->
+        <section class="services-section">
+            <div class="section-header">
+                <h2 class="section-title">Popular <span>Services</span></h2>
+                <p class="section-subtitle">Choose from our wide range of professional household services tailored to
+                    your needs.</p>
             </div>
 
-            <div class="card">
-                <h2>Database Items</h2>
-                <div id="statusMessage" class="status-message"></div>
-                <ul id="itemsList" class="item-list"></ul>
+            <div class="carousel-wrapper">
+                <button class="scroll-btn left" id="scrollLeft"><i data-lucide="chevron-left"></i></button>
+                <div class="services-grid" id="servicesGrid">
+                    <!-- Service Card 1 -->
+                    <div class="service-card" onclick="this.classList.toggle('flipped')">
+                        <div class="card-inner">
+                            <div class="card-front">
+                                <div class="service-icon icon-blue">
+                                    <i data-lucide="home"></i>
+                                </div>
+                                <div class="service-image">
+                                    <img src="https://images.unsplash.com/photo-1581578731548-c64695cc6958?auto=format&fit=crop&w=800&q=80"
+                                        alt="Housekeeping">
+                                </div>
+                                <div class="service-content">
+                                    <h3 class="service-title">Housekeeping</h3>
+                                    <div class="service-meta">
+                                        <span class="price-amount">₹450/hr</span>
+                                        <span class="service-rating">4.9 ★</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-back">
+                                <h3>Full Cleaning</h3>
+                                <p>Deep cleaning for your kitchen, bathrooms, and living areas.</p>
+                                <ul class="back-features">
+                                    <li><i data-lucide="check" size="16"></i> Verified Cleaners</li>
+                                    <li><i data-lucide="check" size="16"></i> Eco-friendly Products</li>
+                                    <li><i data-lucide="check" size="16"></i> 100% Satisfaction</li>
+                                </ul>
+                                <button class="btn-flip-action"
+                                    onclick="event.stopPropagation(); window.location.href='htmlpages/login.html'">Book
+                                    Now</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Service Card 2 -->
+                    <div class="service-card" onclick="this.classList.toggle('flipped')">
+                        <div class="card-inner">
+                            <div class="card-front">
+                                <div class="service-icon icon-green">
+                                    <i data-lucide="utensils"></i>
+                                </div>
+                                <div class="service-image">
+                                    <img src="https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=800&q=80"
+                                        alt="Cooking">
+                                </div>
+                                <div class="service-content">
+                                    <h3 class="service-title">Personal Cook</h3>
+                                    <div class="service-meta">
+                                        <span class="price-amount">₹600/hr</span>
+                                        <span class="service-rating">4.8 ★</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-back">
+                                <h3>Gourmet Meals</h3>
+                                <p>Professional cooks for everyday meals or special occasions.</p>
+                                <ul class="back-features">
+                                    <li><i data-lucide="check" size="16"></i> Diverse Cuisines</li>
+                                    <li><i data-lucide="check" size="16"></i> Hygiene Guaranteed</li>
+                                    <li><i data-lucide="check" size="16"></i> Customized Menu</li>
+                                </ul>
+                                <button class="btn-flip-action"
+                                    onclick="event.stopPropagation(); window.location.href='htmlpages/login.html'">Book
+                                    Now</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Service Card 3 -->
+                    <div class="service-card" onclick="this.classList.toggle('flipped')">
+                        <div class="card-inner">
+                            <div class="card-front">
+                                <div class="service-icon icon-purple">
+                                    <i data-lucide="shield"></i>
+                                </div>
+                                <div class="service-image">
+                                    <img src="https://images.unsplash.com/photo-1582139329536-e7284fece509?auto=format&fit=crop&w=800&q=80"
+                                        alt="Security">
+                                </div>
+                                <div class="service-content">
+                                    <h3 class="service-title">Security</h3>
+                                    <div class="service-meta">
+                                        <span class="price-amount">₹800/hr</span>
+                                        <span class="service-rating">5.0 ★</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-back">
+                                <h3>Elite Protection</h3>
+                                <p>Professional security guards and monitoring services.</p>
+                                <ul class="back-features">
+                                    <li><i data-lucide="check" size="16"></i> Ex-military/Police</li>
+                                    <li><i data-lucide="check" size="16"></i> Background Checked</li>
+                                    <li><i data-lucide="check" size="16"></i> 24/7 Vigilance</li>
+                                </ul>
+                                <button class="btn-flip-action"
+                                    onclick="event.stopPropagation(); window.location.href='htmlpages/login.html'">Book
+                                    Now</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="scroll-btn right" id="scrollRight"><i data-lucide="chevron-right"></i></button>
             </div>
-        </main>
-    </div>
-    <script src="js/app.js"></script>
+        </section>
+
+        <!-- How It Works -->
+        <section class="how-it-works">
+            <div class="section-header">
+                <h2 class="section-title">How It <span>Works</span></h2>
+                <p class="section-subtitle">Booking a professional service has never been easier.</p>
+            </div>
+
+            <div class="steps-grid">
+                <div class="step-card">
+                    <div class="step-icon search"><i data-lucide="search"></i></div>
+                    <div class="step-label">Step 1</div>
+                    <h3 class="step-title">Find Service</h3>
+                    <p class="step-description">Search for the service you need and enter your location to find local
+                        pros.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-icon calendar"><i data-lucide="calendar"></i></div>
+                    <div class="step-label">Step 2</div>
+                    <h3 class="step-title">Pick a Time</h3>
+                    <p class="step-description">Choose a date and time that works best for you and your schedule.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-icon star"><i data-lucide="check-circle"></i></div>
+                    <div class="step-label">Step 3</div>
+                    <h3 class="step-title">Get it Done</h3>
+                    <p class="step-description">Relax while our experts handle the job with 100% quality guarantee.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="cta-section">
+            <div class="cta-container">
+                <h2 class="cta-title">Ready to Experience the Best Service?</h2>
+                <p class="cta-subtitle">Join thousands of happy customers who trust All in One for their home needs.</p>
+                <div class="cta-buttons">
+                    <button class="btn-browse" onclick="window.location.href='join.html'">Get Started</button>
+                    <button class="btn-provider" onclick="window.location.href='join.html'">Become a
+                        Provider</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer" style="background: #1f2937; color: white; padding: 40px; text-align: center;">
+        <p>&copy; 2026 All in One Household Services. All Rights Reserved.</p>
+    </footer>
+
+    <!-- Modern Scripts -->
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // Horizontal Scroll for Carousel
+        const grid = document.getElementById('servicesGrid');
+        document.getElementById('scrollLeft').onclick = () => grid.scrollBy({ left: -350, behavior: 'smooth' });
+        document.getElementById('scrollRight').onclick = () => grid.scrollBy({ left: 350, behavior: 'smooth' });
+    </script>
 </body>
 
 </html>

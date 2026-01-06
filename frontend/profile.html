@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Provider Profile - All in One</title>
-    <link rel="stylesheet" href="/csspages/dashboard.css">
+    <link rel="stylesheet" href="csspages/dashboard.css">
     <style>
         .profile-container {
             max-width: 800px;
@@ -122,8 +122,8 @@
         </div>
     </div>
 
-    <script src="/js/config.js"></script>
-    <script src="/js/api.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
             const urlParams = new URLSearchParams(window.location.search);
@@ -147,7 +147,7 @@
                 }
 
                 document.getElementById('bookBtn').onclick = () => {
-                    window.location.href = `/${provider.service_type}.html`;
+                    window.location.href = `index.html`;
                 };
             } catch (err) {
                 document.getElementById('profileContent').innerHTML = `<h1>Error: ${err.message}</h1>`;
