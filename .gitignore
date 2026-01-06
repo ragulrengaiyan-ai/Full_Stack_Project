@@ -22,3 +22,6 @@ Thumbs.db
 # Build artifacts
 dist/
 build/
+.env
+.frontend
+api

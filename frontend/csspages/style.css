@@ -26,6 +26,7 @@ a {
     padding: 0 20px;
 }
 
+
 header {
     height: 70px;
     background-color: white;
@@ -561,6 +562,7 @@ nav a:hover::after {
     padding: 80px 40px;
     background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
 }
+
 
 .steps-grid {
     display: grid;
