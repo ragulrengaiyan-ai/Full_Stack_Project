@@ -1,4 +1,4 @@
-@echo off
+echo off
 REM Get the directory of this script
 cd /d "%~dp0"
 
