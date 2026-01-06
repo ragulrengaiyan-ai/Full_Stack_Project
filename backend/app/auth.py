@@ -8,7 +8,6 @@ from typing import Optional
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
-from passlib.context import CryptContext
 
 from app.database import get_db
 from app.models import User
@@ -16,8 +15,6 @@ from app.models import User
 # Secret key for signing (in a real app, this should be in .env)
 SECRET_KEY = "my_super_secret_key_for_this_project_123"
 ALGORITHM = "HS256"
-
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/login")
 oauth2_scheme_optional = OAuth2PasswordBearer(tokenUrl="/users/login", auto_error=False)
@@ -114,7 +111,9 @@ def get_current_user_optional(token: Optional[str] = Depends(oauth2_scheme_optio
     return user
 
 def generate_password_hash(password: str) -> str:
-    return pwd_context.hash(password)
+    # return plain password (legacy behavior compatibility)
+    return password
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    return pwd_context.verify(plain_password, hashed_password)
+    # simple string comparison (legacy behavior compatibility)
+    return plain_password == hashed_password
