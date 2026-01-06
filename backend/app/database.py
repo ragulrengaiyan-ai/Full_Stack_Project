@@ -16,6 +16,12 @@ if not DATABASE_URL:
 if DATABASE_URL.startswith("postgres://"):
     DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
 
+# CRITICAL: Strip 'channel_binding=require' which causes issues on some Vercel/Python environments
+if "&channel_binding=require" in DATABASE_URL:
+    DATABASE_URL = DATABASE_URL.replace("&channel_binding=require", "")
+elif "?channel_binding=require" in DATABASE_URL:
+    DATABASE_URL = DATABASE_URL.replace("?channel_binding=require", "")
+
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
