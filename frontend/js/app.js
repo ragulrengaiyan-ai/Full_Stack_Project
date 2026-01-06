@@ -6,7 +6,7 @@
 // 2. COPY THE URL (e.g., https://my-project.vercel.app).
 // 3. PASTE IT BELOW.
 
-const API_BASE_URL = "https://YOUR_VERCEL_BACKEND_URL_HERE.vercel.app";
+const API_BASE_URL = "https://full-stack-project-iota-lime.vercel.app";
 
 // =================================================================
 
