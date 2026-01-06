@@ -8,6 +8,7 @@ from typing import Optional
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
+from passlib.context import CryptContext
 
 from app.database import get_db
 from app.models import User
@@ -16,8 +17,9 @@ from app.models import User
 SECRET_KEY = "my_super_secret_key_for_this_project_123"
 ALGORITHM = "HS256"
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/login")
-oauth2_scheme_optional = OAuth2PasswordBearer(tokenUrl="/users/login", auto_error=False)
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/users/login")
+oauth2_scheme_optional = OAuth2PasswordBearer(tokenUrl="/api/users/login", auto_error=False)
 
 def base64_url_encode(data: bytes) -> str:
     return base64.urlsafe_b64encode(data).rstrip(b'=').decode('utf-8')
@@ -31,7 +33,7 @@ def create_access_token(data: dict, expires_delta: Optional[int] = None) -> str:
     if expires_delta:
         expire = time.time() + expires_delta
     else:
-        expire = time.time() + 15 * 60 # 15 minutes default
+        expire = time.time() + 24 * 3600 # 24 hours default
     
     to_encode.update({"exp": expire})
     
@@ -53,7 +55,11 @@ def create_access_token(data: dict, expires_delta: Optional[int] = None) -> str:
 
 def verify_token(token: str):
     try:
-        header_b64, payload_b64, signature_b64 = token.split('.')
+        parts = token.split('.')
+        if len(parts) != 3:
+             raise HTTPException(status_code=401, detail="Invalid token format")
+        
+        header_b64, payload_b64, signature_b64 = parts
         
         # Verify signature
         signature_input = f"{header_b64}.{payload_b64}".encode('utf-8')
@@ -72,7 +78,7 @@ def verify_token(token: str):
              raise HTTPException(status_code=401, detail="Token expired")
              
         return payload
-    except Exception as e:
+    except Exception:
         raise HTTPException(status_code=401, detail="Invalid token")
 
 def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> User:
@@ -81,9 +87,9 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
         email: str = payload.get("sub")
         if email is None:
             raise HTTPException(status_code=401, detail="Invalid authentication credentials")
-    except HTTPException as e:
-         raise e
-    except Exception:
+    except HTTPException:
+         raise
+    except Exception: # Catch any other unexpected errors during token processing
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Could not validate credentials",
@@ -104,16 +110,12 @@ def get_current_user_optional(token: Optional[str] = Depends(oauth2_scheme_optio
         email: str = payload.get("sub")
         if email is None:
             return None
+        return db.query(User).filter(User.email == email).first()
     except Exception:
         return None
-        
-    user = db.query(User).filter(User.email == email).first()
-    return user
 
 def generate_password_hash(password: str) -> str:
-    # return plain password (legacy behavior compatibility)
-    return password
+    return pwd_context.hash(password)
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    # simple string comparison (legacy behavior compatibility)
-    return plain_password == hashed_password
+    return pwd_context.verify(plain_password, hashed_password)
