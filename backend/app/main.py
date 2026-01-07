@@ -47,7 +47,7 @@ frontend_path = Path(__file__).parent / "frontend"
 
 if frontend_path.exists():
     # Mount subdirectories
-    for folder in ["js", "css", "csspages", "htmlpages", "assets"]:
+    for folder in ["js", "css", "assets"]:
         target = frontend_path / folder
         if target.exists():
             app.mount(f"/{folder}", StaticFiles(directory=str(target)), name=folder)
