@@ -33,4 +33,5 @@ app.include_router(reviews.router, prefix="/api", tags=["Reviews"])
 
 @app.get("/")
 def read_root():
+    # Force redeploy - 2026-01-07
     return {"status": "ok", "message": "Backend running on Vercel"}
