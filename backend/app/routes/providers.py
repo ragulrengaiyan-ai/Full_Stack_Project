@@ -3,10 +3,16 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List, Optional
 
-from ..database import get_db
-from ..auth import get_current_user, get_current_user_optional
-from ..schemas import ProviderOut, UserOut
-from ..models import Provider, Review, User
+try:
+    from ..database import get_db
+    from ..auth import get_current_user, get_current_user_optional
+    from ..schemas import ProviderOut, UserOut
+    from ..models import Provider, Review, User
+except (ImportError, ValueError):
+    from database import get_db
+    from auth import get_current_user, get_current_user_optional
+    from schemas import ProviderOut, UserOut
+    from models import Provider, Review, User
 
 router = APIRouter(prefix="/providers", tags=["Providers"])
 
@@ -31,7 +37,10 @@ def get_providers(
     if booking_date:
         # Exclude providers who have a booking on this date
         # This implementation assumes one booking per day for simplicity of 'day-wise' requirement
-        from ..models import Booking
+        try:
+            from ..models import Booking
+        except (ImportError, ValueError):
+            from models import Booking
         booked_provider_ids = db.query(Booking.provider_id).filter(
             Booking.booking_date == booking_date,
             Booking.status.in_(["pending", "confirmed"])

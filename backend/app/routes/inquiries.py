@@ -1,9 +1,14 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
-from ..database import get_db
-from ..models import Inquiry
-from ..schemas import InquiryCreate, InquiryOut
+try:
+    from ..database import get_db
+    from ..models import Inquiry
+    from ..schemas import InquiryCreate, InquiryOut
+except (ImportError, ValueError):
+    from database import get_db
+    from models import Inquiry
+    from schemas import InquiryCreate, InquiryOut
 
 router = APIRouter(prefix="/inquiries", tags=["Inquiries"])
 

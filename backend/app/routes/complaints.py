@@ -2,9 +2,14 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from typing import List
-from ..database import get_db
-from ..models import Complaint, Booking, User
-from ..schemas import ComplaintCreate, ComplaintOut
+try:
+    from ..database import get_db
+    from ..models import Complaint, Booking, User
+    from ..schemas import ComplaintCreate, ComplaintOut
+except (ImportError, ValueError):
+    from database import get_db
+    from models import Complaint, Booking, User
+    from schemas import ComplaintCreate, ComplaintOut
 
 router = APIRouter(prefix="/complaints", tags=["Complaints"])
 

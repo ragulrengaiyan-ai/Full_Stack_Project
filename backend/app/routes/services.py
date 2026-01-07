@@ -1,8 +1,12 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from ..database import get_db
-from ..models import Service
+try:
+    from ..database import get_db
+    from ..models import Service, User, Booking
+except (ImportError, ValueError):
+    from database import get_db
+    from models import Service, User, Booking
 
 router = APIRouter(prefix="/services", tags=["Services"])
 

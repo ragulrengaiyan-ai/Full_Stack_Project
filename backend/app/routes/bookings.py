@@ -4,9 +4,14 @@ from sqlalchemy.orm import Session
 from typing import List
 from datetime import datetime
 
-from ..database import get_db
-from ..models import Booking, Provider
-from ..schemas import BookingCreate, BookingOut
+try:
+    from ..database import get_db
+    from ..models import Booking, Provider
+    from ..schemas import BookingCreate, BookingOut
+except (ImportError, ValueError):
+    from database import get_db
+    from models import Booking, Provider
+    from schemas import BookingCreate, BookingOut
 
 router = APIRouter(prefix="/bookings", tags=["Bookings"])
 

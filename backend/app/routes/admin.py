@@ -1,7 +1,15 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from ..database import get_db
-from ..models import User, Provider, Booking, Review, Complaint
+from sqlalchemy import func
+
+try:
+    from ..database import get_db
+    from ..models import User, Provider, Booking, Review, Complaint
+except (ImportError, ValueError):
+    from database import get_db
+    from models import User, Provider, Booking, Review, Complaint
+
+router = APIRouter(prefix="/admin", tags=["Admin"])
 
 @router.get("/dashboard")
 def admin_stats(db: Session = Depends(get_db)):

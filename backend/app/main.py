@@ -1,20 +1,41 @@
-from fastapi import FastAPI, Depends # Force Rebuild v1.3.6
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
 from sqlalchemy.orm import Session
 import os
+import sys
 from pathlib import Path
 
-from .database import engine, get_db, Base
-from .routes import users, services, providers, bookings, admin, complaints, reviews, inquiries
-from . import models, auth
+# VERCEL-SAFE IMPORT LOGIC
+# Ensure the backend/app directory is in sys.path so we can do flat imports
+current_dir = Path(__file__).parent
+if str(current_dir) not in sys.path:
+    sys.path.append(str(current_dir))
+
+try:
+    from .database import engine, get_db, Base
+    from .routes import users, services, providers, bookings, admin, complaints, reviews, inquiries
+    from . import models, auth
+except (ImportError, ValueError):
+    # Fallback for Vercel if relative imports fail
+    import database
+    from database import engine, get_db, Base
+    import routes.users as users
+    import routes.services as services
+    import routes.providers as providers
+    import routes.bookings as bookings
+    import routes.admin as admin
+    import routes.complaints as complaints
+    import routes.reviews as reviews
+    import routes.inquiries as inquiries
+    import models, auth
 
 # Create tables
 try:
-    models.Base.metadata.create_all(bind=engine)
+    Base.metadata.create_all(bind=engine)
 except Exception as e:
-    print(f"Database sync skipped/failed during build: {e}")
+    print(f"Database sync skipped/failed: {e}")
 
 app = FastAPI(
     title="Urban Company Style API",

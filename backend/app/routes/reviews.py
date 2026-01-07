@@ -3,9 +3,14 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
 
-from ..database import get_db
-from ..models import Review, Booking, Provider, User
-from ..schemas import ReviewCreate, ReviewOut
+try:
+    from ..database import get_db
+    from ..models import Review, Booking, Provider, User
+    from ..schemas import ReviewCreate, ReviewOut
+except (ImportError, ValueError):
+    from database import get_db
+    from models import Review, Booking, Provider, User
+    from schemas import ReviewCreate, ReviewOut
 
 router = APIRouter(prefix="/reviews", tags=["Reviews"])
 

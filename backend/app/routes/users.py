@@ -4,10 +4,16 @@ from sqlalchemy.orm import Session
 from typing import List, Optional
 from pydantic import BaseModel, EmailStr
 
-from ..database import get_db
-from ..schemas import UserCreate, UserOut, UserLogin, ProviderCreate, ProviderOut
-from ..models import User, Provider
-from ..auth import generate_password_hash, verify_password, create_access_token
+try:
+    from ..database import get_db
+    from ..schemas import UserCreate, UserOut, UserLogin, ProviderCreate, ProviderOut
+    from ..models import User, Provider
+    from ..auth import generate_password_hash, verify_password, create_access_token
+except (ImportError, ValueError):
+    from database import get_db
+    from schemas import UserCreate, UserOut, UserLogin, ProviderCreate, ProviderOut
+    from models import User, Provider
+    from auth import generate_password_hash, verify_password, create_access_token
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
