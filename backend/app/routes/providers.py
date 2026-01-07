@@ -11,6 +11,8 @@ from app.models import Provider, Review, User
 router = APIRouter(prefix="/providers", tags=["Providers"])
 
 
+from sqlalchemy.orm import joinedload
+
 @router.get("/", response_model=List[ProviderOut])
 def get_providers(
     service_type: Optional[str] = None,
@@ -24,7 +26,7 @@ def get_providers(
     sort_by: Optional[str] = None,
     db: Session = Depends(get_db)
 ):
-    query = db.query(Provider).filter(Provider.background_verified == "verified")
+    query = db.query(Provider).options(joinedload(Provider.user)).filter(Provider.background_verified == "verified")
 
     if booking_date:
         # Exclude providers who have a booking on this date

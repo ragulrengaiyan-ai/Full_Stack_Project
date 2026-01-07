@@ -170,6 +170,9 @@ function createProviderCard(provider) {
     const card = document.createElement('div');
     card.className = 'provider-card';
 
+    if (!provider.user) {
+        provider.user = { name: 'Verified Professional' };
+    }
 
     const isAvailable = provider.availability_status === 'available';
     const statusClass = isAvailable ? 'available' : 'busy';

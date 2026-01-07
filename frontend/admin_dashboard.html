@@ -43,7 +43,7 @@
         <main class="main-content">
             <header class="admin-header">
                 <div class="header-title">
-                    <h1>Command Center</h1>
+                    <h1>Admin Dashboard</h1>
                 </div>
                 <div class="admin-user">
                     <span id="adminName">Loading...</span>
@@ -52,41 +52,41 @@
             </header>
 
             <div class="admin-section">
-                <h2 class="section-title">Global Growth</h2>
+                <h2 class="section-title">Statistics</h2>
                 <div class="stats-grid">
                     <div class="stat-box">
                         <span class="stat-value" id="totalUsers">-</span>
-                        <span class="stat-label">Verified Users</span>
+                        <span class="stat-label">Total Users</span>
                     </div>
                     <div class="stat-box">
                         <span class="stat-value" id="totalProviders">-</span>
-                        <span class="stat-label">Active Professionals</span>
+                        <span class="stat-label">Total Providers</span>
                     </div>
                     <div class="stat-box">
                         <span class="stat-value" id="totalBookings">-</span>
-                        <span class="stat-label">Total Engagements</span>
+                        <span class="stat-label">Total Bookings</span>
                     </div>
                     <div class="stat-box">
                         <span class="stat-value" id="totalSales" style="color: #10b981;">₹0</span>
-                        <span class="stat-label">Gross Transaction Value</span>
+                        <span class="stat-label">Total Transactions</span>
                     </div>
                     <div class="stat-box">
                         <span class="stat-value" id="platformRevenue" style="color: #a855f7;">₹0</span>
-                        <span class="stat-label">Platform Net Revenue</span>
+                        <span class="stat-label">Platform Revenue</span>
                     </div>
                 </div>
 
-                <h2 class="section-title">User Roster</h2>
+                <h2 class="section-title">Users List</h2>
                 <div class="data-card">
                     <table class="data-table">
                         <thead>
                             <tr>
                                 <th>ID</th>
-                                <th>Identity</th>
-                                <th>Communication</th>
+                                <th>Name</th>
+                                <th>Email/Phone</th>
                                 <th>Role / Status</th>
-                                <th>Enrolled</th>
-                                <th>Operations</th>
+                                <th>Joined Date</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody id="usersList">
@@ -95,16 +95,16 @@
                     </table>
                 </div>
 
-                <h2 class="section-title">Deployment History</h2>
+                <h2 class="section-title">Bookings History</h2>
                 <div class="data-card">
                     <table class="data-table">
                         <thead>
                             <tr>
-                                <th>Engagement ID</th>
-                                <th>Service Sector</th>
-                                <th>Timeline</th>
-                                <th>Execution Status</th>
-                                <th>Economic Value</th>
+                                <th>Booking ID</th>
+                                <th>Service Type</th>
+                                <th>Date/Time</th>
+                                <th>Status</th>
+                                <th>Price</th>
                             </tr>
                         </thead>
                         <tbody id="bookingsList">
@@ -113,16 +113,16 @@
                     </table>
                 </div>
 
-                <h2 class="section-title">Resolution Center</h2>
+                <h2 class="section-title">Complaints & Issues</h2>
                 <div class="data-card">
                     <table class="data-table">
                         <thead>
                             <tr>
                                 <th>Ticket ID</th>
-                                <th>Reference Engagement</th>
-                                <th>Subject Content</th>
-                                <th>Service Status</th>
-                                <th>Administrative Logic</th>
+                                <th>Booking Ref</th>
+                                <th>Subject</th>
+                                <th>Status</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody id="complaintsList">
