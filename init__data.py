@@ -1,17 +1,31 @@
+from dotenv import load_dotenv
+import os
+import sys
+
+# Load .env file at the very beginning
+load_dotenv()
+
+# Add backend to sys.path if not already there
+backend_path = os.path.join(os.getcwd(), "backend")
+if backend_path not in sys.path:
+    sys.path.append(backend_path)
+
 from app.database import SessionLocal
 from app.models import User, Provider, Service
 from app.auth import generate_password_hash
 
 def init_sample_data():
+    print(f"Using Database: {os.environ.get('DATABASE_URL')[:20] if os.environ.get('DATABASE_URL') else 'NONE'}...")
+    
     db = SessionLocal()
     
     # Create sample services
     services = [
-        Service(name="babysitter", description="Professional childcare", base_price=350, category="household"),
-        Service(name="cook", description="Home cooking services", base_price=450, category="household"),
-        Service(name="housekeeper", description="Cleaning services", base_price=400, category="household"),
-        Service(name="gardener", description="Garden maintenance", base_price=300, category="outdoor"),
-        Service(name="security", description="Security services", base_price=500, category="safety"),
+        Service(name="babysitter", description="Professional childcare", base_price=350),
+        Service(name="cook", description="Home cooking services", base_price=450),
+        Service(name="housekeeper", description="Cleaning services", base_price=400),
+        Service(name="gardener", description="Garden maintenance", base_price=300),
+        Service(name="security", description="Security services", base_price=500),
     ]
     
     for service in services:
@@ -82,6 +96,20 @@ def init_sample_data():
                 background_verified="verified"
             )
             db.add(provider)
+    
+    # Create Default Admin
+    admin_email = "admin@allinone.com"
+    existing_admin = db.query(User).filter(User.email == admin_email).first()
+    if not existing_admin:
+        admin_user = User(
+            name="Admin User",
+            email=admin_email,
+            phone="0000000000",
+            password=generate_password_hash("adminpassword"),
+            role="admin"
+        )
+        db.add(admin_user)
+        print(f"Admin account created: {admin_email}")
     
     db.commit()
     print("Sample data initialized successfully!")
