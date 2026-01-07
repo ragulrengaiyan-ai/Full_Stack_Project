@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Provider Profile - All in One</title>
+    <link rel="stylesheet" href="csspages/dashboard.css">
+    <style>
+        .profile-container {
+            max-width: 800px;
+            margin: 40px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            margin-bottom: 30px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .profile-pic {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .profile-info h1 {
+            margin: 0;
+            font-size: 2rem;
+            color: #1a1a1a;
+        }
+
+        .rating-chip {
+            background: #fef3c7;
+            color: #92400e;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 10px;
+        }
+
+        .profile-details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .detail-item {
+            margin-bottom: 20px;
+        }
+
+        .detail-item h3 {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .detail-item p {
+            font-size: 1.1rem;
+            color: #333;
+            margin: 0;
+        }
+
+        .bio-section {
+            grid-column: span 2;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        .action-buttons {
+            margin-top: 30px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn-book {
+            background: #2563eb;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            flex: 1;
+        }
+
+        .btn-back {
+            background: #f3f4f6;
+            color: #4b5563;
+            padding: 12px 30px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="profile-container">
+        <div id="profileContent">
+            <p>Loading profile...</p>
+        </div>
+
+        <div class="action-buttons">
+            <button class="btn-back" onclick="history.back()">Back</button>
+            <button class="btn-book" id="bookBtn">Book Now</button>
+        </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const providerId = urlParams.get('id');
+            const adminReview = urlParams.get('admin_review') === 'true';
+
+            if (!providerId) {
+                document.getElementById('profileContent').innerHTML = '<h1>Provider not found</h1>';
+                return;
+            }
+
+            try {
+                const query = adminReview ? `/providers/${providerId}?admin_review=true` : `/providers/${providerId}`;
+                const provider = await API.get(query);
+                renderProfile(provider);
+
+                if (adminReview) {
+                    const backBtn = document.querySelector('.btn-back');
+                    backBtn.textContent = 'Close Window';
+                    backBtn.onclick = () => window.close();
+                }
+
+                document.getElementById('bookBtn').onclick = () => {
+                    window.location.href = `index.html`;
+                };
+            } catch (err) {
+                document.getElementById('profileContent').innerHTML = `<h1>Error: ${err.message}</h1>`;
+            }
+        });
+
+        function renderProfile(p) {
+            document.getElementById('profileContent').innerHTML = `
+                <div class="profile-header">
+                    <img src="https://ui-avatars.com/api/?name=${p.user.name}&size=120&background=random" class="profile-pic">
+                    <div class="profile-info">
+                        <h1>${p.user.name}</h1>
+                        <p style="color:#666; margin:5px 0;">${p.service_type.charAt(0).toUpperCase() + p.service_type.slice(1)} Professional</p>
+                        <div class="rating-chip">
+                            ★ ${p.rating} (${p.total_bookings} bookings)
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="profile-details">
+                    <div class="detail-item">
+                        <h3>Experience</h3>
+                        <p>${p.experience_years} Years</p>
+                    </div>
+                    <div class="detail-item">
+                        <h3>Location</h3>
+                        <p>${p.location}</p>
+                    </div>
+                    <div class="detail-item">
+                        <h3>Hourly Rate</h3>
+                        <p>₹${p.hourly_rate}</p>
+                    </div>
+                    <div class="detail-item">
+                        <h3>Status</h3>
+                        <p style="color:${p.availability_status === 'available' ? '#059669' : '#dc2626'}">${p.availability_status.toUpperCase()}</p>
+                    </div>
+                    <div class="bio-section">
+                        <h3>About Me</h3>
+                        <p>${p.bio || 'Professional service provider.'}</p>
+                    </div>
+                     <div class="bio-section">
+                        <h3>Service Area</h3>
+                        <p>${p.address || 'N/A'}</p>
+                    </div>
+                </div>
+            `;
+        }
+    </script>
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+</body>
+
+</html>

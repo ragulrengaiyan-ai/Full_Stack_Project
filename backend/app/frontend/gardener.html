@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Available Gardener</title>
+    <link rel="stylesheet" href="csspages/gardener.css">
+</head>
+
+<body>
+    <header>
+        <div class="hero">
+            <h1>ALL IN ONE</h1>
+        </div>
+
+        <nav id="mainNav">
+            <a href="index.html">Home</a>
+            <a href="about.html">About</a>
+            <a href="contact.html">Contact</a>
+            <a href="login.html" id="signInNav">Sign in</a>
+            <a href="join.html" id="joinNav">Join Now</a>
+        </nav>
+    </header>
+    <div class="container">
+
+        <aside class="filters-sidebar">
+            <div class="filters-header">
+                <span class="filter-icon">⋮</span>
+                <h3>Filters</h3>
+            </div>
+
+            <div class="filter-group">
+                <label class="filter-label">Location</label>
+                <input type="text" class="filter-input" placeholder="Enter location">
+            </div>
+
+            <div class="filter-group">
+                <label class="filter-label">Price Range</label>
+                <select class="filter-select">
+                    <option>Select range</option>
+                    <option>₹200 - ₹300/hour</option>
+                    <option>₹300 - ₹400/hour</option>
+                    <option>₹400 - ₹500/hour</option>
+                    <option>₹500+/hour</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label class="filter-label">Experience</label>
+                <select class="filter-select">
+                    <option>Any experience</option>
+                    <option>1-2 years</option>
+                    <option>3-5 years</option>
+                    <option>5+ years</option>
+                </select>
+            </div>
+
+            <div class="filter-group"><label class="filter-label">Available on Day</label><input type="date"
+                    class="filter-date filter-input"></div>
+
+            <button class="btn-apply-filters">Apply Filters</button>
+        </aside>
+
+        <main class="main-content">
+            <div class="header-section">
+                <div>
+                    <h1 class="page-title">Available Gardener</h1>
+                    <p class="providers-count">2 providers found</p>
+                </div>
+                <select class="sort-dropdown">
+                    <option>Sort by rating</option>
+                    <option>Sort by price (low to high)</option>
+                    <option>Sort by price (high to low)</option>
+                    <option>Sort by experience</option>
+                </select>
+            </div>
+
+            <div class="providers-list">
+                <p>Loading professionals...</p>
+            </div>
+        </main>
+    </div>
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2025 All in One Household Services. All Rights Reserved</p>
+        </div>
+    </footer>
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        const SERVICE_TYPE = 'gardener';
+    </script>
+    <script src="js/providers.js"></script>
+</body>
+
+</html>
