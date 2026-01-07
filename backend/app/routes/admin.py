@@ -12,9 +12,15 @@ def admin_stats(db: Session = Depends(get_db)):
     bookings_count = db.query(Booking).count()
     
     # Calculate revenue
-    from sqlalchemy import func
-    total_sales = db.query(func.sum(Booking.total_amount)).filter(Booking.status == 'completed').scalar() or 0.0
-    platform_revenue = db.query(func.sum(Booking.commission_amount)).filter(Booking.status == 'completed').scalar() or 0.0
+    try:
+        from sqlalchemy import func
+        total_sales = db.query(func.sum(Booking.total_amount)).filter(Booking.status == 'completed').scalar() or 0.0
+        platform_revenue = db.query(func.sum(Booking.commission_amount)).filter(Booking.status == 'completed').scalar() or 0.0
+    except Exception as e:
+        # Fallback if columns missing or other DB error
+        print(f"Error calculating revenue: {e}")
+        total_sales = 0.0
+        platform_revenue = 0.0
 
     return {
         "users": users_count,
