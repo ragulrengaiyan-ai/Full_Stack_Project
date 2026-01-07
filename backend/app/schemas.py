@@ -75,9 +75,9 @@ class BookingCreate(BookingBase):
 class BookingOut(BookingBase):
     id: int
     customer_id: int
-    total_amount: float
-    commission_amount: float
-    provider_amount: float
+    total_amount: Optional[float] = 0.0
+    commission_amount: Optional[float] = 0.0
+    provider_amount: Optional[float] = 0.0
     status: str
     refund_status: Optional[str] = None
     created_at: datetime
