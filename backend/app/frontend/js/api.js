@@ -21,10 +21,19 @@ class API {
 
         try {
             const response = await fetch(url, config);
-            const responseData = await response.json();
+            let responseData;
+
+            const contentType = response.headers.get("content-type");
+            if (contentType && contentType.includes("application/json")) {
+                responseData = await response.json();
+            } else {
+                responseData = { detail: await response.text() };
+            }
 
             if (!response.ok) {
-                throw new Error(responseData.detail || 'Something went wrong');
+                // Return a more descriptive error if it's a known non-JSON format like 'Internal Server Error' string
+                const errorMsg = responseData.detail || responseData.message || (typeof responseData === 'string' ? responseData : 'Something went wrong');
+                throw new Error(errorMsg);
             }
 
             return responseData;

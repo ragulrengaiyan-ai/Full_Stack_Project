@@ -10,25 +10,32 @@ from sqlalchemy import func
 @router.get("/dashboard")
 def admin_stats(db: Session = Depends(get_db)):
     try:
+        # User and Provider counts
         users_count = db.query(User).count()
         providers_count = db.query(Provider).count()
         bookings_count = db.query(Booking).count()
         
-        # Revenue calculation with explicit error handling
+        # Revenue calculation with explicit error handling for each part
+        total_sales = 0.0
+        platform_revenue = 0.0
+        
         try:
             total_sales = db.query(func.sum(Booking.total_amount)).filter(Booking.status == 'completed').scalar() or 0.0
+        except Exception as sales_err:
+            print(f"Sales calc error: {sales_err}")
+
+        try:
             platform_revenue = db.query(func.sum(Booking.commission_amount)).filter(Booking.status == 'completed').scalar() or 0.0
         except Exception as rev_err:
-            print(f"Revenue calc error: {rev_err}")
-            total_sales = 0.0
-            platform_revenue = 0.0
+            print(f"Platform Revenue calc error: {rev_err}")
 
         return {
             "users": users_count,
             "providers": providers_count,
             "bookings": bookings_count,
-            "total_sales": total_sales,
-            "platform_revenue": platform_revenue
+            "total_sales": float(total_sales),
+            "platform_revenue": float(platform_revenue),
+            "status": "success"
         }
     except Exception as e:
         # ABSOLUTE FALLBACK
@@ -39,7 +46,8 @@ def admin_stats(db: Session = Depends(get_db)):
             "bookings": 0,
             "total_sales": 0.0,
             "platform_revenue": 0.0,
-            "error": str(e) # Send error to frontend for debugging if needed
+            "status": "partial_failure",
+            "error": str(e)
         }
 
 from sqlalchemy.orm import joinedload

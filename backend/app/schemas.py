@@ -75,6 +75,8 @@ class BookingCreate(BookingBase):
 class BookingOut(BookingBase):
     id: int
     customer_id: int
+    customer: Optional[UserOut] = None
+    provider: Optional[ProviderOut] = None
     total_amount: Optional[float] = 0.0
     commission_amount: Optional[float] = 0.0
     provider_amount: Optional[float] = 0.0

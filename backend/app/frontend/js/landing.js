@@ -1,4 +1,24 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    // Dynamic Stats Loading
+    async function loadStats() {
+        try {
+            const stats = await API.get('/services/stats');
+            const providerStat = document.querySelector('.stat-item:nth-child(1) .stat-number');
+            const customerStat = document.querySelector('.stat-item:nth-child(2) .stat-number');
+            const ratingStat = document.querySelector('.stat-item:nth-child(3) .stat-number');
+
+            // Second stats section on page
+            const completedStat = document.querySelector('.stats-section .stat-item:nth-child(3) .stat-number');
+
+            if (providerStat) providerStat.textContent = `${stats.providers}+`;
+            if (customerStat) customerStat.textContent = `${stats.customers}+`;
+            if (ratingStat) ratingStat.textContent = stats.rating;
+            if (completedStat) completedStat.textContent = `${stats.completed}+`;
+        } catch (err) {
+            console.warn('Could not load dynamic stats', err);
+        }
+    }
+    loadStats();
 
     const carousel = document.getElementById('serviceCarousel');
     const leftBtn = document.querySelector('.scroll-btn.left');

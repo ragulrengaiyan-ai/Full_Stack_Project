@@ -68,7 +68,6 @@ function setupTabs() {
 
 async function loadCustomerDashboard(userId) {
     try {
-        // Fetch data independently or use allSettled to prevent one failure from blocking the other
         const results = await Promise.allSettled([
             API.get(`/bookings/customer/${userId}`),
             API.get('/providers/')
@@ -76,12 +75,6 @@ async function loadCustomerDashboard(userId) {
 
         const bookings = results[0].status === 'fulfilled' ? results[0].value : [];
         const providers = results[1].status === 'fulfilled' ? results[1].value : [];
-
-        if (results[0].status === 'rejected') console.error('Bookings failed:', results[0].reason);
-        if (results[1].status === 'rejected') console.error('Providers failed:', results[1].reason);
-
-        const providerMap = {};
-        providers.forEach(p => providerMap[p.id] = p);
 
         // 1. Stats Overview
         const pending = bookings.filter(b => b.status === 'pending').length;
@@ -101,9 +94,9 @@ async function loadCustomerDashboard(userId) {
             if (bookings.length === 0) {
                 recentBody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 20px; color: #666;">No bookings found yet. Time to book your first service!</td></tr>';
             } else {
-                const recent = bookings.slice(-5).reverse(); // Last 5
+                const recent = [...bookings].reverse().slice(0, 5); // Last 5
                 recent.forEach(b => {
-                    const pName = providerMap[b.provider_id]?.user.name || `Provider #${b.provider_id}`;
+                    const pName = b.provider?.user?.name || `Professional #${b.provider_id}`;
                     recentBody.innerHTML += `
                         <tr>
                             <td>${b.service_name}</td>
@@ -149,8 +142,9 @@ async function loadCustomerDashboard(userId) {
             if (bookings.length === 0) {
                 allBookingsBody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding: 40px; color: #666;">You haven\'t made any bookings yet. Browse our services to get started!</td></tr>';
             } else {
-                bookings.reverse().forEach(b => {
-                    const pName = providerMap[b.provider_id]?.user.name || `Provider #${b.provider_id}`;
+                bookings.forEach(b => {
+                    const pName = b.provider?.user?.name || `Professional #${b.provider_id}`;
+                    const customerName = b.customer?.name || "Customer";
                     let actionBtn = '';
                     if (b.status === 'completed') {
                         actionBtn += `<button class="btn-small" onclick="openReviewModal(${b.id}, ${b.provider_id})" style="margin-right:5px;">Review</button>`;
@@ -171,7 +165,7 @@ async function loadCustomerDashboard(userId) {
                         <td>#B${b.id.toString().padStart(3, '0')}</td>
                         <td>${b.service_name}</td>
                         <td>${pName}</td>
-                        <td>${JSON.parse(localStorage.getItem('user')).name}</td>
+                        <td>${customerName}</td>
                         <td>${b.booking_date} ${b.booking_time}</td>
                         <td>₹${b.total_amount}</td>
                         <td><span class="badge ${b.status}">${b.status}</span></td>

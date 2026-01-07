@@ -15,8 +15,8 @@ class User(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     # Relationships
-    provider_profile = relationship("Provider", back_populates="user", uselist=False)
-    bookings_as_customer = relationship("Booking", back_populates="customer")
+    provider_profile = relationship("Provider", back_populates="user", uselist=False, cascade="all, delete-orphan")
+    bookings_as_customer = relationship("Booking", back_populates="customer", cascade="all, delete-orphan")
 
 class Provider(Base):
     __tablename__ = "providers"
@@ -37,8 +37,8 @@ class Provider(Base):
 
     # Relationships
     user = relationship("User", back_populates="provider_profile")
-    bookings = relationship("Booking", back_populates="provider")
-    reviews = relationship("Review", back_populates="provider")
+    bookings = relationship("Booking", back_populates="provider", cascade="all, delete-orphan")
+    reviews = relationship("Review", back_populates="provider", cascade="all, delete-orphan")
 
 class Booking(Base):
     __tablename__ = "bookings"
@@ -63,8 +63,8 @@ class Booking(Base):
     # Relationships
     customer = relationship("User", back_populates="bookings_as_customer")
     provider = relationship("Provider", back_populates="bookings")
-    complaints = relationship("Complaint", back_populates="booking")
-    review = relationship("Review", back_populates="booking", uselist=False)
+    complaints = relationship("Complaint", back_populates="booking", cascade="all, delete-orphan")
+    review = relationship("Review", back_populates="booking", uselist=False, cascade="all, delete-orphan")
 
 class Review(Base):
     __tablename__ = "reviews"

@@ -32,19 +32,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 async function loadProviderBookings(providerId) {
     try {
-        const [bookings, users] = await Promise.all([
-            API.get(`/bookings/provider/${providerId}`),
-            API.get('/admin/users') // Only works if admin, but let's assume provider can see limited or we fetch only concerned users
-        ]).catch(async () => {
-            // Fallback if users fetch fails
-            const b = await API.get(`/bookings/provider/${providerId}`);
-            return [b, []];
-        });
-
-        const userMap = {};
-        users.forEach(u => userMap[u.id] = u);
-
+        const bookings = await API.get(`/bookings/provider/${providerId}`);
         const tableBody = document.querySelector('.bookings-table tbody');
+        if (!tableBody) return;
         tableBody.innerHTML = '';
 
         let totalEarnings = 0;
@@ -77,7 +67,7 @@ async function loadProviderBookings(providerId) {
                 actions = '-';
             }
 
-            const customerName = userMap[booking.customer_id]?.name || `Customer #${booking.customer_id}`;
+            const customerName = booking.customer?.name || `Customer #${booking.customer_id}`;
 
             row.innerHTML = `
                 <td>

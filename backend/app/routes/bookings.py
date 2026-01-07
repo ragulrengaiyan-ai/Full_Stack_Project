@@ -65,7 +65,11 @@ def create_booking(booking: BookingCreate, customer_id: int, db: Session = Depen
 @router.get("/customer/{customer_id}", response_model=List[BookingOut])
 def get_customer_bookings(customer_id: int, db: Session = Depends(get_db)):
     try:
-        bookings = db.query(Booking).filter(Booking.customer_id == customer_id).all()
+        from sqlalchemy.orm import joinedload
+        bookings = db.query(Booking).options(
+            joinedload(Booking.customer),
+            joinedload(Booking.provider).joinedload(Provider.user)
+        ).filter(Booking.customer_id == customer_id).all()
         return bookings
     except Exception as e:
         print(f"Error fetching customer bookings: {e}")
@@ -74,7 +78,11 @@ def get_customer_bookings(customer_id: int, db: Session = Depends(get_db)):
 
 @router.get("/provider/{provider_id}", response_model=List[BookingOut])
 def get_provider_bookings(provider_id: int, db: Session = Depends(get_db)):
-    bookings = db.query(Booking).filter(Booking.provider_id == provider_id).all()
+    from sqlalchemy.orm import joinedload
+    bookings = db.query(Booking).options(
+        joinedload(Booking.customer),
+        joinedload(Booking.provider).joinedload(Provider.user)
+    ).filter(Booking.provider_id == provider_id).all()
     return bookings
 
 
