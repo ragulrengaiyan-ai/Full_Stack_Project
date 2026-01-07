@@ -37,10 +37,10 @@ class UserOut(UserBase):
 
 # --- Providers ---
 class ProviderBase(BaseModel):
-    service_type: str
-    experience_years: int
-    hourly_rate: float
-    location: str
+    service_type: Optional[str] = None
+    experience_years: Optional[int] = 0
+    hourly_rate: Optional[float] = 0.0
+    location: Optional[str] = None
     address: Optional[str] = None
     bio: Optional[str] = None
 
