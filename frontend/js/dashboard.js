@@ -68,11 +68,17 @@ function setupTabs() {
 
 async function loadCustomerDashboard(userId) {
     try {
-        // Fetch all necessary data
-        const [bookings, providers] = await Promise.all([
+        // Fetch data independently or use allSettled to prevent one failure from blocking the other
+        const results = await Promise.allSettled([
             API.get(`/bookings/customer/${userId}`),
             API.get('/providers/')
         ]);
+
+        const bookings = results[0].status === 'fulfilled' ? results[0].value : [];
+        const providers = results[1].status === 'fulfilled' ? results[1].value : [];
+
+        if (results[0].status === 'rejected') console.error('Bookings failed:', results[0].reason);
+        if (results[1].status === 'rejected') console.error('Providers failed:', results[1].reason);
 
         const providerMap = {};
         providers.forEach(p => providerMap[p.id] = p);
