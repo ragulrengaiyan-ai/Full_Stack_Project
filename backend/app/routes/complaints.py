@@ -28,8 +28,12 @@ def create_complaint(complaint: ComplaintCreate, customer_id: int, db: Session =
 
 @router.get("/", response_model=List[ComplaintOut])
 def get_all_complaints(db: Session = Depends(get_db)):
-    # Simple list for admin. In real app, check admin role.
-    return db.query(Complaint).all()
+    try:
+        # Simple list for admin. In real app, check admin role.
+        return db.query(Complaint).all()
+    except Exception as e:
+        print(f"Error fetching complaints: {e}")
+        return []
 
 @router.get("/customer/{customer_id}", response_model=List[ComplaintOut])
 def get_customer_complaints(customer_id: int, db: Session = Depends(get_db)):

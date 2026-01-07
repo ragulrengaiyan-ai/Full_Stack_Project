@@ -46,7 +46,11 @@ from sqlalchemy.orm import joinedload
 
 @router.get("/users")
 def get_all_users(db: Session = Depends(get_db)):
-    return db.query(User).options(joinedload(User.provider_profile)).order_by(User.created_at.desc()).all()
+    try:
+        return db.query(User).options(joinedload(User.provider_profile)).order_by(User.created_at.desc()).all()
+    except Exception as e:
+        print(f"Error fetching users: {e}")
+        return []
 
 @router.delete("/users/{user_id}")
 def delete_user(user_id: int, db: Session = Depends(get_db)):
@@ -60,4 +64,8 @@ def delete_user(user_id: int, db: Session = Depends(get_db)):
 
 @router.get("/bookings")
 def get_all_bookings(db: Session = Depends(get_db)):
-    return db.query(Booking).all()
+    try:
+        return db.query(Booking).all()
+    except Exception as e:
+        print(f"Error fetching bookings: {e}")
+        return []

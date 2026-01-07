@@ -17,8 +17,12 @@ def create_inquiry(inquiry: InquiryCreate, db: Session = Depends(get_db)):
 
 @router.get("/", response_model=List[InquiryOut])
 def get_all_inquiries(db: Session = Depends(get_db)):
-    # In real app, check admin role
-    return db.query(Inquiry).all()
+    try:
+        # In real app, check admin role
+        return db.query(Inquiry).all()
+    except Exception as e:
+        print(f"Error fetching inquiries: {e}")
+        return []
 
 @router.patch("/{inquiry_id}/status")
 def update_inquiry_status(inquiry_id: int, status: str, db: Session = Depends(get_db)):

@@ -40,6 +40,11 @@ async function loadUsers() {
         const list = document.getElementById('usersList');
         list.innerHTML = '';
 
+        if (users.length === 0) {
+            list.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:20px; color:#64748b;">No users found</td></tr>';
+            return;
+        }
+
         users.forEach(u => {
             const row = document.createElement('tr');
 
@@ -92,6 +97,11 @@ async function loadBookings() {
         const list = document.getElementById('bookingsList');
         list.innerHTML = '';
 
+        if (bookings.length === 0) {
+            list.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px; color:#64748b;">No bookings found</td></tr>';
+            return;
+        }
+
         bookings.forEach(b => {
             const row = document.createElement('tr');
 
@@ -127,6 +137,11 @@ async function loadComplaints() {
         const list = document.getElementById('complaintsList');
         if (!list) return;
         list.innerHTML = '';
+
+        if (complaints.length === 0) {
+            list.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px; color:#64748b;">No complaints found</td></tr>';
+            return;
+        }
 
         complaints.forEach(c => {
             const row = document.createElement('tr');
@@ -212,6 +227,11 @@ async function loadInquiries() {
         const list = document.getElementById('inquiriesList');
         if (!list) return;
         list.innerHTML = '';
+
+        if (inquiries.length === 0) {
+            list.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px; color:#64748b;">No inquiries found</td></tr>';
+            return;
+        }
 
         inquiries.forEach(i => {
             const row = document.createElement('tr');
