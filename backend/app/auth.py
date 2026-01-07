@@ -10,8 +10,8 @@ from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
 
-from app.database import get_db
-from app.models import User
+from .database import get_db
+from .models import User
 
 # Secret key for signing (in a real app, this should be in .env)
 SECRET_KEY = "my_super_secret_key_for_this_project_123"

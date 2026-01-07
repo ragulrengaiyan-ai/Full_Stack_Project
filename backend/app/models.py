@@ -27,7 +27,7 @@ class Provider(Base):
     experience_years = Column(Integer)
     hourly_rate = Column(Float)
     location = Column(String)
-    address = Column(String)
+    address = Column(String, nullable=True) # Address is now linked/required during registration
     bio = Column(Text)
     background_verified = Column(String, default="pending") # pending, verified, rejected
     availability_status = Column(String, default="available") # available, busy, offline
@@ -47,7 +47,7 @@ class Booking(Base):
     customer_id = Column(Integer, ForeignKey("users.id"))
     provider_id = Column(Integer, ForeignKey("providers.id"))
     service_name = Column(String)
-    booking_date = Column(String) # Using string for simplicity to match frontend
+    booking_date = Column(String) 
     booking_time = Column(String)
     duration_hours = Column(Integer)
     total_amount = Column(Float)
@@ -56,6 +56,7 @@ class Booking(Base):
     address = Column(Text)
     notes = Column(Text)
     status = Column(String, default="pending") # pending, accepted, completed, cancelled
+    refund_status = Column(String, nullable=True) # None, processed, rejected
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
@@ -88,12 +89,25 @@ class Complaint(Base):
     customer_id = Column(Integer, ForeignKey("users.id"))
     subject = Column(String)
     description = Column(Text)
-    status = Column(String, default="pending") # pending, under_review, resolved
+    status = Column(String, default="pending") # pending, investigating, resolved, refunded, warned
     resolution = Column(Text)
+    admin_notes = Column(Text)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     # Relationships
     booking = relationship("Booking", back_populates="complaints")
+
+class Inquiry(Base):
+    __tablename__ = "inquiries"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String)
+    email = Column(String)
+    phone = Column(String, nullable=True)
+    subject = Column(String)
+    message = Column(Text)
+    status = Column(String, default="new") # new, read, replied
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
 
 class Service(Base):
     __tablename__ = "services"

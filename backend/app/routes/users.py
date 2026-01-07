@@ -4,10 +4,10 @@ from sqlalchemy.orm import Session
 from typing import List, Optional
 from pydantic import BaseModel, EmailStr
 
-from app.database import get_db
-from app.schemas import UserCreate, UserOut, UserLogin, ProviderCreate, ProviderOut
-from app.models import User, Provider
-from app.auth import generate_password_hash, verify_password, create_access_token
+from ..database import get_db
+from ..schemas import UserCreate, UserOut, UserLogin, ProviderCreate, ProviderOut
+from ..models import User, Provider
+from ..auth import generate_password_hash, verify_password, create_access_token
 
 router = APIRouter(prefix="/users", tags=["Users"])
 

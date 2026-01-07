@@ -72,28 +72,28 @@
 
       <div class="contact-form">
         <h2>Send us a Message</h2>
-        <form>
+        <form id="contactForm">
           <div class="row">
             <div class="input-box">
               <label>Full Name *</label>
-              <input type="text" placeholder="Enter your name" required>
+              <input type="text" id="name" placeholder="Enter your name" required>
             </div>
 
             <div class="input-box">
               <label>Email Address *</label>
-              <input type="email" placeholder="Enter your email" required>
+              <input type="email" id="email" placeholder="Enter your email" required>
             </div>
           </div>
 
           <div class="row">
             <div class="input-box">
               <label>Phone Number</label>
-              <input type="tel" placeholder="Enter your phone number">
+              <input type="tel" id="phone" placeholder="Enter your phone number">
             </div>
 
             <div class="input-box">
               <label>Subject *</label>
-              <select required>
+              <select id="subject" required>
                 <option value="">Select a subject</option>
                 <option>General Inquiry</option>
                 <option>Technical Support</option>
@@ -104,7 +104,7 @@
 
           <div class="input-box full">
             <label>Message *</label>
-            <textarea rows="4" placeholder="Tell us how we can help you..." required></textarea>
+            <textarea id="message" rows="4" placeholder="Tell us how we can help you..." required></textarea>
           </div>
 
           <div class="checkbox">
@@ -127,6 +127,7 @@
   <script src="js/config.js"></script>
   <script src="js/api.js"></script>
   <script src="js/auth.js"></script>
+  <script src="js/contact.js"></script>
 </body>
 
 </html>

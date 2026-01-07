@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     await loadUsers();
     await loadBookings();
     await loadComplaints();
+    await loadInquiries();
 });
 
 async function loadStats() {
@@ -48,7 +49,6 @@ async function loadUsers() {
                 actionBtns += `<button class="btn-small" onclick="verifyProvider(${u.provider_profile?.id || 'null'})" style="background:#2563eb; color:white; margin-right:5px;">Verify</button>`;
             }
 
-            // Only allow deleting non-admin users to prevent self-deletion or locking out the admin account easily
             if (u.role !== 'admin') {
                 actionBtns += `<button class="btn-small" onclick="deleteUser(${u.id})" style="background:#ef4444; color:white;">Delete</button>`;
             }
@@ -75,12 +75,12 @@ async function loadUsers() {
 }
 
 async function deleteUser(userId) {
-    if (!confirm('Are you sure you want to delete this user and all associated profile data? This action cannot be undone.')) return;
+    if (!confirm('Are you sure you want to delete this user?')) return;
     try {
         await API.request(`/admin/users/${userId}`, 'DELETE');
         alert('User removed successfully.');
         loadUsers();
-        await loadStats(); // Update counts
+        await loadStats();
     } catch (err) {
         alert(err.message);
     }
@@ -100,7 +100,7 @@ async function loadBookings() {
                 <td>${b.service_name}</td>
                 <td>${b.booking_date}</td>
                 <td><span class="badge ${b.status}">${b.status}</span></td>
-                <td>${b.total_amount}</td>
+                <td>₹${b.total_amount}</td>
             `;
             list.appendChild(row);
         });
@@ -121,7 +121,6 @@ async function verifyProvider(providerId) {
     }
 }
 
-
 async function loadComplaints() {
     try {
         const complaints = await API.get('/complaints');
@@ -131,9 +130,22 @@ async function loadComplaints() {
 
         complaints.forEach(c => {
             const row = document.createElement('tr');
-            let actionBtn = '-';
+            let actions = '';
+
             if (c.status === 'pending') {
-                actionBtn = `<button class="btn-small" onclick="resolveComplaint(${c.id})" style="background:#166534; color:white; padding:4px 8px; border:none; border-radius:4px; cursor:pointer;">Resolve</button>`;
+                actions = `
+                    <button class="btn-small" onclick="investigateComplaint(${c.id})" style="background:#f59e0b; color:white; margin-right:2px;">Check</button>
+                    <button class="btn-small" onclick="refundComplaint(${c.id})" style="background:#2563eb; color:white; margin-right:2px;">Refund</button>
+                    <button class="btn-small" onclick="warnProvider(${c.id})" style="background:#ef4444; color:white; margin-right:2px;">Warn</button>
+                `;
+            } else if (c.status === 'investigating') {
+                actions = `
+                    <button class="btn-small" onclick="refundComplaint(${c.id})" style="background:#2563eb; color:white; margin-right:2px;">Refund</button>
+                    <button class="btn-small" onclick="warnProvider(${c.id})" style="background:#ef4444; color:white; margin-right:2px;">Warn</button>
+                    <button class="btn-small" onclick="resolveComplaint(${c.id})" style="background:#166534; color:white;">Resolve</button>
+                `;
+            } else {
+                actions = `<span style="font-size:0.8rem; color:#64748b;">${c.resolution || 'No notes'}</span>`;
             }
 
             row.innerHTML = `
@@ -141,7 +153,7 @@ async function loadComplaints() {
                 <td>Booking #${c.booking_id}</td>
                 <td><strong>${c.subject}</strong><br><small>${c.description}</small></td>
                 <td><span class="badge ${c.status}">${c.status}</span></td>
-                <td>${actionBtn}</td>
+                <td><div style="display:flex; flex-wrap:wrap;">${actions}</div></td>
             `;
             list.appendChild(row);
         });
@@ -150,10 +162,41 @@ async function loadComplaints() {
     }
 }
 
-async function resolveComplaint(id) {
-    const resolution = prompt('Enter resolution for this complaint:');
-    if (!resolution) return;
+async function investigateComplaint(id) {
+    try {
+        await API.request(`/complaints/${id}/investigate`, 'PATCH');
+        loadComplaints();
+        alert('Complaint marked as Under Investigation.');
+    } catch (err) {
+        alert(err.message);
+    }
+}
 
+async function refundComplaint(id) {
+    if (!confirm('Process refund for this booking?')) return;
+    try {
+        await API.request(`/complaints/${id}/refund`, 'PATCH');
+        loadComplaints();
+        alert('Refund processed successfully.');
+    } catch (err) {
+        alert(err.message);
+    }
+}
+
+async function warnProvider(id) {
+    if (!confirm('Issue a formal warning to the provider?')) return;
+    try {
+        await API.request(`/complaints/${id}/warn`, 'PATCH');
+        loadComplaints();
+        alert('Formal warning issued to provider.');
+    } catch (err) {
+        alert(err.message);
+    }
+}
+
+async function resolveComplaint(id) {
+    const resolution = prompt('Enter final resolution notes:');
+    if (!resolution) return;
     try {
         await API.request(`/complaints/${id}/resolve`, 'PATCH', { resolution });
         loadComplaints();
@@ -163,8 +206,32 @@ async function resolveComplaint(id) {
     }
 }
 
-function viewProfile(id, isAdminReview = false) {
-    let url = `profile.html?id=${id}`;
-    if (isAdminReview) url += '&admin_review=true';
-    window.open(url, '_blank');
+async function loadInquiries() {
+    try {
+        const inquiries = await API.get('/inquiries');
+        const list = document.getElementById('inquiriesList');
+        if (!list) return;
+        list.innerHTML = '';
+
+        inquiries.forEach(i => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${new Date(i.created_at).toLocaleDateString()}</td>
+                <td>${i.name} (${i.email})</td>
+                <td><strong>${i.subject}</strong></td>
+                <td>${i.message}</td>
+                <td><span class="badge ${i.status}">${i.status}</span></td>
+            `;
+            list.appendChild(row);
+        });
+    } catch (err) {
+        console.error('Failed to load inquiries', err);
+    }
 }
+
+window.investigateComplaint = investigateComplaint;
+window.refundComplaint = refundComplaint;
+window.warnProvider = warnProvider;
+window.resolveComplaint = resolveComplaint;
+window.verifyProvider = verifyProvider;
+window.deleteUser = deleteUser;

@@ -2,9 +2,9 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from typing import List
-from app.database import get_db
-from app.models import Complaint, Booking, User
-from app.schemas import ComplaintCreate, ComplaintOut
+from ..database import get_db
+from ..models import Complaint, Booking, User
+from ..schemas import ComplaintCreate, ComplaintOut
 
 router = APIRouter(prefix="/complaints", tags=["Complaints"])
 
@@ -48,3 +48,44 @@ def resolve_complaint(complaint_id: int, resolve_data: ComplaintResolve, db: Ses
     complaint.resolution = resolve_data.resolution
     db.commit()
     return {"message": "Complaint marked as resolved"}
+
+@router.patch("/{complaint_id}/investigate")
+def investigate_complaint(complaint_id: int, db: Session = Depends(get_db)):
+    complaint = db.query(Complaint).filter(Complaint.id == complaint_id).first()
+    if not complaint:
+        raise HTTPException(status_code=404, detail="Complaint not found")
+    
+    complaint.status = "investigating"
+    db.commit()
+    return {"message": "Complaint status changed to investigating"}
+
+@router.patch("/{complaint_id}/refund")
+def refund_complaint(complaint_id: int, db: Session = Depends(get_db)):
+    complaint = db.query(Complaint).filter(Complaint.id == complaint_id).first()
+    if not complaint:
+        raise HTTPException(status_code=404, detail="Complaint not found")
+    
+    # Update complaint status
+    complaint.status = "refunded"
+    complaint.resolution = "System-initiated refund processed for the customer."
+    
+    # Update booking status
+    booking = complaint.booking
+    if booking:
+        booking.refund_status = "processed"
+        booking.status = "cancelled" 
+        
+    db.commit()
+    return {"message": "Refund processed and complaint updated"}
+
+@router.patch("/{complaint_id}/warn")
+def warn_provider(complaint_id: int, db: Session = Depends(get_db)):
+    complaint = db.query(Complaint).filter(Complaint.id == complaint_id).first()
+    if not complaint:
+        raise HTTPException(status_code=404, detail="Complaint not found")
+    
+    complaint.status = "warned"
+    complaint.admin_notes = "Official warning issued to provider based on this complaint."
+    
+    db.commit()
+    return {"message": "Provider warned and complaint updated"}

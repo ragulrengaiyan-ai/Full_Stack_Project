@@ -79,6 +79,7 @@ class BookingOut(BookingBase):
     commission_amount: float
     provider_amount: float
     status: str
+    refund_status: Optional[str] = None
     created_at: datetime
     updated_at: Optional[datetime] = None
     class Config:
@@ -109,6 +110,22 @@ class ComplaintOut(ComplaintCreate):
     customer_id: int
     status: str
     resolution: Optional[str] = None
+    admin_notes: Optional[str] = None
+    created_at: datetime
+    class Config:
+        from_attributes = True
+
+# --- Inquiries ---
+class InquiryCreate(BaseModel):
+    name: str
+    email: EmailStr
+    phone: Optional[str] = None
+    subject: str
+    message: str
+
+class InquiryOut(InquiryCreate):
+    id: int
+    status: str
     created_at: datetime
     class Config:
         from_attributes = True
