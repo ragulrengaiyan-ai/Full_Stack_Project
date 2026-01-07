@@ -249,9 +249,15 @@ async function loadInquiries() {
     }
 }
 
+async function viewProfile(providerId, isAdminView = false) {
+    if (!providerId) return;
+    window.location.href = `profile.html?id=${providerId}&admin=${isAdminView}`;
+}
+
 window.investigateComplaint = investigateComplaint;
 window.refundComplaint = refundComplaint;
 window.warnProvider = warnProvider;
 window.resolveComplaint = resolveComplaint;
 window.verifyProvider = verifyProvider;
 window.deleteUser = deleteUser;
+window.viewProfile = viewProfile; // Fix for Inspect button
