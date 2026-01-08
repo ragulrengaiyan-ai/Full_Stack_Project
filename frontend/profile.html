@@ -174,7 +174,7 @@
                     </div>
                     <div class="detail-item">
                         <h3>Location</h3>
-                        <p>${p.location}</p>
+                        <p>${p.address || p.location}</p>
                     </div>
                     <div class="detail-item">
                         <h3>Hourly Rate</h3>
@@ -187,10 +187,6 @@
                     <div class="bio-section">
                         <h3>About Me</h3>
                         <p>${p.bio || 'Professional service provider.'}</p>
-                    </div>
-                     <div class="bio-section">
-                        <h3>Service Area</h3>
-                        <p>${p.address || 'N/A'}</p>
                     </div>
                 </div>
             `;
