@@ -1,6 +1,7 @@
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from sqlalchemy import or_
 from typing import List, Optional
 
 try:
@@ -52,7 +53,10 @@ def get_providers(
         query = query.filter(Provider.service_type == service_type)
 
     if location:
-        query = query.filter(Provider.location.ilike(f"%{location}%"))
+        query = query.filter(or_(
+            Provider.location.ilike(f"%{location}%"),
+            Provider.address.ilike(f"%{location}%")
+        ))
 
     if min_rating:
         query = query.filter(Provider.rating >= min_rating)
