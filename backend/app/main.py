@@ -46,15 +46,6 @@ app = FastAPI(
     version="1.3.2"
 )
 
-# Migration Trigger Route (Temporary)
-@app.get("/api/migrate")
-def trigger_migration():
-    try:
-        results = run_db_migrations()
-        return {"status": "Migration Complete", "details": results}
-    except Exception as e:
-        return JSONResponse(status_code=500, content={"error": f"Migration failed: {str(e)}"})
-
 # CORS Configuration
 app.add_middleware(
     CORSMiddleware,
