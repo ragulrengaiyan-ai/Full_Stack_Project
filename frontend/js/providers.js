@@ -185,8 +185,7 @@ function createProviderCard(provider) {
             <div class="provider-info">
                 <h2 class="provider-name">${provider.user.name}</h2>
                 <div class="provider-meta">
-                    <span class="meta-item">📍 ${provider.location || 'Unknown'}</span>
-                    ${provider.address && provider.address !== provider.location ? `<span class="meta-item">🏠 Area: ${provider.address}</span>` : ''}
+                    <span class="meta-item">📍 ${provider.address || provider.location || 'Unknown'}</span>
                     <span class="meta-item">⏱ ${provider.experience_years} years experience</span>
                 </div>
             </div>
