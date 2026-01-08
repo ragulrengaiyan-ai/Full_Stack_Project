@@ -17,6 +17,7 @@ try:
     from .database import engine, get_db, Base
     from .routes import users, services, providers, bookings, admin, complaints, reviews, inquiries
     from . import models, auth
+    from .migrate import run_db_migrations # New migration utility
 except (ImportError, ValueError):
     # Fallback for Vercel if relative imports fail
     import database
@@ -30,6 +31,8 @@ except (ImportError, ValueError):
     import routes.reviews as reviews
     import routes.inquiries as inquiries
     import models, auth
+    import migrate
+    from migrate import run_db_migrations
 
 # Create tables
 try:
@@ -40,8 +43,17 @@ except Exception as e:
 app = FastAPI(
     title="Urban Company Style API",
     description="Full Stack Household Services Application",
-    version="1.3.1"
+    version="1.3.2"
 )
+
+# Migration Trigger Route (Temporary)
+@app.get("/api/migrate")
+def trigger_migration():
+    try:
+        results = run_db_migrations()
+        return {"status": "Migration Complete", "details": results}
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"error": f"Migration failed: {str(e)}"})
 
 # CORS Configuration
 app.add_middleware(
