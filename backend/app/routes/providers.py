@@ -85,6 +85,14 @@ def get_providers(
     return query.all()
 
 
+@router.get("/profile/{user_id}", response_model=ProviderOut)
+def get_provider_by_user_id(user_id: int, db: Session = Depends(get_db)):
+    provider = db.query(Provider).filter(Provider.user_id == user_id).first()
+    if not provider:
+        raise HTTPException(status_code=404, detail="Provider profile not found for this user")
+    return provider
+
+
 @router.get("/{provider_id}", response_model=ProviderOut)
 def get_provider_details(
     provider_id: int, 

@@ -26,9 +26,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 function updateProfileUI(user) {
+    const nameEl = document.getElementById('header-user-name');
+    const imgEl = document.getElementById('header-user-img');
 
-    const profileNames = document.querySelectorAll('.user-profile span');
-    profileNames.forEach(el => el.textContent = user.name);
+    if (nameEl) nameEl.textContent = user.name;
+    if (imgEl) imgEl.src = `https://ui-avatars.com/api/?name=${user.name}&background=random`;
 }
 
 function setupTabs() {
@@ -38,24 +40,17 @@ function setupTabs() {
     links.forEach(link => {
         link.addEventListener('click', (e) => {
             const targetId = link.getAttribute('data-page');
-            if (targetId === 'bookings' || targetId === 'providers') {
 
-                e.preventDefault();
+            // Allow default navigation for "Back to Home"
+            if (link.getAttribute('href') !== '#' && !targetId) return;
 
+            e.preventDefault();
 
+            // Handle special tabs
+            if (targetId) {
                 pages.forEach(p => p.classList.remove('active'));
                 links.forEach(l => l.classList.remove('active'));
 
-
-                const targetPage = document.getElementById(targetId + '-page');
-                if (targetPage) {
-                    targetPage.classList.add('active');
-                    link.classList.add('active');
-                }
-            } else if (targetId) {
-                e.preventDefault();
-                pages.forEach(p => p.classList.remove('active'));
-                links.forEach(l => l.classList.remove('active'));
                 const targetPage = document.getElementById(targetId + '-page');
                 if (targetPage) {
                     targetPage.classList.add('active');
@@ -97,8 +92,9 @@ async function loadCustomerDashboard(userId) {
                 const recent = [...bookings].reverse().slice(0, 5); // Last 5
                 recent.forEach(b => {
                     const pName = b.provider?.user?.name || `Professional #${b.provider_id}`;
+                    // Make row clickable to go to bookings tab
                     recentBody.innerHTML += `
-                        <tr>
+                        <tr onclick="document.querySelector('[data-page=bookings]').click()" style="cursor:pointer;" title="Click to view details">
                             <td>${b.service_name}</td>
                             <td>${pName}</td>
                             <td>${new Date(b.booking_date).toLocaleDateString()}</td>
@@ -119,7 +115,7 @@ async function loadCustomerDashboard(userId) {
                 const top = [...providers].sort((a, b) => b.rating - a.rating).slice(0, 3);
                 top.forEach(p => {
                     topProvidersContainer.innerHTML += `
-                        <div class="provider-item" onclick="viewProfile(${p.id})" style="cursor:pointer;">
+                        <div class="provider-item" onclick="window.location.href='/profile.html?id=${p.id}'" style="cursor:pointer;">
                             <img src="https://ui-avatars.com/api/?name=${p.user.name}&background=random" alt="Provider">
                             <div class="provider-info">
                                 <p class="provider-name">${p.user.name}</p>
@@ -186,7 +182,7 @@ async function loadCustomerDashboard(userId) {
                         <td>#TXN${b.id.toString().padStart(3, '0')}</td>
                         <td>${b.service_name} Payment</td>
                         <td>₹${b.total_amount}</td>
-                        <td>${new Date(b.created_at).toLocaleDateString()}</td>
+                        <td>${new Date(b.created_at || Date.now()).toLocaleDateString()}</td>
                         <td><span class="badge completed">Paid</span></td>
                     </tr>
                 `;
@@ -197,28 +193,146 @@ async function loadCustomerDashboard(userId) {
                 document.getElementById('payment-pending').textContent = `₹${bookings.filter(b => b.status === 'pending').reduce((sum, b) => sum + b.total_amount, 0).toLocaleString()}`;
             }
 
-        } catch (err) {
-            console.error('Failed to load customer dashboard:', err);
+        }
+    } catch (err) {
+        console.error('Failed to load customer dashboard:', err);
+    }
+}
+
+async function loadProviderDashboard(userId) {
+    console.log('Loading Provider Dashboard...');
+    try {
+        // 1. Get Provider Profile
+        const provider = await API.get(`/providers/profile/${userId}`);
+        const providerId = provider.id;
+
+        // 2. Get Provider Bookings
+        const bookings = await API.get(`/bookings/provider/${providerId}`);
+
+        // 3. Calculate Stats
+        const pending = bookings.filter(b => b.status === 'pending').length;
+        const confirmed = bookings.filter(b => b.status === 'confirmed').length;
+        const completed = bookings.filter(b => b.status === 'completed');
+        const earnings = completed.reduce((sum, b) => sum + (b.provider_amount || 0), 0);
+
+        // Update Labels for Provider Context
+        document.querySelector('.stat-card:nth-child(3) .stat-label').textContent = 'Total Jobs Done';
+        document.getElementById('stat-active-providers').textContent = completed.length; // Reuse ID but change meaning
+
+        document.querySelector('.stat-card:nth-child(4) .stat-label').textContent = 'Total Earnings';
+
+        document.getElementById('stat-pending-bookings').textContent = pending;
+        document.getElementById('stat-confirmed-bookings').textContent = confirmed;
+        document.getElementById('stat-monthly-spend').textContent = `₹${earnings.toLocaleString()}`; // Reusing ID for earnings
+
+        // 4. Render Recent Bookings
+        const recentBody = document.getElementById('recent-bookings-body');
+        if (recentBody) {
+            recentBody.innerHTML = '';
+            if (bookings.length === 0) {
+                recentBody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 20px; color: #666;">No bookings yet. Stay tuned!</td></tr>';
+            } else {
+                const recent = [...bookings].reverse().slice(0, 5);
+                recent.forEach(b => {
+                    const cName = b.customer?.name || "Customer";
+                    recentBody.innerHTML += `
+                        <tr onclick="document.querySelector('[data-page=bookings]').click()" style="cursor:pointer;">
+                            <td>${b.service_name}</td>
+                            <td>${cName}</td>
+                            <td>${new Date(b.booking_date).toLocaleDateString()}</td>
+                            <td><span class="badge ${b.status}">${b.status}</span></td>
+                        </tr>
+                    `;
+                });
+            }
+        }
+
+        // 5. Hide "Top Providers" and show something else or hide it?
+        // For now, let's hide "Top Providers" section for providers as it's not relevant
+        const topProvidersCard = document.querySelector('.dashboard-grid .card:nth-child(2)');
+        if (topProvidersCard) {
+            topProvidersCard.style.display = 'none';
+            // potentially expand the recent bookings to full width
+            document.querySelector('.dashboard-grid').style.gridTemplateColumns = '1fr';
+        }
+
+        // 6. All Bookings Table
+        const allBookingsBody = document.getElementById('all-bookings-body') || document.querySelector('#bookings-page .full-table tbody');
+        if (allBookingsBody) {
+            allBookingsBody.innerHTML = '';
+            bookings.forEach(b => {
+                const cName = b.customer?.name || "Customer";
+
+                // Provider Actions
+                let actionBtn = '';
+                if (b.status === 'pending') {
+                    actionBtn += `
+                        <button class="btn-small" onclick="updateBookingStatus(${b.id}, 'confirmed')" style="background:#16a34a; color:white; margin-right:5px;">Accept</button>
+                        <button class="btn-small btn-danger" onclick="updateBookingStatus(${b.id}, 'cancelled')" style="background:#dc2626; color:white;">Reject</button>
+                     `;
+                } else if (b.status === 'confirmed') {
+                    actionBtn += `<button class="btn-small" onclick="updateBookingStatus(${b.id}, 'completed')" style="background:#2563eb; color:white;">Mark Complete</button>`;
+                } else {
+                    actionBtn = '-';
+                }
+
+                allBookingsBody.innerHTML += `
+                <tr>
+                    <td>#B${b.id.toString().padStart(3, '0')}</td>
+                    <td>${b.service_name}</td>
+                    <td>You</td>
+                    <td>${cName}</td>
+                    <td>${b.booking_date} ${b.booking_time}</td>
+                    <td>₹${b.total_amount}</td>
+                    <td><span class="badge ${b.status}">${b.status}</span></td>
+                    <td>${actionBtn}</td>
+                </tr>
+            `;
+            });
+        }
+
+    } catch (err) {
+        console.error("Error loading provider dashboard:", err);
+        // Show error to user
+        const recentBody = document.getElementById('recent-bookings-body');
+        if (recentBody) recentBody.innerHTML = `<tr><td colspan="4">Error loading data: ${err.message}</td></tr>`;
+
+        // This usually happens if provider profile is missing for a "provider" user
+        if (err.message.includes('404')) {
+            alert("Provider profile not found. Please contact admin.");
         }
     }
+}
+
+async function updateBookingStatus(bookingId, status) {
+    if (!confirm(`Are you sure you want to mark this booking as ${status}?`)) return;
+    try {
+        await API.request(`/bookings/${bookingId}/status?new_status=${status}`, 'PATCH'); // Query param or body depending on backend
+        alert('Status updated!');
+        location.reload();
+    } catch (err) {
+        alert("Failed to update status: " + err.message);
+    }
+}
+
 
 async function loadCustomerReviews(userId) {
-        try {
-            const reviews = await API.get(`/reviews/customer/${userId}`);
-            const container = document.querySelector('.reviews-container');
-            if (!container) return;
+    try {
+        const reviews = await API.get(`/reviews/customer/${userId}`);
+        const container = document.querySelector('.reviews-container');
+        if (!container) return;
 
-            container.innerHTML = '';
+        container.innerHTML = '';
 
-            if (reviews.length === 0) {
-                container.innerHTML = '<p>You haven\'t written any reviews yet.</p>';
-                return;
-            }
+        if (reviews.length === 0) {
+            container.innerHTML = '<p>You haven\'t written any reviews yet.</p>';
+            return;
+        }
 
-            reviews.forEach(review => {
-                const card = document.createElement('div');
-                card.className = 'review-card';
-                card.innerHTML = `
+        reviews.forEach(review => {
+            const card = document.createElement('div');
+            card.className = 'review-card';
+            card.innerHTML = `
                 <div class="review-header">
                     <div class="reviewer-info">
                         <div>
@@ -231,58 +345,60 @@ async function loadCustomerReviews(userId) {
                 <p class="review-text">${review.comment || 'No comment'}</p>
                 <p class="review-date">Posted on ${new Date(review.created_at).toLocaleDateString()}</p>
             `;
-                container.appendChild(card);
-            });
+            container.appendChild(card);
+        });
 
-        } catch (err) {
-            console.error('Failed to load reviews:', err);
-        }
+    } catch (err) {
+        console.error('Failed to load reviews:', err);
     }
+}
 
-    function setupSettingsForm(user) {
-        const form = document.querySelector('.settings-form');
-        if (!form) return;
+function setupSettingsForm(user) {
+    const form = document.querySelector('.settings-form');
+    if (!form) return;
 
-        // Prefill
-        const inputs = form.querySelectorAll('input');
+    // Prefill
+    const inputs = form.querySelectorAll('input');
+    if (inputs.length >= 3) {
         inputs[0].value = user.name;
         inputs[1].value = user.email;
         inputs[2].value = user.phone || '';
-
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const data = {
-                name: inputs[0].value,
-                email: inputs[1].value,
-                phone: inputs[2].value
-            };
-
-            try {
-                const updatedUser = await API.put(`/users/${user.id}`, data);
-
-                const newUserState = { ...user, ...updatedUser };
-                localStorage.setItem('user', JSON.stringify(newUserState));
-
-                alert('Profile updated successfully!');
-                location.reload();
-            } catch (err) {
-                alert('Update failed: ' + err.message);
-            }
-        });
-
-        const deleteBtn = document.querySelector('.btn-danger');
-        if (deleteBtn) {
-            deleteBtn.addEventListener('click', () => {
-                alert('Delete functionality is not implemented yet for safety.');
-            });
-        }
     }
 
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const data = {
+            name: inputs[0].value,
+            email: inputs[1].value,
+            phone: inputs[2].value
+        };
 
-    function openReviewModal(bookingId, providerId) {
+        try {
+            const updatedUser = await API.put(`/users/${user.id}`, data);
 
-        if (!document.getElementById('reviewModal')) {
-            const modalHTML = `
+            const newUserState = { ...user, ...updatedUser };
+            localStorage.setItem('user', JSON.stringify(newUserState));
+
+            alert('Profile updated successfully!');
+            location.reload();
+        } catch (err) {
+            alert('Update failed: ' + err.message);
+        }
+    });
+
+    const deleteBtn = document.querySelector('.btn-danger');
+    if (deleteBtn) {
+        deleteBtn.addEventListener('click', () => {
+            alert('Delete functionality is not implemented yet for safety.');
+        });
+    }
+}
+
+
+function openReviewModal(bookingId, providerId) {
+
+    if (!document.getElementById('reviewModal')) {
+        const modalHTML = `
             <div id="reviewModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100vh; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
                 <div class="modal-content" style="background:white; padding:2rem; border-radius:8px; max-width:500px; width:90%;">
                     <h2>Write a Review</h2>
@@ -310,42 +426,37 @@ async function loadCustomerReviews(userId) {
                 </div>
             </div>
         `;
-            document.body.insertAdjacentHTML('beforeend', modalHTML);
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
 
 
-            document.getElementById('reviewForm').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const data = {
-                    booking_id: document.getElementById('reviewBookingId').value,
-                    rating: document.getElementById('reviewRating').value,
-                    comment: document.getElementById('reviewComment').value
-                };
+        document.getElementById('reviewForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = {
+                booking_id: document.getElementById('reviewBookingId').value,
+                rating: document.getElementById('reviewRating').value,
+                comment: document.getElementById('reviewComment').value
+            };
 
-                try {
+            try {
 
-                    const user = JSON.parse(localStorage.getItem('user'));
-                    await API.post(`/reviews/?customer_id=${user.id}`, data);
-                    alert('Review submitted!');
-                    document.getElementById('reviewModal').style.display = 'none';
-                    location.reload();
-                } catch (err) {
-                    alert(err.message);
-                }
-            });
-        }
-
-        document.getElementById('reviewBookingId').value = bookingId;
-        document.getElementById('reviewModal').style.display = 'flex';
+                const user = JSON.parse(localStorage.getItem('user'));
+                await API.post(`/reviews/?customer_id=${user.id}`, data);
+                alert('Review submitted!');
+                document.getElementById('reviewModal').style.display = 'none';
+                location.reload();
+            } catch (err) {
+                alert(err.message);
+            }
+        });
     }
 
-    async function loadProviderDashboard(userId) {
+    document.getElementById('reviewBookingId').value = bookingId;
+    document.getElementById('reviewModal').style.display = 'flex';
+}
 
-        console.log('Provider dashboard loaded via dashboard.js specific logic');
-    }
-
-    function openComplaintModal(bookingId) {
-        if (!document.getElementById('complaintModal')) {
-            const modalHTML = `
+function openComplaintModal(bookingId) {
+    if (!document.getElementById('complaintModal')) {
+        const modalHTML = `
             <div id="complaintModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100vh; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
                 <div class="modal-content" style="background:white; padding:2rem; border-radius:8px; max-width:500px; width:90%;">
                     <h2>Raise a Complaint</h2>
@@ -367,43 +478,39 @@ async function loadCustomerReviews(userId) {
                 </div>
             </div>
         `;
-            document.body.insertAdjacentHTML('beforeend', modalHTML);
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
 
-            document.getElementById('complaintForm').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const user = JSON.parse(localStorage.getItem('user'));
-                const data = {
-                    booking_id: document.getElementById('complaintBookingId').value,
-                    subject: document.getElementById('complaintSubject').value,
-                    description: document.getElementById('complaintDescription').value
-                };
+        document.getElementById('complaintForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const user = JSON.parse(localStorage.getItem('user'));
+            const data = {
+                booking_id: document.getElementById('complaintBookingId').value,
+                subject: document.getElementById('complaintSubject').value,
+                description: document.getElementById('complaintDescription').value
+            };
 
-                try {
-                    await API.post(`/complaints/?customer_id=${user.id}`, data);
-                    alert('Complaint submitted successfully. Our team will review it.');
-                    document.getElementById('complaintModal').style.display = 'none';
-                    location.reload();
-                } catch (err) {
-                    alert(err.message);
-                }
-            });
-        }
-
-        document.getElementById('complaintBookingId').value = bookingId;
-        document.getElementById('complaintModal').style.display = 'flex';
+            try {
+                await API.post(`/complaints/?customer_id=${user.id}`, data);
+                alert('Complaint submitted successfully. Our team will review it.');
+                document.getElementById('complaintModal').style.display = 'none';
+                location.reload();
+            } catch (err) {
+                alert(err.message);
+            }
+        });
     }
 
-    async function cancelBooking(bookingId) {
-        if (!confirm('Are you sure you want to cancel this booking?')) return;
-        try {
-            await API.request(`/bookings/${bookingId}`, 'DELETE');
-            alert('Booking cancelled.');
-            location.reload();
-        } catch (err) {
-            alert(err.message);
-        }
-    }
+    document.getElementById('complaintBookingId').value = bookingId;
+    document.getElementById('complaintModal').style.display = 'flex';
+}
 
-    function viewProfile(id) {
-        window.location.href = `/profile.html?id=${id}`;
+async function cancelBooking(bookingId) {
+    if (!confirm('Are you sure you want to cancel this booking?')) return;
+    try {
+        await API.request(`/bookings/${bookingId}`, 'DELETE');
+        alert('Booking cancelled.');
+        location.reload();
+    } catch (err) {
+        alert(err.message);
     }
+}
