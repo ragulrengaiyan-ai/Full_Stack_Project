@@ -1,6 +1,0 @@
-ÿþTesting CORS preflight (OPTIONS) at https://full-stack-project-iota-lime.vercel.app/api/providers/?service_type=security...
-
-OPTIONS Status: 200
-
-Error: name 'json' is not defined
-
