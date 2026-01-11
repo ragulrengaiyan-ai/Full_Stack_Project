@@ -1,0 +1,123 @@
+/* Professional Navbar Styles */
+header {
+    height: 80px;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 5%;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    transition: all 0.3s ease;
+}
+
+.hero {
+    display: flex;
+    align-items: center;
+}
+
+.hero h1 {
+    font-size: 1.8rem;
+    color: #2563eb;
+    letter-spacing: -0.5px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    cursor: pointer;
+    margin: 0;
+}
+
+nav {
+    display: flex;
+    gap: 40px;
+    align-items: center;
+}
+
+nav a {
+    text-decoration: none;
+    color: #4b5563;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    position: relative;
+    padding: 5px 0;
+}
+
+nav a:not(#joinNav):not(#signInNav):hover {
+    color: #2563eb;
+}
+
+nav a:not(#joinNav):not(#signInNav)::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: #2563eb;
+    transition: width 0.3s ease;
+    border-radius: 2px;
+}
+
+nav a:not(#joinNav):not(#signInNav):hover::after {
+    width: 100%;
+}
+
+/* Sign In Button */
+#signInNav {
+    color: #2563eb;
+    font-weight: 600;
+}
+
+#signInNav:hover {
+    color: #1d4ed8;
+}
+
+/* Join Now CTA Button */
+#joinNav {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    color: white;
+    padding: 12px 28px;
+    border-radius: 50px;
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.2);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 2px solid transparent;
+}
+
+#joinNav:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(37, 99, 235, 0.3);
+    background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+    color: white;
+}
+
+#joinNav:active {
+    transform: translateY(1px);
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    header {
+        padding: 0 20px;
+    }
+
+    nav {
+        gap: 15px;
+    }
+
+    nav a {
+        font-size: 0.9rem;
+    }
+
+    #joinNav {
+        padding: 8px 16px;
+    }
+}
