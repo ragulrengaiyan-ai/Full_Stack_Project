@@ -1,0 +1,18 @@
+DEBUG: DATABASE_URL is postgresql+psycopg2://postgres:AcademyRootPassword@localhost:5432/all_in_one_project
+DEBUG: Total users found: 14
+ID    Name                 Email                          Role           
+----------------------------------------------------------------------
+21    Sarah Johnson        sarah@example.com              provider       
+23    Maria Garcia         maria@example.com              provider       
+48    Test Admin           test@admin.com                 admin          
+49    Admin User           admin@allinone.com             admin          
+50    Ragul Admin          ragul@allinone.com             admin          
+39    Sriraj               sri@gmail.com                  provider       
+40    Arjun                arjun@gmail.com                customer       
+41    Tamil                tamil@gmail.com                customer       
+42    Ragul                ragul@gmail.com                customer       
+43    Balani               balani@gmail.com               provider       
+44    Selvam               selvam@gmail.com               provider       
+45    Mathan               mathan@gmail.com               provider       
+46    Bala                 bala@allinone.com              provider       
+47    Nagarjun Kumar       naga@example.com               provider       

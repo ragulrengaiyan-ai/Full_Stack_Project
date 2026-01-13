@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    const loginForm = document.querySelector('.login-container form');
+    const loginForm = document.getElementById('loginForm');
     if (loginForm) {
         handleLogin(loginForm);
     }

@@ -33,11 +33,32 @@ except (ImportError, ValueError):
     import models, auth
 
 
-# Create tables
+# Create tables and seed admin
 try:
     Base.metadata.create_all(bind=engine)
+    
+    # Auto-seed admin if database is empty or admin missing
+    from sqlalchemy.orm import Session
+    db = Session(bind=engine)
+    try:
+        admin_email = "admin@allinone.com"
+        admin = db.query(models.User).filter(models.User.email == admin_email).first()
+        if not admin:
+            print(f"AUTO-SEED: Creating default admin {admin_email}")
+            new_admin = models.User(
+                name="System Admin",
+                email=admin_email,
+                password=auth.generate_password_hash("admin123"),
+                role="admin",
+                phone="0000000000"
+            )
+            db.add(new_admin)
+            db.commit()
+    finally:
+        db.close()
+        
 except Exception as e:
-    print(f"Database sync skipped/failed: {e}")
+    print(f"Database sync/seed failed: {e}")
 
 app = FastAPI(
     title="Urban Company Style API",
