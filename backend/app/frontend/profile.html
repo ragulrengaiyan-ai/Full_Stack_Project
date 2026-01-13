@@ -140,11 +140,6 @@
                 const provider = await API.get(query);
                 renderProfile(provider);
 
-                if (adminReview) {
-                    const backBtn = document.querySelector('.btn-back');
-                    backBtn.textContent = 'Close Window';
-                    backBtn.onclick = () => window.close();
-                }
 
                 document.getElementById('bookBtn').onclick = () => {
                     window.location.href = `index.html`;
