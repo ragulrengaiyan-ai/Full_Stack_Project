@@ -1,6 +1,6 @@
 (function () {
     // List of pages that can be accessed without logging in
-    const publicPages = ['login.html', 'join.html'];
+    const publicPages = ['index.html', 'about.html', 'contact.html', 'login.html', 'join.html', ''];
 
     // Get the current page name from the URL
     const pathname = window.location.pathname;
