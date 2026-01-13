@@ -251,7 +251,7 @@ async function loadInquiries() {
 
 async function viewProfile(providerId, isAdminView = false) {
     if (!providerId) return;
-    window.location.href = `profile.html?id=${providerId}&admin=${isAdminView}`;
+    window.location.href = `profile.html?id=${providerId}&admin_review=${isAdminView}`;
 }
 
 window.investigateComplaint = investigateComplaint;
