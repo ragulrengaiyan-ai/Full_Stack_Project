@@ -37,13 +37,18 @@ except (ImportError, ValueError):
 try:
     Base.metadata.create_all(bind=engine)
     
-    # Auto-seed admin if database is empty or admin missing
+    # Auto-seed admin: Force update password and role for guaranteed access
     from sqlalchemy.orm import Session
     db = Session(bind=engine)
     try:
         admin_email = "admin@allinone.com"
         admin_user = db.query(models.User).filter(models.User.email == admin_email).first()
-        if not admin_user:
+        
+        if admin_user:
+            print(f"AUTO-SEED: Force updating existing admin {admin_email}")
+            admin_user.password = auth.generate_password_hash("admin123")
+            admin_user.role = "admin"
+        else:
             print(f"AUTO-SEED: Creating default admin {admin_email}")
             new_admin = models.User(
                 name="System Admin",
@@ -53,7 +58,8 @@ try:
                 phone="0000000000"
             )
             db.add(new_admin)
-            db.commit()
+        
+        db.commit()
     finally:
         db.close()
         
