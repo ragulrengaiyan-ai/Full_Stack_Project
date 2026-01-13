@@ -42,8 +42,8 @@ try:
     db = Session(bind=engine)
     try:
         admin_email = "admin@allinone.com"
-        admin = db.query(models.User).filter(models.User.email == admin_email).first()
-        if not admin:
+        admin_user = db.query(models.User).filter(models.User.email == admin_email).first()
+        if not admin_user:
             print(f"AUTO-SEED: Creating default admin {admin_email}")
             new_admin = models.User(
                 name="System Admin",
