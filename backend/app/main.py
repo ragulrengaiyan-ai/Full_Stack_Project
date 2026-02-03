@@ -102,28 +102,37 @@ app.include_router(complaints.router, prefix="/api", tags=["Complaints"])
 app.include_router(reviews.router, prefix="/api", tags=["Reviews"])
 app.include_router(inquiries.router, prefix="/api", tags=["Inquiries"])
 
-# Static Files Hosting (Professional Single-Origin Solution)
-# NOTE: Detailed static hosting is handled natively by Vercel from the root directory.
-# This section is kept only for local development fallback if needed.
-frontend_path = Path(__file__).parent / "frontend"
+# Static Files Hosting (Unified Single-Origin Solution)
+# The frontend files (js, css, index.html) are now located at the project root.
+root_path = Path(__file__).parent.parent.parent.absolute()
 
-if frontend_path.exists() and not os.getenv("VERCEL"):
-    for folder in ["js", "css", "assets"]:
-        target = frontend_path / folder
-        if target.exists():
-            app.mount(f"/{folder}", StaticFiles(directory=str(target)), name=folder)
+# Mount subdirectories from the root
+for folder in ["js", "css", "assets"]:
+    target = root_path / folder
+    if target.exists():
+        app.mount(f"/{folder}", StaticFiles(directory=str(target)), name=folder)
+
+@app.get("/")
+async def serve_index():
+    index_file = root_path / "index.html"
+    if index_file.exists():
+        return FileResponse(str(index_file))
+    return JSONResponse({"error": "index.html not found in root", "root": str(root_path)})
+
+# Catch-all for other HTML files at root
+@app.get("/{path:path}")
+async def serve_static_html(path: str):
+    # Don't intercept API calls
+    if path.startswith("api/"):
+        return JSONResponse({"detail": "Not Found"}, status_code=404)
+        
+    file_path = root_path / path
+    if file_path.exists() and file_path.is_file():
+        return FileResponse(str(file_path))
     
-    @app.get("/")
-    async def serve_index():
-        return FileResponse(str(frontend_path / "index.html"))
-    
-    @app.get("/{path:path}")
-    async def serve_static_html(path: str):
-        file_path = frontend_path / path
-        if file_path.exists() and file_path.is_file():
-            return FileResponse(str(file_path))
-        return FileResponse(str(frontend_path / "index.html"))
+    # Default back to index for SPA-like behavior or if file missing
+    return FileResponse(str(root_path / "index.html"))
 
 @app.get("/api/health")
 def health_check():
-    return {"status": "ok", "message": "Backend API is active"}
+    return {"status": "ok", "message": "Backend API is active", "version": "1.3.5"}
