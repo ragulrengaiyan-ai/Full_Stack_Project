@@ -17,46 +17,54 @@ router = APIRouter(prefix="/reviews", tags=["Reviews"])
 
 @router.post("/", response_model=ReviewOut, status_code=status.HTTP_201_CREATED)
 def create_review(review: ReviewCreate, customer_id: int, db: Session = Depends(get_db)):
-    # Check if booking exists
-    booking = db.query(Booking).filter(Booking.id == review.booking_id).first()
-    if not booking:
-        raise HTTPException(status_code=404, detail="Booking not found")
-    
-    # Check if booking belongs to customer
-    if booking.customer_id != customer_id:
-        raise HTTPException(status_code=403, detail="Not authorized")
-    
-    # Only completed services can be reviewed
-    if booking.status != "completed":
-        raise HTTPException(status_code=400, detail="Only completed bookings can be reviewed")
-    
-    # Check if review already exists
-    existing_review = db.query(Review).filter(Review.booking_id == review.booking_id).first()
-    if existing_review:
-        raise HTTPException(status_code=400, detail="Review already exists for this booking")
-    
-    # Create review
-    new_review = Review(
-        booking_id=review.booking_id,
-        provider_id=booking.provider_id,
-        customer_id=customer_id,
-        rating=review.rating,
-        comment=review.comment
-    )
-    
-    db.add(new_review)
-    db.commit()
-    db.refresh(new_review)
-    
-    # Update provider rating
-    provider = db.query(Provider).filter(Provider.id == booking.provider_id).first()
-    reviews = db.query(Review).filter(Review.provider_id == provider.id).all()
-    if reviews:
-        avg_rating = sum(r.rating for r in reviews) / len(reviews)
-        provider.rating = round(avg_rating, 1)
+    try:
+        # Check if booking exists
+        booking = db.query(Booking).filter(Booking.id == review.booking_id).first()
+        if not booking:
+            raise HTTPException(status_code=404, detail="Booking not found")
+        
+        # Check if booking belongs to customer
+        if booking.customer_id != customer_id:
+            raise HTTPException(status_code=403, detail="Not authorized")
+        
+        # Only completed services can be reviewed
+        if booking.status != "completed":
+            raise HTTPException(status_code=400, detail="Only completed bookings can be reviewed")
+        
+        # Check if review already exists
+        existing_review = db.query(Review).filter(Review.booking_id == review.booking_id).first()
+        if existing_review:
+            raise HTTPException(status_code=400, detail="Review already exists for this booking")
+        
+        # Create review
+        new_review = Review(
+            booking_id=review.booking_id,
+            provider_id=booking.provider_id,
+            customer_id=customer_id,
+            rating=review.rating,
+            comment=review.comment
+        )
+        
+        db.add(new_review)
         db.commit()
-    
-    return new_review
+        db.refresh(new_review)
+        
+        # Update provider rating
+        provider = db.query(Provider).filter(Provider.id == booking.provider_id).first()
+        if provider:
+            reviews = db.query(Review).filter(Review.provider_id == provider.id).all()
+            if reviews:
+                avg_rating = sum(r.rating for r in reviews) / len(reviews)
+                provider.rating = round(float(avg_rating), 1)
+                db.commit()
+        
+        return new_review
+    except HTTPException:
+        raise
+    except Exception as e:
+        db.rollback()
+        print(f"CRITICAL REVIEW ERROR: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to create review: {str(e)}")
 
 
 @router.get("/provider/{provider_id}", response_model=List[ReviewOut])

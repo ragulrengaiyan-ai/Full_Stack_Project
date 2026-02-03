@@ -7,7 +7,7 @@
     ],
     "rewrites": [
         {
-            "source": "/(api|js|css|csspages|htmlpages|assets)/(.*)",
+            "source": "/(api|js|css|htmlpages|assets)/(.*)",
             "destination": "backend/app/main.py"
         },
         {

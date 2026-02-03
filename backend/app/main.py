@@ -81,6 +81,17 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Global Exception Handler for better debugging
+@app.exception_handler(Exception)
+async def global_exception_handler(request, exc):
+    import traceback
+    print(f"GLOBAL ERROR CAUGHT: {exc}")
+    traceback.print_exc()
+    return JSONResponse(
+        status_code=500,
+        content={"detail": f"Internal Server Error: {str(exc)}", "type": type(exc).__name__}
+    )
+
 # Root level API routes
 app.include_router(users.router, prefix="/api", tags=["Users"])
 app.include_router(services.router, prefix="/api", tags=["Services"])

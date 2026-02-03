@@ -143,3 +143,6 @@ function logout() {
     localStorage.removeItem('user');
     window.location.href = '/index.html';
 }
+
+
+// “I implemented client-side authentication handling using a shared JavaScript module that manages login, signup, logout, role-based routing, and dynamic navbar updates using JWT tokens stored in localStorage.”

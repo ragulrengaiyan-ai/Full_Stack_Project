@@ -319,7 +319,7 @@ function setupBookingModal() {
         }
 
         const data = {
-            provider_id: document.getElementById('bookingProviderId').value,
+            provider_id: parseInt(document.getElementById('bookingProviderId').value),
             service_name: SERVICE_TYPE,
             booking_date: document.getElementById('bookingDate').value,
             booking_time: convertTo24Hour(
@@ -327,7 +327,7 @@ function setupBookingModal() {
                 document.getElementById('timeMinute').value,
                 document.getElementById('timePeriod').value
             ),
-            duration_hours: document.getElementById('bookingDuration').value,
+            duration_hours: parseInt(document.getElementById('bookingDuration').value),
             address: document.getElementById('bookingAddress').value,
             notes: document.getElementById('bookingNotes') ? document.getElementById('bookingNotes').value : ""
         };

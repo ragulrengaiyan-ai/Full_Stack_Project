@@ -131,11 +131,16 @@ def get_providers_by_service(service_type: str, db: Session = Depends(get_db)):
 
 @router.patch("/{provider_id}/verify")
 def verify_provider(provider_id: int, db: Session = Depends(get_db)):
-    provider = db.query(Provider).filter(Provider.id == provider_id).first()
-    if not provider:
-        raise HTTPException(status_code=404, detail="Provider not found")
-    
-    provider.background_verified = "verified"
-    db.commit()
-    return {"message": "Provider verified successfully"}
+    try:
+        provider = db.query(Provider).filter(Provider.id == provider_id).first()
+        if not provider:
+            raise HTTPException(status_code=404, detail="Provider not found")
+        
+        provider.background_verified = "verified"
+        db.commit()
+        return {"message": "Provider verified successfully"}
+    except Exception as e:
+        db.rollback()
+        print(f"CRITICAL PROVIDER VERIFY ERROR: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to verify provider: {str(e)}")
 

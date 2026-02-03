@@ -55,3 +55,6 @@ class API {
         return this.request(endpoint, 'PUT', data);
     }
 }
+
+
+// “I created a centralized API utility class that wraps the Fetch API. It automatically attaches JWT tokens, handles JSON and non-JSON responses, standardizes error handling, and reduces duplicate code across the frontend.”

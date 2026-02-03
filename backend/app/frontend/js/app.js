@@ -75,3 +75,7 @@ async function handleAdd(e) {
 
 document.addEventListener('DOMContentLoaded', loadItems);
 addItemForm.addEventListener('submit', handleAdd);
+
+
+
+// “This frontend dynamically connects to a FastAPI backend deployed on Vercel, fetches items on load, allows item creation via POST requests, and provides real-time UI feedback with proper error handling.”

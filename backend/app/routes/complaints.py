@@ -18,18 +18,30 @@ def create_complaint(complaint: ComplaintCreate, customer_id: int, db: Session =
     # Check if booking exists and belongs to customer
     booking = db.query(Booking).filter(Booking.id == complaint.booking_id, Booking.customer_id == customer_id).first()
     if not booking:
-        raise HTTPException(status_code=404, detail="Booking not found or not owned by you")
+        raise HTTPException(
+            status_code=404, 
+            detail=f"Booking #{complaint.booking_id} not found or not owned by customer #{customer_id}"
+        )
     
-    new_complaint = Complaint(
-        booking_id=complaint.booking_id,
-        customer_id=customer_id,
-        subject=complaint.subject,
-        description=complaint.description
-    )
-    db.add(new_complaint)
-    db.commit()
-    db.refresh(new_complaint)
-    return new_complaint
+    try:
+        new_complaint = Complaint(
+            booking_id=complaint.booking_id,
+            customer_id=customer_id,
+            subject=complaint.subject,
+            description=complaint.description,
+            status="pending" # Explicitly set status to prevent null serialization issues
+        )
+        db.add(new_complaint)
+        db.commit()
+        db.refresh(new_complaint)
+        return new_complaint
+    except Exception as e:
+        db.rollback()
+        print(f"CRITICAL COMPLAINT ERROR: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to save complaint to database: {str(e)}"
+        )
 
 @router.get("/", response_model=List[ComplaintOut])
 def get_all_complaints(db: Session = Depends(get_db)):

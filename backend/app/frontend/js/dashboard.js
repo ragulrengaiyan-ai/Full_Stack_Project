@@ -432,8 +432,8 @@ function openReviewModal(bookingId, providerId) {
         document.getElementById('reviewForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const data = {
-                booking_id: document.getElementById('reviewBookingId').value,
-                rating: document.getElementById('reviewRating').value,
+                booking_id: parseInt(document.getElementById('reviewBookingId').value),
+                rating: parseInt(document.getElementById('reviewRating').value),
                 comment: document.getElementById('reviewComment').value
             };
 
@@ -484,7 +484,7 @@ function openComplaintModal(bookingId) {
             e.preventDefault();
             const user = JSON.parse(localStorage.getItem('user'));
             const data = {
-                booking_id: document.getElementById('complaintBookingId').value,
+                booking_id: parseInt(document.getElementById('complaintBookingId').value),
                 subject: document.getElementById('complaintSubject').value,
                 description: document.getElementById('complaintDescription').value
             };
@@ -514,3 +514,6 @@ async function cancelBooking(bookingId) {
         alert(err.message);
     }
 }
+
+
+// This dashboard script handles authentication, role-based UI rendering, API-driven data loading, and real-time user interactions for both customers and providers using a single reusable JavaScript file.

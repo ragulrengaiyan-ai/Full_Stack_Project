@@ -8,3 +8,8 @@ const API_BASE_URL = currentOrigin.includes('localhost') || currentOrigin.includ
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = { API_BASE_URL };
 }
+
+
+
+
+// This code dynamically sets the API base URL based on whether the app is running locally or in production, ensuring seamless switching between development and deployment environments without manual changes.
