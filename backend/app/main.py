@@ -106,6 +106,11 @@ app.include_router(inquiries.router, prefix="/api", tags=["Inquiries"])
 # Frontend is now located inside the app package for guaranteed Vercel bundling
 frontend_path = Path(__file__).parent / "frontend"
 
+# Vercel Fallback: Try relative to current working directory if not found
+if not frontend_path.exists():
+    frontend_path = Path(os.getcwd()) / "backend" / "app" / "frontend"
+    print(f"PATH WARNING: Falling back to CWD path: {frontend_path}")
+
 if frontend_path.exists():
     # Mount subdirectories
     for folder in ["js", "css", "assets"]:
