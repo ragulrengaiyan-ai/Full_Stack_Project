@@ -103,35 +103,27 @@ app.include_router(reviews.router, prefix="/api", tags=["Reviews"])
 app.include_router(inquiries.router, prefix="/api", tags=["Inquiries"])
 
 # Static Files Hosting (Professional Single-Origin Solution)
-# Frontend is now located inside the app package for guaranteed Vercel bundling
+# NOTE: Detailed static hosting is handled natively by Vercel from the root directory.
+# This section is kept only for local development fallback if needed.
 frontend_path = Path(__file__).parent / "frontend"
 
-# Vercel Fallback: Try relative to current working directory if not found
-if not frontend_path.exists():
-    frontend_path = Path(os.getcwd()) / "backend" / "app" / "frontend"
-    print(f"PATH WARNING: Falling back to CWD path: {frontend_path}")
-
-if frontend_path.exists():
-    # Mount subdirectories
+if frontend_path.exists() and not os.getenv("VERCEL"):
     for folder in ["js", "css", "assets"]:
         target = frontend_path / folder
         if target.exists():
             app.mount(f"/{folder}", StaticFiles(directory=str(target)), name=folder)
     
-    # Root index.html handler
     @app.get("/")
     async def serve_index():
         return FileResponse(str(frontend_path / "index.html"))
     
-    # Catch-all for HTML files and assets at the root of frontend/
     @app.get("/{path:path}")
     async def serve_static_html(path: str):
         file_path = frontend_path / path
         if file_path.exists() and file_path.is_file():
             return FileResponse(str(file_path))
-        # Default back to index
         return FileResponse(str(frontend_path / "index.html"))
-else:
-    @app.get("/")
-    def read_root():
-        return {"status": "ok", "message": "Backend running on Vercel - v1.3.1 (Frontend directory missing in bundle)"}
+
+@app.get("/api/health")
+def health_check():
+    return {"status": "ok", "message": "Backend API is active"}
