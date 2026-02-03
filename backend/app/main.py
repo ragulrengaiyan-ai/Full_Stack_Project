@@ -103,9 +103,9 @@ app.include_router(reviews.router, prefix="/api", tags=["Reviews"])
 app.include_router(inquiries.router, prefix="/api", tags=["Inquiries"])
 
 # Static Files Hosting
-# NOTE: Vercel serves the root static files (index.html, js, css) natively.
-# We only handle the API here.
+# NOTE: Vercel serves the root static files (index.html, js, css) natively from the project root.
+# We do not serve static files in the Python backend on Vercel to avoid conflicts.
 
 @app.get("/api/health")
 def health_check():
-    return {"status": "ok", "message": "Backend API is active", "version": "1.3.6"}
+    return {"status": "ok", "message": "Backend API is active", "version": "1.3.7"}
