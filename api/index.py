@@ -2,26 +2,33 @@ import os
 import sys
 from pathlib import Path
 
-# Vercel runs from the root. Add backend/app to path for imports.
-root_dir = Path(__file__).parent.parent.absolute()
-if str(root_dir) not in sys.path:
-    sys.path.insert(0, str(root_dir))
-
-backend_app_dir = root_dir / "backend" / "app"
-if str(backend_app_dir) not in sys.path:
-    sys.path.insert(0, str(backend_app_dir))
+# Add the project root to sys.path
+# On Vercel, the function runs with the root as the CWD
+root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+if root_dir not in sys.path:
+    sys.path.insert(0, root_dir)
 
 try:
-    # Standard package-style import
+    # Try importing from the package
     from backend.app.main import app
 except Exception as e:
-    print(f"API Bridge: Import failed, trying direct: {e}")
-    try:
-        # Flat import if path is set
-        import main
-        app = main.app
-    except Exception as e2:
-        raise ImportError(f"API Bridge: Could not import FastAPI app. Errors: {e}, {e2}")
+    # Diagnostic fallback
+    import traceback
+    print(f"IMPORT ERROR: {e}")
+    traceback.print_exc()
+    
+    # Create a dummy app to at least show something if imports fail
+    from fastapi import FastAPI
+    app = FastAPI()
+    @app.get("/api/debug")
+    async def debug():
+        return {
+            "error": str(e),
+            "sys_path": sys.path,
+            "root_dir": root_dir,
+            "cwd": os.getcwd(),
+            "files": os.listdir(root_dir) if os.path.exists(root_dir) else "not found"
+        }
 
-# Vercel Python runtime expects the app instance to be available as a variable
+# Vercel needs 'app' to be available
 app = app
