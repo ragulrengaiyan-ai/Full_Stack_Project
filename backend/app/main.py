@@ -66,6 +66,34 @@ try:
 except Exception as e:
     print(f"Database sync/seed failed: {e}")
 
+# SCHEMA MIGRATION: Auto-patch missing columns for 'complaints' table
+# This handles the case where the table existed before the new columns were added.
+try:
+    from sqlalchemy import text
+    with engine.connect() as conn:
+        with conn.begin(): # Start transaction
+            # Add 'status' column if missing
+            try:
+                conn.execute(text("ALTER TABLE complaints ADD COLUMN IF NOT EXISTS status VARCHAR DEFAULT 'pending'"))
+            except Exception as e:
+                print(f"Migration warning (status): {e}")
+
+            # Add 'resolution' column if missing
+            try:
+                conn.execute(text("ALTER TABLE complaints ADD COLUMN IF NOT EXISTS resolution TEXT"))
+            except Exception as e:
+                print(f"Migration warning (resolution): {e}")
+
+            # Add 'admin_notes' column if missing
+            try:
+                conn.execute(text("ALTER TABLE complaints ADD COLUMN IF NOT EXISTS admin_notes TEXT"))
+            except Exception as e:
+                print(f"Migration warning (admin_notes): {e}")
+                
+            print("Schema migration for 'complaints' completed.")
+except Exception as e:
+     print(f"Schema migration failed: {e}")
+
 app = FastAPI(
     title="Urban Company Style API",
     description="Full Stack Household Services Application",

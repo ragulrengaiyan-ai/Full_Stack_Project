@@ -37,10 +37,15 @@ def create_complaint(complaint: ComplaintCreate, customer_id: int, db: Session =
         return new_complaint
     except Exception as e:
         db.rollback()
-        print(f"CRITICAL COMPLAINT ERROR: {str(e)}")
+        # Extract the original database error if available
+        error_msg = str(e)
+        if hasattr(e, 'orig') and e.orig:
+            error_msg = str(e.orig)
+        
+        print(f"CRITICAL COMPLAINT ERROR: {error_msg}")
         raise HTTPException(
             status_code=500,
-            detail=f"Failed to save complaint to database: {str(e)}"
+            detail=f"Database Error: {error_msg}"
         )
 
 @router.get("/", response_model=List[ComplaintOut])
