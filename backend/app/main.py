@@ -102,22 +102,41 @@ app.include_router(complaints.router, prefix="/api", tags=["Complaints"])
 app.include_router(reviews.router, prefix="/api", tags=["Reviews"])
 app.include_router(inquiries.router, prefix="/api", tags=["Inquiries"])
 
-# Static Files Hosting
-# NOTE: Vercel SHOULD serve static files natively.
-# However, as a failsafe, we explicitly serve index.html if the request hits the backend.
-# This fixes the persistent "Not Found" JSON error on Vercel.
+# Static Files Hosting (Python-Served Frontend)
+# Files are now bundled INSIDE the package at backend/app/static
+# This guarantees availability in the Vercel Lambda environment.
 
-@app.get("/")
-async def serve_root_fallback():
-    # Look for index.html in the project root (3 levels up from this file)
-    root_path = Path(__file__).parent.parent.parent
-    index_file = root_path / "index.html"
+static_path = Path(__file__).parent / "static"
+
+# Mount the static directory to serve js, css, assets directly if requested via /static/
+app.mount("/static", StaticFiles(directory=str(static_path)), name="static")
+
+# Also mount specific folders to matching root paths for compatibility
+for folder in ["js", "css", "assets"]:
+    target = static_path / folder
+    if target.exists():
+        app.mount(f"/{folder}", StaticFiles(directory=str(target)), name=folder)
+
+@app.get("/{path_name:path}")
+async def catch_all(path_name: str):
+    # API routes are already handled above. Everything else is frontend.
     
-    if index_file.exists():
-        return FileResponse(str(index_file))
+    # default to index.html for root
+    if path_name == "" or path_name == "/":
+        file_path = static_path / "index.html"
+    else:
+        file_path = static_path / path_name
+        
+        # If no extension, try adding .html (clean URLs support)
+        if not file_path.suffix and not file_path.exists():
+             file_path = static_path / f"{path_name}.html"
+
+    if file_path.exists() and file_path.is_file():
+        return FileResponse(str(file_path))
     
+    # 404 for truly missing files
     return JSONResponse(
-        {"error": "index.html not found", "search_path": str(root_path)}, 
+        {"error": "File not found", "path": path_name, "resolved": str(file_path)}, 
         status_code=404
     )
 
