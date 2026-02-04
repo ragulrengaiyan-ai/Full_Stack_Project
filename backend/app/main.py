@@ -103,9 +103,24 @@ app.include_router(reviews.router, prefix="/api", tags=["Reviews"])
 app.include_router(inquiries.router, prefix="/api", tags=["Inquiries"])
 
 # Static Files Hosting
-# NOTE: Vercel serves the root static files (index.html, js, css) natively from the project root.
-# We do not serve static files in the Python backend on Vercel to avoid conflicts.
+# NOTE: Vercel SHOULD serve static files natively.
+# However, as a failsafe, we explicitly serve index.html if the request hits the backend.
+# This fixes the persistent "Not Found" JSON error on Vercel.
+
+@app.get("/")
+async def serve_root_fallback():
+    # Look for index.html in the project root (3 levels up from this file)
+    root_path = Path(__file__).parent.parent.parent
+    index_file = root_path / "index.html"
+    
+    if index_file.exists():
+        return FileResponse(str(index_file))
+    
+    return JSONResponse(
+        {"error": "index.html not found", "search_path": str(root_path)}, 
+        status_code=404
+    )
 
 @app.get("/api/health")
 def health_check():
-    return {"status": "ok", "message": "Backend API is active", "version": "1.3.7"}
+    return {"status": "ok", "message": "Backend API is active", "version": "1.3.8"}
