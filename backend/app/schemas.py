@@ -107,13 +107,16 @@ class ComplaintCreate(BaseModel):
     subject: str
     description: str
 
-class ComplaintOut(ComplaintCreate):
+class ComplaintOut(BaseModel):
     id: int
-    customer_id: int
-    status: str
+    booking_id: Optional[int] = None
+    customer_id: Optional[int] = None
+    subject: Optional[str] = None
+    description: Optional[str] = None
+    status: Optional[str] = "pending"
     resolution: Optional[str] = None
     admin_notes: Optional[str] = None
-    created_at: datetime
+    created_at: Optional[datetime] = None
     class Config:
         from_attributes = True
 
