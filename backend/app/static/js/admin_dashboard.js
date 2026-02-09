@@ -174,6 +174,10 @@ async function loadComplaints() {
         });
     } catch (err) {
         console.error('Failed to load complaints', err);
+        const list = document.getElementById('complaintsList');
+        if (list) {
+            list.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:20px; color:#ef4444;">Error loading complaints: ${err.message}</td></tr>`;
+        }
     }
 }
 
