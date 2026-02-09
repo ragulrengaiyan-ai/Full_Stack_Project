@@ -31,9 +31,22 @@ class API {
             }
 
             if (!response.ok) {
-                // Return a more descriptive error if it's a known non-JSON format like 'Internal Server Error' string
-                const errorMsg = responseData.detail || responseData.message || (typeof responseData === 'string' ? responseData : 'Something went wrong');
-                throw new Error(errorMsg);
+                // Try to get the most useful error message
+                let errorDetails = responseData.detail || responseData.message;
+
+                if (!errorDetails) {
+                    if (typeof responseData === 'string') {
+                        errorDetails = responseData;
+                    } else {
+                        errorDetails = JSON.stringify(responseData);
+                    }
+                }
+
+                if (!errorDetails || errorDetails === '{}') {
+                    errorDetails = response.statusText;
+                }
+
+                throw new Error(`HTTP ${response.status}: ${errorDetails}`);
             }
 
             return responseData;
