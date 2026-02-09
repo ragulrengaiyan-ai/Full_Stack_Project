@@ -388,8 +388,17 @@ function setupSettingsForm(user) {
 
     const deleteBtn = document.querySelector('.btn-danger');
     if (deleteBtn) {
-        deleteBtn.addEventListener('click', () => {
-            alert('Delete functionality is not implemented yet for safety.');
+        deleteBtn.addEventListener('click', async () => {
+            if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+                try {
+                    await API.request(`/users/${user.id}`, 'DELETE');
+                    alert('Account deleted successfully.');
+                    localStorage.clear();
+                    window.location.href = 'index.html';
+                } catch (err) {
+                    alert('Failed to delete account: ' + err.message);
+                }
+            }
         });
     }
 }

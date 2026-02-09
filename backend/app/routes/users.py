@@ -8,13 +8,13 @@ from pydantic import BaseModel, EmailStr
 try:
     from ..database import get_db
     from ..schemas import UserCreate, UserOut, UserLogin, ProviderCreate, ProviderOut
-    from ..models import User, Provider
-    from ..auth import generate_password_hash, verify_password, create_access_token
+    from ..models import User, Provider, Booking, Review, Complaint
+    from ..auth import generate_password_hash, verify_password, create_access_token, get_current_user
 except (ImportError, ValueError):
     from database import get_db
     from schemas import UserCreate, UserOut, UserLogin, ProviderCreate, ProviderOut
-    from models import User, Provider
-    from auth import generate_password_hash, verify_password, create_access_token
+    from models import User, Provider, Booking, Review, Complaint
+    from auth import generate_password_hash, verify_password, create_access_token, get_current_user
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
@@ -156,3 +156,42 @@ def update_user(user_id: int, user_update: UserUpdate, db: Session = Depends(get
     db.commit()
     db.refresh(user)
     return user
+
+
+@router.delete("/{user_id}", status_code=status.HTTP_200_OK)
+def delete_user_account(user_id: int, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    if current_user.id != user_id and current_user.role != 'admin':
+        raise HTTPException(status_code=403, detail="Not authorized to delete this account")
+    
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    try:
+        # Cascade Delete Logic
+        # 1. Handle Provider Profile and dependency chain
+        provider = db.query(Provider).filter(Provider.user_id == user_id).first()
+        if provider:
+            # Delete everything linked to provider's bookings
+            p_booking_ids = [b.id for b in db.query(Booking.id).filter(Booking.provider_id == provider.id).all()]
+            if p_booking_ids:
+                db.query(Review).filter(Review.booking_id.in_(p_booking_ids)).delete(synchronize_session=False)
+                db.query(Complaint).filter(Complaint.booking_id.in_(p_booking_ids)).delete(synchronize_session=False)
+                db.query(Booking).filter(Booking.id.in_(p_booking_ids)).delete(synchronize_session=False)
+            
+            # Delete provider reviews directly
+            db.query(Review).filter(Review.provider_id == provider.id).delete(synchronize_session=False)
+            db.delete(provider)
+        
+        # 2. Handle Customer activity
+        db.query(Review).filter(Review.customer_id == user_id).delete(synchronize_session=False)
+        db.query(Complaint).filter(Complaint.customer_id == user_id).delete(synchronize_session=False)
+        db.query(Booking).filter(Booking.customer_id == user_id).delete(synchronize_session=False)
+        
+        # 3. Final User Deletion
+        db.delete(user)
+        db.commit()
+        return {"message": "Account deleted successfully"}
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Database deletion failed: {str(e)}")
