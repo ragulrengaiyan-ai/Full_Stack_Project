@@ -49,6 +49,7 @@ def create_complaint(complaint: ComplaintCreate, customer_id: int, db: Session =
         )
 
 @router.get("/", response_model=List[ComplaintOut])
+@router.get("", response_model=List[ComplaintOut], include_in_schema=False)
 def get_all_complaints(db: Session = Depends(get_db)):
     try:
         # Simple list for admin. In real app, check admin role.
