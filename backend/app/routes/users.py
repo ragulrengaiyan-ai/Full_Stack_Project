@@ -1,5 +1,6 @@
 # app/routes/users.py
 from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from pydantic import BaseModel, EmailStr
@@ -104,6 +105,23 @@ def login(credentials: UserLogin, db: Session = Depends(get_db)):
             "role": user.role
         }
     }
+
+
+@router.post("/token")
+def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    # OAuth2PasswordRequestForm uses 'username', not 'email'
+    user = db.query(User).filter(User.email == form_data.username).first()
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    
+    if not verify_password(form_data.password, user.password):
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    
+    # Generate token
+    access_token = create_access_token(data={"sub": user.email})
+
+    # OAuth2 spec requires exactly this JSON structure
+    return {"access_token": access_token, "token_type": "bearer"}
 
 
 @router.get("/me/{user_id}", response_model=UserOut)

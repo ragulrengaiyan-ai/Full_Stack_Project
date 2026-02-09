@@ -22,8 +22,8 @@ SECRET_KEY = "my_super_secret_key_for_this_project_123"
 ALGORITHM = "HS256"
 
 pwd_context = CryptContext(schemes=["pbkdf2_sha256", "bcrypt"], deprecated="auto")
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/users/login")
-oauth2_scheme_optional = OAuth2PasswordBearer(tokenUrl="/api/users/login", auto_error=False)
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/users/token")
+oauth2_scheme_optional = OAuth2PasswordBearer(tokenUrl="/api/users/token", auto_error=False)
 
 def base64_url_encode(data: bytes) -> str:
     return base64.urlsafe_b64encode(data).rstrip(b'=').decode('utf-8')
