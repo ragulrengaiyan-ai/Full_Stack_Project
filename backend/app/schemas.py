@@ -69,6 +69,14 @@ class BookingBase(BaseModel):
     address: str
     notes: Optional[str] = None
 
+class BookingUpdate(BaseModel):
+    service_name: Optional[str] = None
+    booking_date: Optional[str] = None
+    booking_time: Optional[str] = None
+    duration_hours: Optional[int] = None
+    address: Optional[str] = None
+    notes: Optional[str] = None
+
 class BookingCreate(BookingBase):
     pass
 

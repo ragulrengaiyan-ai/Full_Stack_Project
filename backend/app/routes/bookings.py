@@ -7,11 +7,11 @@ from datetime import datetime
 try:
     from ..database import get_db
     from ..models import Booking, Provider
-    from ..schemas import BookingCreate, BookingOut
+    from ..schemas import BookingCreate, BookingOut, BookingUpdate
 except (ImportError, ValueError):
     from database import get_db
     from models import Booking, Provider
-    from schemas import BookingCreate, BookingOut
+    from schemas import BookingCreate, BookingOut, BookingUpdate
 
 router = APIRouter(prefix="/bookings", tags=["Bookings"])
 
@@ -146,3 +146,56 @@ def cancel_booking(booking_id: int, db: Session = Depends(get_db)):
     db.commit()
     
     return {"message": "Booking cancelled successfully"}
+
+
+@router.patch("/{booking_id}", response_model=BookingOut)
+def update_booking(booking_id: int, booking_update: BookingUpdate, db: Session = Depends(get_db)):
+    try:
+        booking = db.query(Booking).filter(Booking.id == booking_id).first()
+        if not booking:
+            raise HTTPException(status_code=404, detail="Booking not found")
+
+        if booking.status not in ["pending", "confirmed"]:
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Cannot edit booking in '{booking.status}' status."
+            )
+
+        update_data = booking_update.dict(exclude_unset=True)
+        
+        # Check for overlaps if date is changed
+        if "booking_date" in update_data and update_data["booking_date"] != booking.booking_date:
+            existing_booking = db.query(Booking).filter(
+                Booking.provider_id == booking.provider_id,
+                Booking.booking_date == update_data["booking_date"],
+                Booking.status.in_(["pending", "confirmed"]),
+                Booking.id != booking_id
+            ).first()
+            
+            if existing_booking:
+                raise HTTPException(
+                    status_code=400, 
+                    detail=f"Professional is already booked on this date. Please choose another date."
+                )
+
+        # Recalculate total amount if duration is changed
+        if "duration_hours" in update_data:
+            provider = db.query(Provider).filter(Provider.id == booking.provider_id).first()
+            if provider:
+                hourly_rate = provider.hourly_rate if provider.hourly_rate is not None else 0.0
+                booking.total_amount = hourly_rate * update_data["duration_hours"]
+
+        for key, value in update_data.items():
+            setattr(booking, key, value)
+            
+        booking.updated_at = datetime.utcnow()
+        db.commit()
+        db.refresh(booking)
+        
+        return booking
+    except HTTPException:
+        raise
+    except Exception as e:
+        db.rollback()
+        print(f"CRITICAL BOOKING UPDATE ERROR: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to update booking: {str(e)}")

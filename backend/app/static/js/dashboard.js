@@ -151,6 +151,7 @@ async function loadCustomerDashboard(userId) {
                     }
 
                     if (b.status === 'pending' || b.status === 'confirmed') {
+                        actionBtn += `<button class="btn-small" onclick='openEditBookingModal(${JSON.stringify(b)})' style="background:#0ea5e9; color:white; margin-right:5px;">Edit</button>`;
                         actionBtn += `<button class="btn-small btn-danger" onclick="cancelBooking(${b.id})" style="background:#dc2626; color:white;">Cancel</button>`;
                     }
 
@@ -522,6 +523,90 @@ async function cancelBooking(bookingId) {
     } catch (err) {
         alert(err.message);
     }
+}
+
+function openEditBookingModal(booking) {
+    if (!document.getElementById('editBookingModal')) {
+        const modalHTML = `
+            <div id="editBookingModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100vh; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
+                <div class="modal-content" style="background:white; padding:2rem; border-radius:8px; max-width:500px; width:90%; color: #333;">
+                    <h2 style="margin-bottom: 1.5rem;">Edit Booking Details</h2>
+                    <form id="editBookingForm">
+                        <input type="hidden" id="editBookingId">
+                        
+                        <div class="form-group" style="margin-bottom:1rem;">
+                            <label style="display:block; margin-bottom:5px; font-weight:bold;">Date</label>
+                            <input type="date" id="editBookingDate" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:4px;" required>
+                        </div>
+
+                        <div class="form-group" style="margin-bottom:1rem;">
+                            <label style="display:block; margin-bottom:5px; font-weight:bold;">Time</label>
+                            <input type="time" id="editBookingTime" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:4px;" required>
+                        </div>
+
+                        <div class="form-group" style="margin-bottom:1rem;">
+                            <label style="display:block; margin-bottom:5px; font-weight:bold;">Duration (Hours)</label>
+                            <input type="number" id="editBookingDuration" min="1" max="24" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:4px;" required>
+                        </div>
+
+                        <div class="form-group" style="margin-bottom:1rem;">
+                            <label style="display:block; margin-bottom:5px; font-weight:bold;">Service Name</label>
+                            <input type="text" id="editBookingServiceName" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:4px;" required>
+                        </div>
+
+                         <div class="form-group" style="margin-bottom:1rem;">
+                            <label style="display:block; margin-bottom:5px; font-weight:bold;">Address</label>
+                            <textarea id="editBookingAddress" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:4px;" rows="2" required></textarea>
+                        </div>
+
+                        <div class="form-group" style="margin-bottom:1rem;">
+                            <label style="display:block; margin-bottom:5px; font-weight:bold;">Notes (Optional)</label>
+                            <textarea id="editBookingNotes" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:4px;" rows="2"></textarea>
+                        </div>
+
+                        <div style="display:flex; justify-content:space-between; margin-top:20px;">
+                            <button type="button" onclick="document.getElementById('editBookingModal').style.display='none'" style="padding:10px 20px; border:none; background:#ccc; border-radius:4px; cursor:pointer; font-weight:bold;">Cancel</button>
+                            <button type="submit" style="padding:10px 20px; border:none; background:#0ea5e9; color:white; border-radius:4px; cursor:pointer; font-weight:bold;">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        `;
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+        document.getElementById('editBookingForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const bookingId = document.getElementById('editBookingId').value;
+            const data = {
+                booking_date: document.getElementById('editBookingDate').value,
+                booking_time: document.getElementById('editBookingTime').value,
+                duration_hours: parseInt(document.getElementById('editBookingDuration').value),
+                service_name: document.getElementById('editBookingServiceName').value,
+                address: document.getElementById('editBookingAddress').value,
+                notes: document.getElementById('editBookingNotes').value
+            };
+
+            try {
+                await API.request(`/bookings/${bookingId}`, 'PATCH', data);
+                alert('Booking updated successfully!');
+                document.getElementById('editBookingModal').style.display = 'none';
+                location.reload();
+            } catch (err) {
+                alert('Failed to update booking: ' + err.message);
+            }
+        });
+    }
+
+    // Pre-fill form
+    document.getElementById('editBookingId').value = booking.id;
+    document.getElementById('editBookingDate').value = booking.booking_date;
+    document.getElementById('editBookingTime').value = booking.booking_time;
+    document.getElementById('editBookingDuration').value = booking.duration_hours;
+    document.getElementById('editBookingServiceName').value = booking.service_name;
+    document.getElementById('editBookingAddress').value = booking.address;
+    document.getElementById('editBookingNotes').value = booking.notes || '';
+
+    document.getElementById('editBookingModal').style.display = 'flex';
 }
 
 
