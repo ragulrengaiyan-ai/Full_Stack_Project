@@ -68,6 +68,16 @@
                     </svg>
                     <span>Settings</span>
                 </a>
+                <a href="#" class="nav-link" data-page="complaints">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path
+                            d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z">
+                        </path>
+                        <line x1="12" y1="9" x2="12" y2="13"></line>
+                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                    </svg>
+                    <span>Complaints</span>
+                </a>
                 <a href="index.html" class="nav-link">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
@@ -493,6 +503,36 @@
                         <div class="settings-section danger">
                             <h3>Danger Zone</h3>
                             <button class="btn-danger">Delete Account</button>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="complaints-page" class="page">
+                    <div class="page-header">
+                        <h2>My Complaints</h2>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Complaint History</h3>
+                        </div>
+                        <div class="card-body">
+                            <table class="full-table">
+                                <thead>
+                                    <tr>
+                                        <th>Complaint ID</th>
+                                        <th>Booking ID</th>
+                                        <th>Subject</th>
+                                        <th>Status</th>
+                                        <th>Resolution</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="user-complaints-body">
+                                    <tr>
+                                        <td colspan="6" style="text-align:center;">Loading complaints...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </section>

@@ -55,6 +55,11 @@ function setupTabs() {
                 if (targetPage) {
                     targetPage.classList.add('active');
                     link.classList.add('active');
+
+                    // Load specific data if needed
+                    if (targetId === 'complaints') {
+                        loadCustomerComplaints(user.id);
+                    }
                 }
             }
         });
@@ -607,6 +612,39 @@ function openEditBookingModal(booking) {
     document.getElementById('editBookingNotes').value = booking.notes || '';
 
     document.getElementById('editBookingModal').style.display = 'flex';
+}
+
+async function loadCustomerComplaints(userId) {
+    const body = document.getElementById('user-complaints-body');
+    if (!body) return;
+
+    try {
+        const complaints = await API.get(`/complaints/customer/${userId}`);
+        body.innerHTML = '';
+
+        if (complaints.length === 0) {
+            body.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 40px; color: #666;">No complaints found. We hope you are having a great experience!</td></tr>';
+            return;
+        }
+
+        complaints.forEach(c => {
+            const statusClass = c.status.toLowerCase();
+            const resolution = c.resolution || '-';
+            body.innerHTML += `
+                <tr>
+                    <td>#C${c.id.toString().padStart(3, '0')}</td>
+                    <td>#B${c.booking_id.toString().padStart(3, '0')}</td>
+                    <td>${c.subject}</td>
+                    <td><span class="badge ${statusClass}">${c.status}</span></td>
+                    <td>${resolution}</td>
+                    <td>${new Date(c.created_at).toLocaleDateString()}</td>
+                </tr>
+            `;
+        });
+    } catch (err) {
+        console.error('Failed to load complaints:', err);
+        body.innerHTML = '<tr><td colspan="6" style="text-align:center; color: red;">Error loading complaints. Please try again.</td></tr>';
+    }
 }
 
 
