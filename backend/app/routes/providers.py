@@ -33,6 +33,7 @@ def get_providers(
     sort_by: Optional[str] = None,
     db: Session = Depends(get_db)
 ):
+    print(f"DEBUG: get_providers CALLED - service_type: {service_type}, location: {location}, availability_status: {availability_status}")
     query = db.query(Provider).options(joinedload(Provider.user)).filter(Provider.background_verified == "verified")
 
     if booking_date:

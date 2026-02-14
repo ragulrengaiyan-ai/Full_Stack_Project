@@ -69,8 +69,9 @@ async function loadProviders(serviceType, filters = {}) {
         if (filters.booking_date) query += `&booking_date=${filters.booking_date}`;
         if (filters.sort_by) query += `&sort_by=${filters.sort_by}`;
 
-        console.log('Fetching providers with query:', query);
+        console.log('Final API Request Query:', query);
         const providers = await API.get(query);
+        console.log('API Response:', providers);
         const container = document.querySelector('.providers-list');
         const countText = document.querySelector('.providers-count');
 
