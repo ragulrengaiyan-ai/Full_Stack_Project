@@ -76,6 +76,8 @@ class BookingUpdate(BaseModel):
     duration_hours: Optional[int] = None
     address: Optional[str] = None
     notes: Optional[str] = None
+    suggested_date: Optional[str] = None
+    suggested_time: Optional[str] = None
 
 class BookingCreate(BookingBase):
     pass
@@ -89,6 +91,8 @@ class BookingOut(BookingBase):
     commission_amount: Optional[float] = 0.0
     provider_amount: Optional[float] = 0.0
     status: str
+    suggested_date: Optional[str] = None
+    suggested_time: Optional[str] = None
     refund_status: Optional[str] = None
     created_at: datetime
     updated_at: Optional[datetime] = None

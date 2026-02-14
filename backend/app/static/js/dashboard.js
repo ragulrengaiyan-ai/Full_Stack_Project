@@ -69,6 +69,17 @@ function renderBookingsTable(statusFilter = 'All Status') {
             if (b.status !== 'cancelled') {
                 actionBtn += `<button class="btn-small" onclick="openComplaintModal(${b.id})" style="background:#f97316; color:white; margin-right:5px;">Complaint</button>`;
             }
+            if (b.status === 'reschedule_requested') {
+                actionBtn += `
+                    <div style="display:flex; flex-direction:column; gap:4px; margin-bottom:5px;">
+                        <span style="font-size:0.75rem; color:#d97706; font-weight:600;">Proposed: ${b.suggested_date} @ ${b.suggested_time}</span>
+                        <div style="display:flex; gap:4px;">
+                            <button class="btn-small" onclick="handleReschedule(${b.id}, true)" style="background:#16a34a; color:white;">Accept</button>
+                            <button class="btn-small" onclick="handleReschedule(${b.id}, false)" style="background:#dc2626; color:white;">Decline</button>
+                        </div>
+                    </div>
+                `;
+            }
             if (b.status === 'pending' || b.status === 'confirmed') {
                 actionBtn += `<button class="btn-small" onclick='openEditBookingModal(${JSON.stringify(b)})' style="background:#0ea5e9; color:white; margin-right:5px;">Edit</button>`;
                 actionBtn += `<button class="btn-small btn-danger" onclick="cancelBooking(${b.id})" style="background:#dc2626; color:white;">Cancel</button>`;
@@ -78,10 +89,14 @@ function renderBookingsTable(statusFilter = 'All Status') {
             if (b.status === 'pending') {
                 actionBtn += `
                     <button class="btn-small" onclick="updateBookingStatus(${b.id}, 'confirmed')" style="background:#16a34a; color:white; margin-right:5px;">Accept</button>
+                    <button class="btn-small" onclick="openRescheduleModal(${b.id})" style="background:#f59e0b; color:white; margin-right:5px;">Reschedule</button>
                     <button class="btn-small btn-danger" onclick="updateBookingStatus(${b.id}, 'cancelled')" style="background:#dc2626; color:white;">Reject</button>
                  `;
             } else if (b.status === 'confirmed') {
-                actionBtn += `<button class="btn-small" onclick="updateBookingStatus(${b.id}, 'completed')" style="background:#2563eb; color:white;">Mark Complete</button>`;
+                actionBtn += `
+                    <button class="btn-small" onclick="updateBookingStatus(${b.id}, 'completed')" style="background:#2563eb; color:white; margin-right:5px;">Mark Complete</button>
+                    <button class="btn-small" onclick="openRescheduleModal(${b.id})" style="background:#f59e0b; color:white;">Reschedule</button>
+                `;
             }
         }
 
@@ -95,12 +110,26 @@ function renderBookingsTable(statusFilter = 'All Status') {
                 <td>${customerName}</td>
                 <td>${b.booking_date} ${b.booking_time}</td>
                 <td>₹${b.total_amount}</td>
-                <td><span class="badge ${b.status.toLowerCase()}">${b.status}</span></td>
+                <td><span class="badge ${b.status.toLowerCase()}">${b.status.replace(/_/g, ' ')}</span></td>
                 <td>${actionBtn}</td>
             </tr>
         `;
     });
 }
+
+// Global Reschedule Handler for Customers
+window.handleReschedule = async (bookingId, accept) => {
+    const action = accept ? 'accept' : 'decline';
+    if (!confirm(`Are you sure you want to ${action} this reschedule request?`)) return;
+
+    try {
+        await API.request(`/bookings/${bookingId}/reschedule/response?accept=${accept}`, 'PATCH');
+        alert(`Reschedule request ${accept ? 'accepted' : 'declined'}.`);
+        window.location.reload();
+    } catch (err) {
+        alert('Failed to process response: ' + err.message);
+    }
+};
 
 function updateProfileUI(user) {
     const nameEl = document.getElementById('header-user-name');

@@ -199,3 +199,39 @@ def update_booking(booking_id: int, booking_update: BookingUpdate, db: Session =
         db.rollback()
         print(f"CRITICAL BOOKING UPDATE ERROR: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Failed to update booking: {str(e)}")
+
+
+@router.patch("/{booking_id}/reschedule")
+def request_reschedule(booking_id: int, suggested_date: str, suggested_time: str, db: Session = Depends(get_db)):
+    booking = db.query(Booking).filter(Booking.id == booking_id).first()
+    if not booking:
+        raise HTTPException(status_code=404, detail="Booking not found")
+
+    booking.suggested_date = suggested_date
+    booking.suggested_time = suggested_time
+    booking.status = "reschedule_requested"
+    booking.updated_at = datetime.utcnow()
+    db.commit()
+
+    return {"message": "Reschedule request sent to customer"}
+
+
+@router.patch("/{booking_id}/reschedule/response")
+def handle_reschedule_response(booking_id: int, accept: bool, db: Session = Depends(get_db)):
+    booking = db.query(Booking).filter(Booking.id == booking_id).first()
+    if not booking:
+        raise HTTPException(status_code=404, detail="Booking not found")
+
+    if accept:
+        booking.booking_date = booking.suggested_date
+        booking.booking_time = booking.suggested_time
+        booking.status = "confirmed"
+    else:
+        booking.status = "pending"
+
+    booking.suggested_date = None
+    booking.suggested_time = None
+    booking.updated_at = datetime.utcnow()
+    db.commit()
+
+    return {"message": "Reschedule response processed"}

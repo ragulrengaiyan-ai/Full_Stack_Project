@@ -58,7 +58,9 @@ class Booking(Base):
     provider_amount = Column(Float, default=0.0)
     address = Column(Text)
     notes = Column(Text)
-    status = Column(String, default="pending") # pending, accepted, completed, cancelled
+    status = Column(String, default="pending") # pending, accepted, completed, cancelled, reschedule_requested
+    suggested_date = Column(String, nullable=True)
+    suggested_time = Column(String, nullable=True)
     refund_status = Column(String, nullable=True) # None, processed, rejected
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
