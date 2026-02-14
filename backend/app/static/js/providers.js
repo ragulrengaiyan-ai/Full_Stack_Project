@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const initialDate = urlParams.get('date');
     const initialFilters = {};
 
+    console.log('URL Initial Location:', initialLocation);
     if (initialLocation) {
         initialFilters.location = initialLocation;
         const locationInput = document.querySelector('.filter-input');
@@ -32,16 +33,19 @@ document.addEventListener('DOMContentLoaded', async () => {
 function updateNavAuth() {
     const user = JSON.parse(localStorage.getItem('user'));
     if (user) {
-        const signInLink = document.getElementById('signInLink');
-        const joinBtn = document.getElementById('joinBtn');
+        // IDs on service pages are signInNav and joinNav
+        const signInLink = document.getElementById('signInNav') || document.getElementById('signInLink');
+        const joinBtn = document.getElementById('joinNav') || document.getElementById('joinBtn');
 
         if (signInLink) {
+            console.log('Updating Navbar: Sign In link found');
             signInLink.textContent = 'Dashboard';
             signInLink.href = user.role === 'admin' ? 'admin_dashboard.html' :
                 user.role === 'provider' ? 'provider_dashboard.html' : 'dashboard.html';
         }
 
         if (joinBtn) {
+            console.log('Updating Navbar: Join button found');
             joinBtn.textContent = 'Sign Out';
             joinBtn.href = '#';
             joinBtn.onclick = (e) => {
@@ -65,6 +69,7 @@ async function loadProviders(serviceType, filters = {}) {
         if (filters.booking_date) query += `&booking_date=${filters.booking_date}`;
         if (filters.sort_by) query += `&sort_by=${filters.sort_by}`;
 
+        console.log('Fetching providers with query:', query);
         const providers = await API.get(query);
         const container = document.querySelector('.providers-list');
         const countText = document.querySelector('.providers-count');
