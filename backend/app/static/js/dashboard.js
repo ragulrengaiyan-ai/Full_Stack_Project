@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     setupSettingsForm(user);
 
 
-    setupTabs();
+    setupTabs(user);
 });
 
 function updateProfileUI(user) {
@@ -33,7 +33,7 @@ function updateProfileUI(user) {
     if (imgEl) imgEl.src = `https://ui-avatars.com/api/?name=${user.name}&background=random`;
 }
 
-function setupTabs() {
+function setupTabs(user) {
     const links = document.querySelectorAll('.sidebar-nav .nav-link');
     const pages = document.querySelectorAll('.page');
 
