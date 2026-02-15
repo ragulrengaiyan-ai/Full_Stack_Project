@@ -18,11 +18,19 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (myProfile) {
             providerId = myProfile.id;
             document.getElementById('total-jobs').textContent = myProfile.total_bookings;
+
+            // Set User Name in Header
+            const nameDisplay = document.getElementById('provider-name-display');
+            if (nameDisplay) nameDisplay.textContent = user.name;
         } else {
             console.error('Provider profile not found for user', user.id);
             alert('Error: Provider profile not found.');
             return;
         }
+
+        // Initialize display values
+        const earningsEl = document.getElementById('total-earnings');
+        if (earningsEl) earningsEl.textContent = '₹0';
 
         // 2. Setup Tabs
         setupTabs();
@@ -160,8 +168,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     function calculateEarnings() {
         const totalEarnings = currentBookings
-            .filter(b => b.status === 'completed')
-            .reduce((sum, b) => sum + (b.provider_amount || (b.total_amount * 0.85)), 0);
+            .filter(b => b.status.toLowerCase() === 'completed')
+            .reduce((sum, b) => sum + (Number(b.provider_amount) || (Number(b.total_amount) * 0.85) || 0), 0);
 
         const earningsEl = document.getElementById('total-earnings');
         if (earningsEl) {
