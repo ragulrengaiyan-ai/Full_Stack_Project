@@ -2,10 +2,16 @@ let currentBookings = [];
 let currentUserRole = '';
 
 document.addEventListener('DOMContentLoaded', async () => {
-    const user = JSON.parse(localStorage.getItem('user'));
-
-    if (!user) {
+    const userString = localStorage.getItem('user');
+    if (!userString) {
         window.location.href = '/login.html';
+        return;
+    }
+    const user = JSON.parse(userString);
+
+    // Redirect provider to their specific dashboard
+    if (user.role === 'provider') {
+        window.location.href = '/provider_dashboard.html';
         return;
     }
 

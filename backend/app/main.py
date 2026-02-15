@@ -89,8 +89,19 @@ try:
                 conn.execute(text("ALTER TABLE complaints ADD COLUMN IF NOT EXISTS admin_notes TEXT"))
             except Exception as e:
                 print(f"Migration warning (admin_notes): {e}")
+
+            # SCHEMA MIGRATION: Auto-patch missing columns for 'bookings' table
+            try:
+                conn.execute(text("ALTER TABLE bookings ADD COLUMN IF NOT EXISTS suggested_date VARCHAR"))
+            except Exception as e:
+                print(f"Migration warning (suggested_date): {e}")
+
+            try:
+                conn.execute(text("ALTER TABLE bookings ADD COLUMN IF NOT EXISTS suggested_time VARCHAR"))
+            except Exception as e:
+                print(f"Migration warning (suggested_time): {e}")
                 
-            print("Schema migration for 'complaints' completed.")
+            print("Schema migration for 'complaints' and 'bookings' completed.")
 except Exception as e:
      print(f"Schema migration failed: {e}")
 
