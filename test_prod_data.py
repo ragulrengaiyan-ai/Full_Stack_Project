@@ -21,13 +21,15 @@ def test_production_logic(service_type, location):
         query = query.filter(Provider.service_type.ilike(f"{service_type}"))
         print(f"Applied service_type filter: {service_type}")
 
-    if location:
-        location = location.strip()
         query = query.filter(or_(
             Provider.location.ilike(f"%{location}%"),
             Provider.address.ilike(f"%{location}%")
         ))
         print(f"Applied location filter: {location}")
+        # Print the SQL
+        from sqlalchemy.dialects import postgresql
+        print("GENERATED SQL:")
+        print(query.statement.compile(dialect=postgresql.dialect(), compile_kwargs={"literal_binds": True}))
 
     results = query.all()
     print(f"Match count: {len(results)}")

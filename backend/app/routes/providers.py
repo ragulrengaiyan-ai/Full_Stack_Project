@@ -29,38 +29,40 @@ def get_providers(
     max_price: Optional[float] = None,
     min_experience: Optional[int] = None,
     availability_status: Optional[str] = None,
-    booking_date: Optional[str] = None, # YYYY-MM-DD
+    booking_date: Optional[str] = None, 
     sort_by: Optional[str] = None,
     db: Session = Depends(get_db)
 ):
-    print(f"DEBUG: get_providers CALLED - service_type: {service_type}, location: {location}, availability_status: {availability_status}")
+    print(f"\n>>> [API] get_providers GET received")
+    print(f">>> Params: service='{service_type}', location='{location}', avail='{availability_status}', date='{booking_date}'")
     
-    # Base query: only verified providers
     query = db.query(Provider).options(joinedload(Provider.user)).filter(Provider.background_verified == "verified")
 
     if booking_date:
-        # Exclude providers who have a booking on this date
         try:
             from ..models import Booking
         except (ImportError, ValueError):
             from models import Booking
-        booked_provider_ids = db.query(Booking.provider_id).filter(
+        booked_ids = db.query(Booking.provider_id).filter(
             Booking.booking_date == booking_date,
             Booking.status.in_(["pending", "confirmed"])
         ).all()
-        ids = [i[0] for i in booked_provider_ids]
+        ids = [i[0] for i in booked_ids]
         query = query.filter(~Provider.id.in_(ids))
+        print(f">>> Filtered by date: {booking_date} (Excl IDs: {ids})")
 
     if service_type:
-        service_type = service_type.strip().lower()
-        query = query.filter(Provider.service_type.ilike(f"{service_type}"))
+        st = service_type.strip().lower()
+        query = query.filter(Provider.service_type.ilike(f"{st}"))
+        print(f">>> Filtered by service: '{st}'")
 
     if location:
-        location = location.strip()
+        loc = location.strip()
         query = query.filter(or_(
-            Provider.location.ilike(f"%{location}%"),
-            Provider.address.ilike(f"%{location}%")
+            Provider.location.ilike(f"%{loc}%"),
+            Provider.address.ilike(f"%{loc}%")
         ))
+        print(f">>> Filtered by location: '{loc}'")
 
     if min_rating:
         query = query.filter(Provider.rating >= min_rating)
@@ -77,7 +79,7 @@ def get_providers(
     if availability_status:
         query = query.filter(Provider.availability_status == availability_status.lower())
 
-    # Sorting logic
+    # Sorting
     if sort_by == "rating":
         query = query.order_by(Provider.rating.desc())
     elif sort_by == "price_low":
@@ -90,9 +92,9 @@ def get_providers(
         query = query.order_by(Provider.rating.desc())
 
     results = query.all()
-    print(f"DEBUG: FOUND {len(results)} providers")
+    print(f">>> RETURNED {len(results)} PROVIDERS")
     for p in results:
-        print(f"  - MATCHED: ID {p.id} ({p.user.name if p.user else 'N/A'}) | Loc: '{p.location}' | Addr: '{p.address}'")
+        print(f"    [MATCH] ID:{p.id} | Name:{p.user.name if p.user else 'N/A'} | Loc:'{p.location}' | Addr:'{p.address}'")
 
     return results
 

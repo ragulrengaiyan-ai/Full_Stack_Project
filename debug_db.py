@@ -2,28 +2,26 @@ import os
 import sys
 from pathlib import Path
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, joinedload
 
 # Add current dir to path for imports
 sys.path.append(str(Path(__file__).parent / "backend" / "app"))
 
+from database import engine
+from models import Provider, User
+from sqlalchemy.orm import Session
+
+db = Session(bind=engine)
 try:
-    from database import engine
-    from models import Provider, User
-    from sqlalchemy.orm import Session
-    
-    db = Session(bind=engine)
     print("Connecting to database...")
     
-    providers = db.query(Provider).all()
-    print(f"Total Providers: {len(providers)}")
+    all_p = db.query(Provider).options(joinedload(Provider.user)).all()
+    print(f"Total Providers: {len(all_p)}")
     
-    print("\n--- Searching for Hari and Balaji ---")
-    targets = db.query(Provider).join(User).filter(User.name.ilike("%Hari%") | User.name.ilike("%Balaji%")).all()
-    for p in targets:
-        user = db.query(User).filter(User.id == p.user_id).first()
-        print(f"ID:{p.id} | Name:{user.name} | Service:'{p.service_type}' | Loc:'{p.location}' | Addr:'{p.address}'")
+    print("\n--- Full Alignment Audit ---")
+    for p in all_p:
+        uname = p.user.name if p.user else "N/A"
+        print(f"ID:{p.id} | Name:{uname} | Service:'{p.service_type}' | Loc:'{p.location}' | Addr:'{p.address}'")
     
+finally:
     db.close()
-except Exception as e:
-    print(f"Error: {e}")
