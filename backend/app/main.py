@@ -41,23 +41,32 @@ try:
     from sqlalchemy.orm import Session
     db = Session(bind=engine)
     try:
-        # --- DATA REPAIR: Fix 'Chennai' Location Bug ---
-        print("DATA REPAIR: Checking for providers with hardcoded 'Chennai' location...")
-        cities = ["Madurai", "Coimbatore", "Nagapattinam", "Thiruvarur", "Rameshwaram", "Vellore", "Thenkasi", "Chennai"]
+        # --- DATA REPAIR: Fix 'Chennai' Location Bug (Enhanced) ---
+        print("DATA REPAIR: Performing deep geographic audit...")
+        # Comprehensive list of cities to scan for in addresses
+        cities = [
+            "Madurai", "Coimbatore", "Nagapattinam", "Thiruvarur", "Rameshwaram", 
+            "Vellore", "Thenkasi", "Salem", "Kanniyakumari", "Trichy", "Tanjore", 
+            "Erode", "Tiruppur", "Chennai"
+        ]
+        
+        # We target anyone whose location is 'Chennai' but address says otherwise
         mismatched = db.query(models.Provider).filter(models.Provider.location == "Chennai").all()
         repairs = 0
         for p in mismatched:
+            addr = p.address.lower() if p.address else ""
             for city in cities:
-                if p.address and city.lower() in p.address.lower() and city != "Chennai":
+                # If a different city is explicitly mentioned in the address, fix it
+                if city.lower() in addr and city != "Chennai":
                     print(f"  Repairing ID:{p.id} Name:{p.user.name if p.user else 'N/A'} | '{p.location}' -> '{city}'")
                     p.location = city
                     repairs += 1
                     break
         if repairs > 0:
             db.commit()
-            print(f"DATA REPAIR: Fixed {repairs} providers.")
+            print(f"DATA REPAIR: Fixed {repairs} providers via deep audit.")
         else:
-            print("DATA REPAIR: No repairs needed.")
+            print("DATA REPAIR: Local records are clean.")
 
         admin_email = "admin@allinone.com"
         admin_user = db.query(models.User).filter(models.User.email == admin_email).first()
