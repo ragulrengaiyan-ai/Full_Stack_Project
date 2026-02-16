@@ -22,6 +22,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.log('Loading dashboard for user:', user.id);
     if (user.role === 'customer') {
         currentUserRole = 'customer';
+        // Hide management buttons for customers
+        const addProviderBtn = document.getElementById('add-provider-btn');
+        if (addProviderBtn) addProviderBtn.style.display = 'none';
+
         await loadCustomerDashboard(user.id);
         await loadCustomerReviews(user.id);
     } else {
