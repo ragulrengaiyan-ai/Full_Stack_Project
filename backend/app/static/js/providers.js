@@ -1,15 +1,17 @@
 document.addEventListener('DOMContentLoaded', async () => {
-
+    // Check for SERVICE_TYPE
     if (typeof SERVICE_TYPE === 'undefined') {
         const urlParams = new URLSearchParams(window.location.search);
         const typeFromUrl = urlParams.get('type');
         if (typeFromUrl) {
             window.SERVICE_TYPE = typeFromUrl;
         } else {
-            console.error('SERVICE_TYPE is not defined and not found in URL');
+            console.error('SERVICE_TYPE is not defined');
             return;
         }
     }
+
+    console.log(`[Providers] Initializing for service: ${SERVICE_TYPE}`);
 
     // Check for initial filters in URL
     const urlParams = new URLSearchParams(window.location.search);
@@ -17,8 +19,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const initialDate = urlParams.get('date');
     const initialFilters = {};
 
-    console.log('URL Initial Location:', initialLocation);
     if (initialLocation) {
+        console.log(`[Providers] Found initial location: ${initialLocation}`);
         initialFilters.location = initialLocation;
         const locationInput = document.querySelector('.filter-input');
         if (locationInput) locationInput.value = initialLocation;
@@ -30,11 +32,68 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (dateInput) dateInput.value = initialDate;
     }
 
-    await loadProviders(SERVICE_TYPE, initialFilters);
-
+    // Setup UI components
+    setupFilterListeners();
     setupBookingModal();
     updateNavAuth();
+
+    // Initial load
+    await loadProviders(SERVICE_TYPE, initialFilters);
 });
+
+function setupFilterListeners() {
+    const applyBtn = document.querySelector('.btn-apply-filters');
+    const sortDropdown = document.querySelector('.sort-dropdown');
+
+    if (applyBtn) {
+        applyBtn.addEventListener('click', () => {
+            console.log('[Providers] Apply Filters clicked');
+            const filters = {};
+            const locationInput = document.querySelector('.filter-input');
+            const selects = document.querySelectorAll('.filter-select');
+
+            if (locationInput && locationInput.value.trim()) {
+                filters.location = locationInput.value.trim();
+                console.log(`[Providers] Filter: location=${filters.location}`);
+            }
+
+            // Price range
+            if (selects[0]) {
+                const range = selects[0].value;
+                if (range && range !== 'Select range') {
+                    const prices = parsePriceRange(range);
+                    if (prices.min) filters.min_price = prices.min;
+                    if (prices.max) filters.max_price = prices.max;
+                }
+            }
+
+            // Experience
+            if (selects[1]) {
+                const exp = selects[1].value;
+                if (exp && exp !== 'Any experience') {
+                    filters.min_experience = parseInt(exp.split('-')[0]) || parseInt(exp) || 0;
+                }
+            }
+
+            if (sortDropdown) {
+                filters.sort_by = getSortValue(sortDropdown.value);
+            }
+
+            const dateInput = document.querySelector('.filter-date');
+            if (dateInput && dateInput.value) {
+                filters.booking_date = dateInput.value;
+            }
+
+            loadProviders(SERVICE_TYPE, filters);
+        });
+    }
+
+    if (sortDropdown) {
+        sortDropdown.addEventListener('change', () => {
+            if (applyBtn) applyBtn.click();
+        });
+    }
+}
 
 function updateNavAuth() {
     const user = JSON.parse(localStorage.getItem('user'));
@@ -85,7 +144,13 @@ async function loadProviders(serviceType, filters = {}) {
         container.innerHTML = '';
 
         if (countText) {
-            countText.textContent = `${providers.length} providers found`;
+            let filterDesc = [];
+            if (filters.location) filterDesc.push(`in ${filters.location}`);
+            if (filters.min_price) filterDesc.push(`above ₹${filters.min_price}`);
+
+            const descStr = filterDesc.length > 0 ? ` ${filterDesc.join(', ')}` : '';
+            countText.textContent = `${providers.length} providers found${descStr}`;
+            console.log(`[Providers] Loaded ${providers.length} results${descStr}`);
         }
 
         if (providers.length === 0) {
@@ -103,60 +168,7 @@ async function loadProviders(serviceType, filters = {}) {
     }
 }
 
-// Global Filter Logic
-document.addEventListener('DOMContentLoaded', () => {
-    const applyBtn = document.querySelector('.btn-apply-filters');
-    const sortDropdown = document.querySelector('.sort-dropdown');
-
-    if (applyBtn) {
-        applyBtn.addEventListener('click', () => {
-            const filters = {};
-            const locationInput = document.querySelector('.filter-input');
-            const selects = document.querySelectorAll('.filter-select');
-
-            if (locationInput && locationInput.value) {
-                filters.location = locationInput.value;
-            }
-
-            // Price range - usually the first select
-            if (selects[0]) {
-                const range = selects[0].value;
-                if (range && range !== 'Select range') {
-                    const prices = parsePriceRange(range);
-                    if (prices.min) filters.min_price = prices.min;
-                    if (prices.max) filters.max_price = prices.max;
-                }
-            }
-
-            // Experience - usually the second select
-            if (selects[1]) {
-                const exp = selects[1].value;
-                if (exp && exp !== 'Any experience') {
-                    filters.min_experience = parseInt(exp.split('-')[0]) || parseInt(exp) || 0;
-                }
-            }
-
-            // Add sorting if selected
-            if (sortDropdown) {
-                filters.sort_by = getSortValue(sortDropdown.value);
-            }
-
-            // Date - usually the third select OR a date input
-            const dateInput = document.querySelector('.filter-date');
-            if (dateInput && dateInput.value) {
-                filters.booking_date = dateInput.value;
-            }
-
-            loadProviders(SERVICE_TYPE, filters);
-        });
-    }
-
-    if (sortDropdown) {
-        sortDropdown.addEventListener('change', () => {
-            if (applyBtn) applyBtn.click(); // Trigger apply filters which includes sorting
-        });
-    }
-});
+// Obsolete listener removed as part of consolidation
 
 function parsePriceRange(range) {
     const res = { min: null, max: null };
