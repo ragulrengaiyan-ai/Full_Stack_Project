@@ -614,6 +614,10 @@ nav a:not(#joinNav):not(#signInNav):hover::after {
     margin: 0 auto;
 }
 
+.section-title{
+    text-align: center;
+}
+
 .step-card {
     background: white;
     border-radius: 12px;
