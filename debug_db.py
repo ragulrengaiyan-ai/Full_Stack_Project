@@ -18,11 +18,11 @@ try:
     providers = db.query(Provider).all()
     print(f"Total Providers: {len(providers)}")
     
-    print("\n--- Searching for Siddharth ---")
-    siddharth = db.query(Provider).join(User).filter(User.name.ilike("%Siddharth%")).all()
-    for p in siddharth:
+    print("\n--- Searching for Hari and Balaji ---")
+    targets = db.query(Provider).join(User).filter(User.name.ilike("%Hari%") | User.name.ilike("%Balaji%")).all()
+    for p in targets:
         user = db.query(User).filter(User.id == p.user_id).first()
-        print(f"ID:{p.id} | Name:{user.name} | Loc:'{p.location}' | Addr:'{p.address}'")
+        print(f"ID:{p.id} | Name:{user.name} | Service:'{p.service_type}' | Loc:'{p.location}' | Addr:'{p.address}'")
     
     db.close()
 except Exception as e:

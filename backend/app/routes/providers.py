@@ -52,7 +52,6 @@ def get_providers(
         query = query.filter(~Provider.id.in_(ids))
 
     if service_type:
-        # Robust case-insensitive search
         service_type = service_type.strip().lower()
         query = query.filter(Provider.service_type.ilike(f"{service_type}"))
 
@@ -76,7 +75,6 @@ def get_providers(
         query = query.filter(Provider.experience_years >= min_experience)
 
     if availability_status:
-        # Optional: only filter if explicitly requested (e.g., 'available')
         query = query.filter(Provider.availability_status == availability_status.lower())
 
     # Sorting logic
@@ -89,10 +87,14 @@ def get_providers(
     elif sort_by == "experience":
         query = query.order_by(Provider.experience_years.desc())
     else:
-        # Default sort by rating
         query = query.order_by(Provider.rating.desc())
 
-    return query.all()
+    results = query.all()
+    print(f"DEBUG: FOUND {len(results)} providers")
+    for p in results:
+        print(f"  - MATCHED: ID {p.id} ({p.user.name if p.user else 'N/A'}) | Loc: '{p.location}' | Addr: '{p.address}'")
+
+    return results
 
 
 @router.get("/profile/{user_id}", response_model=ProviderOut)

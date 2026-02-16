@@ -102,7 +102,15 @@
         const SERVICE_TYPE = urlParams.get('type') || 'babysitter';
 
         // Update UI Text
-        const prettyName = SERVICE_TYPE.charAt(0).toUpperCase() + SERVICE_TYPE.slice(1) + 's';
+        const serviceMapping = {
+            'babysitter': 'Babysitters',
+            'cook': 'Cooks',
+            'housekeeper': 'Housekeepers',
+            'gardener': 'Gardeners',
+            'security': 'Security Professionals'
+        };
+
+        const prettyName = serviceMapping[SERVICE_TYPE.toLowerCase()] || (SERVICE_TYPE.charAt(0).toUpperCase() + SERVICE_TYPE.slice(1) + 's');
         document.getElementById('pageTitle').textContent = `Available ${prettyName}`;
         document.getElementById('serviceHeader').textContent = `Available ${prettyName}`;
     </script>

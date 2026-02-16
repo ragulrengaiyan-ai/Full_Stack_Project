@@ -34,7 +34,16 @@ def test_production_logic(service_type, location):
     for p in results:
         user = db.query(User).filter(User.id == p.user_id).first()
         uname = user.name if user else "Unknown"
-        print(f"MATCH: [{p.id}] {uname} | Loc:'{p.location}' | Addr:'{p.address}'")
+        loc_match = False
+        addr_match = False
+        if location:
+            loc_match = location.lower() in (p.location or "").lower()
+            addr_match = location.lower() in (p.address or "").lower()
+        
+        print(f"MATCH: [{p.id}] {uname}")
+        print(f"  - DB Loc: '{p.location}' (Python Match: {loc_match})")
+        print(f"  - DB Addr: '{p.address}' (Python Match: {addr_match})")
+        print(f"  - Service: '{p.service_type}'")
 
 test_production_logic('babysitter', 'chennai')
 test_production_logic('babysitter', None)
