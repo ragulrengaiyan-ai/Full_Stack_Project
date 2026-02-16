@@ -57,10 +57,14 @@ def get_providers(
         print(f">>> Filtered by service: '{st}'")
 
     if location:
-        loc = location.strip()
-        # Strictly match against the location field (usually City/Area) to avoid false positives from street addresses
-        query = query.filter(Provider.location.ilike(f"%{loc}%"))
-        print(f">>> Filtered strictly by location: '{loc}'")
+        loc = location.strip().lower()
+        # Match against either the city (location) or the detailed address (area)
+        # Now safe to use OR because the hardcoded 'Chennai' bug has been fixed by data repair.
+        query = query.filter(or_(
+            Provider.location.ilike(f"%{loc}%"),
+            Provider.address.ilike(f"%{loc}%")
+        ))
+        print(f">>> Filtered by location/area: '{loc}'")
 
     if min_rating:
         query = query.filter(Provider.rating >= min_rating)

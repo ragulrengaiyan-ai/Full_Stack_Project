@@ -41,6 +41,24 @@ try:
     from sqlalchemy.orm import Session
     db = Session(bind=engine)
     try:
+        # --- DATA REPAIR: Fix 'Chennai' Location Bug ---
+        print("DATA REPAIR: Checking for providers with hardcoded 'Chennai' location...")
+        cities = ["Madurai", "Coimbatore", "Nagapattinam", "Thiruvarur", "Rameshwaram", "Vellore", "Thenkasi", "Chennai"]
+        mismatched = db.query(models.Provider).filter(models.Provider.location == "Chennai").all()
+        repairs = 0
+        for p in mismatched:
+            for city in cities:
+                if p.address and city.lower() in p.address.lower() and city != "Chennai":
+                    print(f"  Repairing ID:{p.id} Name:{p.user.name if p.user else 'N/A'} | '{p.location}' -> '{city}'")
+                    p.location = city
+                    repairs += 1
+                    break
+        if repairs > 0:
+            db.commit()
+            print(f"DATA REPAIR: Fixed {repairs} providers.")
+        else:
+            print("DATA REPAIR: No repairs needed.")
+
         admin_email = "admin@allinone.com"
         admin_user = db.query(models.User).filter(models.User.email == admin_email).first()
         
