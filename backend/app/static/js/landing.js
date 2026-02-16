@@ -131,10 +131,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             const validServices = ['babysitter', 'cook', 'housekeeper', 'gardener', 'security'];
             if (validServices.includes(service)) {
-                let targetUrl = `/${service}.html`;
+                let targetUrl = `/service.html?type=${service}`;
 
                 if (location) {
-                    targetUrl += `?location=${encodeURIComponent(location)}`;
+                    targetUrl += `&location=${encodeURIComponent(location)}`;
                 }
                 window.location.href = targetUrl;
             } else {

@@ -28,17 +28,18 @@ def get_providers(
     min_price: Optional[float] = None,
     max_price: Optional[float] = None,
     min_experience: Optional[int] = None,
-    availability_status: Optional[str] = "available",
+    availability_status: Optional[str] = None,
     booking_date: Optional[str] = None, # YYYY-MM-DD
     sort_by: Optional[str] = None,
     db: Session = Depends(get_db)
 ):
     print(f"DEBUG: get_providers CALLED - service_type: {service_type}, location: {location}, availability_status: {availability_status}")
+    
+    # Base query: only verified providers
     query = db.query(Provider).options(joinedload(Provider.user)).filter(Provider.background_verified == "verified")
 
     if booking_date:
         # Exclude providers who have a booking on this date
-        # This implementation assumes one booking per day for simplicity of 'day-wise' requirement
         try:
             from ..models import Booking
         except (ImportError, ValueError):
@@ -51,9 +52,12 @@ def get_providers(
         query = query.filter(~Provider.id.in_(ids))
 
     if service_type:
-        query = query.filter(Provider.service_type == service_type)
+        # Robust case-insensitive search
+        service_type = service_type.strip().lower()
+        query = query.filter(Provider.service_type.ilike(f"{service_type}"))
 
     if location:
+        location = location.strip()
         query = query.filter(or_(
             Provider.location.ilike(f"%{location}%"),
             Provider.address.ilike(f"%{location}%")
@@ -72,9 +76,10 @@ def get_providers(
         query = query.filter(Provider.experience_years >= min_experience)
 
     if availability_status:
-        query = query.filter(Provider.availability_status == availability_status)
+        # Optional: only filter if explicitly requested (e.g., 'available')
+        query = query.filter(Provider.availability_status == availability_status.lower())
 
-    # Sorting
+    # Sorting logic
     if sort_by == "rating":
         query = query.order_by(Provider.rating.desc())
     elif sort_by == "price_low":

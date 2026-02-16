@@ -4,10 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Available Gardener</title>
+    <title id="pageTitle">Available Services</title>
     <script src="js/security.js"></script>
-    <link rel="stylesheet" href="css/gardener.css?v=2">
+    <link rel="stylesheet" href="css/style.css?v=2">
     <link rel="stylesheet" href="css/navbar.css?v=2">
+    <link rel="stylesheet" href="css/babysitter.css?v=2"> <!-- Reuse common layout -->
 </head>
 
 <body>
@@ -34,12 +35,12 @@
 
             <div class="filter-group">
                 <label class="filter-label">Location</label>
-                <input type="text" class="filter-input" placeholder="Enter location">
+                <input type="text" class="filter-input" placeholder="Enter location" id="locationFilter">
             </div>
 
             <div class="filter-group">
                 <label class="filter-label">Price Range</label>
-                <select class="filter-select">
+                <select class="filter-select" id="priceFilter">
                     <option>Select range</option>
                     <option>₹200 - ₹300/hour</option>
                     <option>₹300 - ₹400/hour</option>
@@ -50,7 +51,7 @@
 
             <div class="filter-group">
                 <label class="filter-label">Experience</label>
-                <select class="filter-select">
+                <select class="filter-select" id="experienceFilter">
                     <option>Any experience</option>
                     <option>1-2 years</option>
                     <option>3-5 years</option>
@@ -58,19 +59,22 @@
                 </select>
             </div>
 
-            <div class="filter-group"><label class="filter-label">Available on Day</label><input type="date"
-                    class="filter-date filter-input"></div>
+            <div class="filter-group">
+                <label class="filter-label">Available on Day</label>
+                <input type="date" class="filter-date filter-input" id="dateFilter">
+            </div>
 
             <button class="btn-apply-filters">Apply Filters</button>
         </aside>
 
+        <!-- Main Content -->
         <main class="main-content">
             <div class="header-section">
                 <div>
-                    <h1 class="page-title">Available Gardener</h1>
-                    <p class="providers-count">2 providers found</p>
+                    <h1 class="page-title" id="serviceHeader">Available Services</h1>
+                    <p class="providers-count" id="providerCounter">Loading...</p>
                 </div>
-                <select class="sort-dropdown">
+                <select class="sort-dropdown" id="sortFilter">
                     <option>Sort by rating</option>
                     <option>Sort by price (low to high)</option>
                     <option>Sort by price (high to low)</option>
@@ -78,6 +82,7 @@
                 </select>
             </div>
 
+            <!-- Provider Cards -->
             <div class="providers-list">
                 <p>Loading professionals...</p>
             </div>
@@ -92,7 +97,14 @@
     <script src="js/api.js"></script>
     <script src="js/auth.js"></script>
     <script>
-        const SERVICE_TYPE = 'gardener';
+        // Dynamic SERVICE_TYPE detection
+        const urlParams = new URLSearchParams(window.location.search);
+        const SERVICE_TYPE = urlParams.get('type') || 'babysitter';
+
+        // Update UI Text
+        const prettyName = SERVICE_TYPE.charAt(0).toUpperCase() + SERVICE_TYPE.slice(1) + 's';
+        document.getElementById('pageTitle').textContent = `Available ${prettyName}`;
+        document.getElementById('serviceHeader').textContent = `Available ${prettyName}`;
     </script>
     <script src="js/providers.js"></script>
 </body>

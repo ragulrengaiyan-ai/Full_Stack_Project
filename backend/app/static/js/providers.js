@@ -1,8 +1,14 @@
 document.addEventListener('DOMContentLoaded', async () => {
 
     if (typeof SERVICE_TYPE === 'undefined') {
-        console.error('SERVICE_TYPE is not defined');
-        return;
+        const urlParams = new URLSearchParams(window.location.search);
+        const typeFromUrl = urlParams.get('type');
+        if (typeFromUrl) {
+            window.SERVICE_TYPE = typeFromUrl;
+        } else {
+            console.error('SERVICE_TYPE is not defined and not found in URL');
+            return;
+        }
     }
 
     // Check for initial filters in URL
@@ -178,6 +184,8 @@ function createProviderCard(provider) {
 
     if (!provider.user) {
         provider.user = { name: 'Verified Professional' };
+    } else if (!provider.user.name) {
+        provider.user.name = 'Verified Professional';
     }
 
     const isAvailable = provider.availability_status === 'available';
