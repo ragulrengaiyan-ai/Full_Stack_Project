@@ -58,11 +58,9 @@ def get_providers(
 
     if location:
         loc = location.strip()
-        query = query.filter(or_(
-            Provider.location.ilike(f"%{loc}%"),
-            Provider.address.ilike(f"%{loc}%")
-        ))
-        print(f">>> Filtered by location: '{loc}'")
+        # Strictly match against the location field (usually City/Area) to avoid false positives from street addresses
+        query = query.filter(Provider.location.ilike(f"%{loc}%"))
+        print(f">>> Filtered strictly by location: '{loc}'")
 
     if min_rating:
         query = query.filter(Provider.rating >= min_rating)

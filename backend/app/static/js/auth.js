@@ -87,8 +87,7 @@ async function handleProviderSignup(form) {
         data.hourly_rate = Number(data.hourly_rate);
         data.experience_years = Number(data.experience_years);
 
-        // Add hardcoded location/bio if missing
-        if (!data.location) data.location = "Chennai";
+        // Add hardcoded bio if missing
         if (!data.bio) data.bio = "Dedicated service provider";
 
         try {
