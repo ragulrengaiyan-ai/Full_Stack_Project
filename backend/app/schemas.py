@@ -110,6 +110,8 @@ class ReviewOut(ReviewCreate):
     provider_id: int
     customer_id: int
     created_at: datetime
+    customer: Optional[UserOut] = None
+    provider: Optional[ProviderOut] = None
     class Config:
         from_attributes = True
 

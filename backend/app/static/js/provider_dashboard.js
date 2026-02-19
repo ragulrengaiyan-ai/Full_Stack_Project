@@ -69,8 +69,50 @@ document.addEventListener('DOMContentLoaded', async () => {
                         page.classList.add('active');
                     }
                 });
+
+                if (targetPage === 'reviews') {
+                    loadProviderReviews(providerId);
+                }
             });
         });
+    }
+
+    async function loadProviderReviews(id) {
+        try {
+            const container = document.querySelector('#reviews-page .reviews-container');
+            if (!container) return;
+
+            const reviews = await API.get(`/reviews/provider/${id}`);
+            container.innerHTML = '';
+
+            if (reviews.length === 0) {
+                container.innerHTML = '<p style="text-align:center; padding: 20px; color: #666;">No reviews yet. Keep up the good work!</p>';
+                return;
+            }
+
+            reviews.forEach(review => {
+                const cName = review.customer?.name || "Customer";
+                const card = document.createElement('div');
+                card.className = 'review-card';
+                card.innerHTML = `
+                    <div class="review-header">
+                        <div class="reviewer-info">
+                            <img src="https://ui-avatars.com/api/?name=${cName}&background=random" alt="Reviewer" style="width:50px; height:50px; border-radius:50%; margin-right:12px;">
+                            <div>
+                                <p class="reviewer-name">Review by ${cName}</p>
+                                <p class="review-service">Booking #${review.booking_id}</p>
+                            </div>
+                        </div>
+                        <div class="review-rating">${review.rating}★</div>
+                    </div>
+                    <p class="review-text">${review.comment || 'No comment provided'}</p>
+                    <p class="review-date">Posted on ${new Date(review.created_at).toLocaleDateString()}</p>
+                `;
+                container.appendChild(card);
+            });
+        } catch (err) {
+            console.error('Failed to load provider reviews:', err);
+        }
     }
 
     async function loadProviderBookings(id) {

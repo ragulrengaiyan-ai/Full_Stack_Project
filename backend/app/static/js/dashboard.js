@@ -403,13 +403,14 @@ async function loadCustomerReviews(userId) {
         }
 
         reviews.forEach(review => {
+            const pName = review.provider?.user?.name || `Provider #${review.provider_id}`;
             const card = document.createElement('div');
             card.className = 'review-card';
             card.innerHTML = `
                 <div class="review-header">
                     <div class="reviewer-info">
                         <div>
-                            <p class="reviewer-name">Review for Provider #${review.provider_id}</p>
+                            <p class="reviewer-name">Review for ${pName}</p>
                             <p class="review-service">Booking #${review.booking_id}</p>
                         </div>
                     </div>

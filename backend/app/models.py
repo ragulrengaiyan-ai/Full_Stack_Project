@@ -85,6 +85,7 @@ class Review(Base):
     # Relationships
     provider = relationship("Provider", back_populates="reviews")
     booking = relationship("Booking", back_populates="review")
+    customer = relationship("User")
 
 class Complaint(Base):
     __tablename__ = "complaints"
