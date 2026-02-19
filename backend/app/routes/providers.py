@@ -58,13 +58,15 @@ def get_providers(
 
     if location:
         loc = location.strip().lower()
-        # Match against either the city (location) or the detailed address (area)
-        # Now safe to use OR because the hardcoded 'Chennai' bug has been fixed by data repair.
-        query = query.filter(or_(
-            Provider.location.ilike(f"%{loc}%"),
-            Provider.address.ilike(f"%{loc}%")
-        ))
-        print(f">>> Filtered by location/area: '{loc}'")
+        # Match against the same field that is displayed in the UI
+        # Logic: if address is not null and not empty, match against address. Else match against location.
+        from sqlalchemy import func, case
+        display_location = case(
+            (or_(Provider.address == None, Provider.address == "", Provider.address == "Not Provided", Provider.address == "None"), Provider.location),
+            else_=Provider.address
+        )
+        query = query.filter(display_location.ilike(f"%{loc}%"))
+        print(f">>> Filtered by dynamic display_location: '{loc}'")
 
     if min_rating:
         query = query.filter(Provider.rating >= min_rating)
