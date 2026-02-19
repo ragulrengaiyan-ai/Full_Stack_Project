@@ -141,14 +141,165 @@
                 const provider = await API.get(query);
                 renderProfile(provider);
 
+                // Initialize booking modal setup
+                setupBookingModal(provider.service_type);
 
                 document.getElementById('bookBtn').onclick = () => {
-                    window.location.href = `index.html`;
+                    openBookingModal(provider.id, provider.user.name, provider.hourly_rate);
                 };
             } catch (err) {
                 document.getElementById('profileContent').innerHTML = `<h1>Error: ${err.message}</h1>`;
             }
         });
+
+        function setupBookingModal(serviceType) {
+            if (!document.getElementById('bookingModal')) {
+                const modalHTML = `
+                    <style>
+                        .modal-overlay {
+                            position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+                            background: rgba(0,0,0,0.6); z-index: 2000;
+                            display: none; align-items: center; justify-content: center;
+                            backdrop-filter: blur(4px);
+                        }
+                        .modal-container {
+                            background: white; border-radius: 16px; width: 90%; max-width: 500px;
+                            padding: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+                        }
+                        .modal-title { font-size: 1.5rem; margin-bottom: 5px; color: #1a1a1a; }
+                        .modal-subtitle { color: #666; margin-bottom: 25px; font-size: 0.95rem; }
+                        .form-row { margin-bottom: 20px; }
+                        .form-row label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.9rem; color: #444; }
+                        .form-row input, .form-row select, .form-row textarea {
+                            width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;
+                            font-family: inherit; font-size: 1rem;
+                        }
+                        .modal-actions { display: flex; gap: 15px; margin-top: 30px; }
+                        .btn-cancel { flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 8px; background: white; cursor: pointer; font-weight: 600; }
+                        .btn-confirm { flex: 2; padding: 12px; border: none; border-radius: 8px; background: #2563eb; color: white; cursor: pointer; font-weight: 600; }
+                    </style>
+                    <div id="bookingModal" class="modal-overlay">
+                        <div class="modal-container">
+                            <h2 class="modal-title">Complete Your Booking</h2>
+                            <p class="modal-subtitle" id="modalProviderName"></p>
+                            <p id="modalRate" style="font-weight:700; color:#2563eb; margin-bottom:20px;"></p>
+                            
+                            <form id="bookingForm">
+                                <input type="hidden" id="bookingProviderId">
+                                
+                                <div class="form-row">
+                                    <label>Service Date</label>
+                                    <input type="date" id="bookingDate" required>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <label>Start Time</label>
+                                    <div style="display:flex; gap:10px;">
+                                        <select id="timeHour" required>
+                                            <option value="">Hour</option>
+                                            ${Array.from({ length: 12 }, (_, i) => `<option value="${i + 1}">${i + 1}</option>`).join('')}
+                                        </select>
+                                        <select id="timeMinute" required>
+                                            <option value="00">00</option>
+                                            <option value="15">15</option>
+                                            <option value="30">30</option>
+                                            <option value="45">45</option>
+                                        </select>
+                                        <select id="timePeriod" required>
+                                            <option value="AM">AM</option>
+                                            <option value="PM">PM</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <label>Duration (Hours)</label>
+                                    <input type="number" id="bookingDuration" value="1" min="1" max="12" required>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <label>Service Address</label>
+                                    <textarea id="bookingAddress" placeholder="Enter full address for the professional" required rows="3"></textarea>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <label>Additional Notes (Optional)</label>
+                                    <textarea id="bookingNotes" placeholder="Any special instructions?" rows="2"></textarea>
+                                </div>
+                                
+                                <div class="modal-actions">
+                                    <button type="button" class="btn-cancel" onclick="closeBookingModal()">Cancel</button>
+                                    <button type="submit" class="btn-confirm">Confirm Booking</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                `;
+                document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+                document.getElementById('bookingForm').onsubmit = async (e) => {
+                    e.preventDefault();
+                    const user = JSON.parse(localStorage.getItem('user'));
+                    if (!user) {
+                        alert('Please login to book a service');
+                        window.location.href = '/login.html';
+                        return;
+                    }
+
+                    const data = {
+                        provider_id: parseInt(document.getElementById('bookingProviderId').value),
+                        service_name: serviceType,
+                        booking_date: document.getElementById('bookingDate').value,
+                        booking_time: convertTo24Hour(
+                            document.getElementById('timeHour').value,
+                            document.getElementById('timeMinute').value,
+                            document.getElementById('timePeriod').value
+                        ),
+                        duration_hours: parseInt(document.getElementById('bookingDuration').value),
+                        address: document.getElementById('bookingAddress').value,
+                        notes: document.getElementById('bookingNotes').value
+                    };
+
+                    try {
+                        await API.post(`/bookings/?customer_id=${user.id}`, data);
+                        alert('Booking created successfully!');
+                        closeBookingModal();
+                        window.location.href = '/dashboard.html';
+                    } catch (err) {
+                        alert(err.message);
+                    }
+                };
+            }
+        }
+
+        function openBookingModal(providerId, providerName, rate) {
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (!user) {
+                alert('Please login to book a service');
+                window.location.href = '/login.html';
+                return;
+            }
+
+            document.getElementById('bookingModal').style.display = 'flex';
+            document.getElementById('bookingProviderId').value = providerId;
+            document.getElementById('modalProviderName').textContent = `Professional: ${providerName}`;
+            document.getElementById('modalRate').textContent = `Rate: ₹${rate}/hour`;
+
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('bookingDate').setAttribute('min', today);
+        }
+
+        function closeBookingModal() {
+            document.getElementById('bookingModal').style.display = 'none';
+        }
+
+        function convertTo24Hour(hour, minute, period) {
+            let h = parseInt(hour);
+            if (!h) return "09:00:00";
+            if (period === 'PM' && h < 12) h += 12;
+            if (period === 'AM' && h === 12) h = 0;
+            return `${h.toString().padStart(2, '0')}:${minute}:00`;
+        }
 
         function renderProfile(p) {
             document.getElementById('profileContent').innerHTML = `
