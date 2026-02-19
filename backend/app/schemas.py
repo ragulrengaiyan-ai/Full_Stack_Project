@@ -47,6 +47,9 @@ class ProviderBase(BaseModel):
 class ProviderCreate(UserCreate, ProviderBase):
     pass
 
+class ProviderStatusUpdate(BaseModel):
+    availability_status: str # available, busy
+
 class ProviderOut(ProviderBase):
     id: int
     user_id: int

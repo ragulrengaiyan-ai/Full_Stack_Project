@@ -7,7 +7,7 @@ from typing import List, Optional
 try:
     from ..database import get_db
     from ..auth import get_current_user, get_current_user_optional
-    from ..schemas import ProviderOut, UserOut
+    from ..schemas import ProviderOut, UserOut, ProviderStatusUpdate
     from ..models import Provider, Review, User
 except (ImportError, ValueError):
     from database import get_db
@@ -138,7 +138,6 @@ def get_provider_details(
 def get_providers_by_service(service_type: str, db: Session = Depends(get_db)):
     return db.query(Provider).filter(
         Provider.service_type == service_type,
-        Provider.availability_status == "available",
         Provider.background_verified == "verified"
     ).all()
 
@@ -157,4 +156,32 @@ def verify_provider(provider_id: int, db: Session = Depends(get_db)):
         db.rollback()
         print(f"CRITICAL PROVIDER VERIFY ERROR: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Failed to verify provider: {str(e)}")
+
+
+@router.patch("/{provider_id}/status")
+def update_provider_status(
+    provider_id: int, 
+    status_update: ProviderStatusUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    provider = db.query(Provider).filter(Provider.id == provider_id).first()
+    if not provider:
+        raise HTTPException(status_code=404, detail="Provider not found")
+    
+    # Check if the current user owns this profile or is an admin
+    if current_user.id != provider.user_id and current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Not authorized to update this profile")
+    
+    status = status_update.availability_status.lower()
+    if status not in ["available", "busy"]:
+        raise HTTPException(status_code=400, detail="Invalid status. Must be 'available' or 'busy'")
+        
+    try:
+        provider.availability_status = status
+        db.commit()
+        return {"message": "Status updated successfully", "status": provider.availability_status}
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Failed to update status: {str(e)}")
 

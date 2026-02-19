@@ -425,9 +425,15 @@ body {
 }
 
 .badge.cancelled,
-.badge.rejected {
+.badge.rejected,
+.badge.busy {
     background: rgba(239, 68, 68, 0.2);
     color: #ef4444;
+}
+
+.badge.available {
+    background: rgba(16, 185, 129, 0.2);
+    color: #059669;
 }
 
 /* Provider List */

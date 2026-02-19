@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 
     let providerId = null;
+    let currentStatus = 'available';
     let currentBookings = [];
 
     try {
@@ -17,7 +18,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         if (myProfile) {
             providerId = myProfile.id;
+            currentStatus = myProfile.availability_status || 'available';
             document.getElementById('total-jobs').textContent = myProfile.total_bookings;
+
+            // Availability Setup
+            updateAvailabilityUI(currentStatus);
+            document.getElementById('toggle-availability-btn').addEventListener('click', () => toggleAvailability(providerId, currentStatus));
 
             // Set User Name in Header
             const nameDisplay = document.getElementById('provider-name-display');
@@ -273,4 +279,41 @@ document.addEventListener('DOMContentLoaded', async () => {
             alert(err.message);
         }
     };
+
+    function updateAvailabilityUI(status) {
+        const statusEl = document.getElementById('availability-status');
+        const btn = document.getElementById('toggle-availability-btn');
+        if (!statusEl || !btn) return;
+
+        statusEl.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+        statusEl.className = `badge ${status.toLowerCase()}`;
+
+        if (status === 'available') {
+            btn.textContent = 'Go Busy';
+            btn.style.background = '#ef4444'; // Red for Busy
+        } else {
+            btn.textContent = 'Go Online';
+            btn.style.background = '#10b981'; // Green for Online
+        }
+    }
+
+    async function toggleAvailability(id, current) {
+        const newStatus = current === 'available' ? 'busy' : 'available';
+        const btn = document.getElementById('toggle-availability-btn');
+        btn.disabled = true;
+        btn.textContent = 'Updating...';
+
+        try {
+            const res = await API.request(`/providers/${id}/status`, 'PATCH', {
+                availability_status: newStatus
+            });
+            currentStatus = res.status;
+            updateAvailabilityUI(currentStatus);
+        } catch (err) {
+            alert('Failed to update status: ' + err.message);
+            updateAvailabilityUI(currentStatus); // Revert UI
+        } finally {
+            btn.disabled = false;
+        }
+    }
 });
