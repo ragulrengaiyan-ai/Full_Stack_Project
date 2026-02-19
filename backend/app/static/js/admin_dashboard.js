@@ -15,11 +15,41 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     await loadStats();
-    await loadUsers();
-    await loadBookings();
-    await loadComplaints();
-    await loadInquiries();
+    setupTabs();
+
+    // Initial data load
+    loadUsers();
+    loadBookings();
+    loadComplaints();
+    loadInquiries();
+    loadProviders();
 });
+
+function setupTabs() {
+    const navLinks = document.querySelectorAll('.nav-link[data-page]');
+    const pages = document.querySelectorAll('.page');
+    const pageTitle = document.getElementById('page-title');
+
+    navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const targetPage = link.getAttribute('data-page');
+
+            navLinks.forEach(nl => nl.classList.remove('active'));
+            link.classList.add('active');
+
+            pages.forEach(page => {
+                page.classList.remove('active');
+                if (page.id === `${targetPage}-page`) {
+                    page.classList.add('active');
+                }
+            });
+
+            // Update title
+            pageTitle.textContent = targetPage.charAt(0).toUpperCase() + targetPage.slice(1);
+        });
+    });
+}
 
 async function loadStats() {
     try {
@@ -38,37 +68,28 @@ async function loadUsers() {
     try {
         const users = await API.get('/admin/users');
         const list = document.getElementById('usersList');
+        if (!list) return;
         list.innerHTML = '';
 
-        if (users.length === 0) {
-            list.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:20px; color:#64748b;">No users found</td></tr>';
+        const customers = users.filter(u => u.role === 'customer' || u.role === 'admin');
+
+        if (customers.length === 0) {
+            list.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:20px; color:#64748b;">No customers found</td></tr>';
             return;
         }
 
-        users.forEach(u => {
+        customers.forEach(u => {
             const row = document.createElement('tr');
-
             let actionBtns = '';
-            if (u.role === 'provider' && u.provider_profile?.background_verified === 'pending') {
-                actionBtns += `<button class="btn-small" onclick="viewProfile(${u.provider_profile?.id}, true)" style="background:#475569; color:white; margin-right:5px;">Inspect</button>`;
-                actionBtns += `<button class="btn-small" onclick="verifyProvider(${u.provider_profile?.id || 'null'})" style="background:#2563eb; color:white; margin-right:5px;">Verify</button>`;
-            }
-
             if (u.role !== 'admin') {
                 actionBtns += `<button class="btn-small" onclick="deleteUser(${u.id})" style="background:#ef4444; color:white;">Delete</button>`;
-            }
-
-            let info = u.role;
-            if (u.role === 'provider' && u.provider_profile) {
-                info = `<div><strong>${u.provider_profile.service_type}</strong></div>
-                        <div style="font-size:0.8rem; color:#94a3b8;">${u.provider_profile.address || 'No address'}</div>`;
             }
 
             row.innerHTML = `
                 <td>${u.id}</td>
                 <td>${u.name}</td>
                 <td>${u.email}</td>
-                <td>${info}</td>
+                <td><span class="badge ${u.role === 'admin' ? 'completed' : 'pending'}">${u.role}</span></td>
                 <td>${new Date(u.created_at).toLocaleDateString()}</td>
                 <td><div style="display:flex;">${actionBtns || '-'}</div></td>
             `;
@@ -76,6 +97,49 @@ async function loadUsers() {
         });
     } catch (err) {
         console.error('Failed to load users', err);
+    }
+}
+
+async function loadProviders() {
+    try {
+        const users = await API.get('/admin/users');
+        const list = document.getElementById('providersList');
+        if (!list) return;
+        list.innerHTML = '';
+
+        const providers = users.filter(u => u.role === 'provider');
+
+        if (providers.length === 0) {
+            list.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:20px; color:#64748b;">No providers found</td></tr>';
+            return;
+        }
+
+        providers.forEach(u => {
+            const row = document.createElement('tr');
+            const p = u.provider_profile;
+
+            let actionBtns = '';
+            if (p?.background_verified === 'pending') {
+                actionBtns += `<button class="btn-small" onclick="viewProfile(${p.id}, true)" style="background:#475569; color:white; margin-right:5px;">Inspect</button>`;
+                actionBtns += `<button class="btn-small" onclick="verifyProvider(${p.id})" style="background:#2563eb; color:white; margin-right:5px;">Verify</button>`;
+            }
+            actionBtns += `<button class="btn-small" onclick="deleteUser(${u.id})" style="background:#ef4444; color:white;">Delete</button>`;
+
+            let info = `<div><strong>${p?.service_type || 'N/A'}</strong></div>
+                        <div style="font-size:0.8rem; color:#94a3b8;">${p?.address || 'No address'}</div>`;
+
+            row.innerHTML = `
+                <td>${u.id}</td>
+                <td>${u.name}<br><small>${u.email}</small></td>
+                <td>${info}</td>
+                <td><span class="badge ${p?.background_verified === 'verified' ? 'confirmed' : 'pending'}">${p?.background_verified || 'N/A'}</span></td>
+                <td>${new Date(u.created_at).toLocaleDateString()}</td>
+                <td><div style="display:flex;">${actionBtns}</div></td>
+            `;
+            list.appendChild(row);
+        });
+    } catch (err) {
+        console.error('Failed to load providers', err);
     }
 }
 
@@ -124,7 +188,7 @@ async function verifyProvider(providerId) {
     if (!confirm('Verify this provider?')) return;
     try {
         await API.request(`/providers/${providerId}/verify`, 'PATCH');
-        loadUsers();
+        loadProviders();
         alert('Provider Verified!');
     } catch (err) {
         alert(err.message);
