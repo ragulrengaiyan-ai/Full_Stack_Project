@@ -203,8 +203,13 @@ body {
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 /* Stats Grid */
@@ -283,7 +288,8 @@ body {
     color: var(--text-secondary);
     margin-bottom: 0.5rem;
 }
-.ruppes_icon{
+
+.ruppes_icon {
     font-size: x-large;
     font-weight: bolder;
 }
@@ -397,9 +403,25 @@ body {
     color: #d97706;
 }
 
-.badge.completed {
+.badge.completed,
+.badge.resolved {
     background: rgba(16, 185, 129, 0.2);
     color: #059669;
+}
+
+.badge.investigating {
+    background: rgba(37, 99, 235, 0.2);
+    color: #2563eb;
+}
+
+.badge.refunded {
+    background: rgba(139, 92, 246, 0.2);
+    color: #7c3aed;
+}
+
+.badge.warned {
+    background: rgba(245, 158, 11, 0.2);
+    color: #d97706;
 }
 
 /* Provider List */
