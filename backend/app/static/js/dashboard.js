@@ -274,6 +274,30 @@ async function loadCustomerDashboard(userId) {
             });
 
         }
+
+        // 6. Payments Page Stats
+        const paymentTotalEl = document.getElementById('payment-total');
+        const paymentMonthEl = document.getElementById('payment-month');
+        const paymentPendingEl = document.getElementById('payment-pending');
+
+        if (paymentTotalEl || paymentMonthEl || paymentPendingEl) {
+            const confirmedAndCompleted = bookings.filter(b => b.status === 'confirmed' || b.status === 'completed');
+            const totalPayments = confirmedAndCompleted.reduce((sum, b) => sum + (b.total_amount || 0), 0);
+
+            const now = new Date();
+            const thisMonth = confirmedAndCompleted.filter(b => {
+                const date = new Date(b.created_at || Date.now());
+                return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
+            }).reduce((sum, b) => sum + (b.total_amount || 0), 0);
+
+            const pendingAmount = bookings.filter(b => b.status === 'pending')
+                .reduce((sum, b) => sum + (b.total_amount || 0), 0);
+
+            if (paymentTotalEl) paymentTotalEl.textContent = `₹${totalPayments.toLocaleString()}`;
+            if (paymentMonthEl) paymentMonthEl.textContent = `₹${thisMonth.toLocaleString()}`;
+            if (paymentPendingEl) paymentPendingEl.textContent = `₹${pendingAmount.toLocaleString()}`;
+        }
+
     } catch (err) {
         console.error('Failed to load customer dashboard:', err);
     }
