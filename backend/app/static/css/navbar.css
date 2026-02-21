@@ -1,18 +1,18 @@
 /* Professional Navbar Styles */
 header {
-    height: 80px;
-    background: rgba(255, 255, 255, 0.85);
+    height: 70px;
+    background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 0 5%;
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03);
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
     position: sticky;
     top: 0;
     z-index: 1000;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    border-bottom: 1px solid rgba(37, 99, 235, 0.08);
     transition: all 0.3s ease;
 }
 
@@ -83,41 +83,174 @@ nav a:not(#joinNav):not(#signInNav):hover::after {
 /* Join Now CTA Button */
 #joinNav {
     background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-    color: white;
-    padding: 12px 28px;
+    color: white !important;
+    -webkit-text-fill-color: white !important;
+    padding: 10px 24px;
     border-radius: 50px;
     font-weight: 600;
-    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.2);
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.25);
     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     border: 2px solid transparent;
 }
 
 #joinNav:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(37, 99, 235, 0.3);
+    box-shadow: 0 8px 25px rgba(37, 99, 235, 0.35);
     background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
-    color: white;
+    color: white !important;
+    -webkit-text-fill-color: white !important;
 }
 
 #joinNav:active {
     transform: translateY(1px);
 }
 
-/* Mobile Responsive */
+/* =====================
+   Hamburger Menu Toggle
+   ===================== */
+.menu-toggle {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    gap: 5px;
+    border-radius: 8px;
+    transition: background 0.2s;
+    z-index: 1100;
+}
+
+.menu-toggle:hover {
+    background: #f3f4f6;
+}
+
+.menu-toggle span {
+    display: block;
+    width: 24px;
+    height: 2.5px;
+    background: #1f2937;
+    border-radius: 3px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-origin: center;
+}
+
+.menu-toggle.active span:nth-child(1) {
+    transform: translateY(7.5px) rotate(45deg);
+}
+
+.menu-toggle.active span:nth-child(2) {
+    opacity: 0;
+    transform: scaleX(0);
+}
+
+.menu-toggle.active span:nth-child(3) {
+    transform: translateY(-7.5px) rotate(-45deg);
+}
+
+/* Overlay */
+.nav-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 999;
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+    animation: fadeOverlay 0.3s ease;
+}
+
+.nav-overlay.active {
+    display: block;
+}
+
+@keyframes fadeOverlay {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* =====================
+   Mobile Responsive
+   ===================== */
 @media (max-width: 768px) {
     header {
         padding: 0 20px;
+        height: 64px;
+    }
+
+    .menu-toggle {
+        display: flex;
     }
 
     nav {
-        gap: 15px;
+        position: fixed;
+        top: 0;
+        right: -280px;
+        width: 280px;
+        height: 100vh;
+        background: white;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0;
+        padding: 80px 0 24px;
+        box-shadow: -4px 0 30px rgba(0, 0, 0, 0.12);
+        z-index: 1050;
+        transition: right 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        overflow-y: auto;
+    }
+
+    nav.open {
+        right: 0;
     }
 
     nav a {
-        font-size: 0.9rem;
+        width: 100%;
+        padding: 14px 24px;
+        font-size: 1.05rem;
+        border-left: 3px solid transparent;
+        border-radius: 0;
+    }
+
+    nav a:not(#joinNav):not(#signInNav)::after {
+        display: none;
+    }
+
+    nav a:not(#joinNav):not(#signInNav):hover {
+        background: #f0f4ff;
+        border-left-color: #2563eb;
+        color: #2563eb;
+    }
+
+    #signInNav {
+        border-left: 3px solid transparent;
+    }
+
+    #signInNav:hover {
+        background: #eff6ff;
+        border-left-color: #2563eb;
     }
 
     #joinNav {
-        padding: 8px 16px;
+        margin: 16px 24px 0;
+        width: calc(100% - 48px);
+        text-align: center;
+        border-radius: 12px;
+        padding: 13px 24px;
+    }
+
+    .hero h1 {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero h1 {
+        font-size: 1.3rem;
     }
 }

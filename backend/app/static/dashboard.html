@@ -88,11 +88,19 @@
             </nav>
         </aside>
 
+        <!-- Mobile sidebar overlay -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
         <main class="main-content">
 
             <header class="top-header">
-                <div class="header-left">
+                <div class="header-left" style="display:flex;align-items:center;gap:0.75rem;">
+                    <button class="mobile-menu-btn" id="mobileSidebarToggle" style="display:none;"
+                        aria-label="Open menu">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
                     <h1>Dashboard</h1>
 
                 </div>
@@ -544,6 +552,50 @@
     <script src="js/api.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/dashboard.js"></script>
+    <script>
+        // Mobile Sidebar Drawer
+        (function () {
+            const toggleBtn = document.getElementById('mobileSidebarToggle');
+            const sidebar = document.querySelector('.sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+
+            function isMobile() { return window.innerWidth <= 768; }
+
+            function showToggleBtn() {
+                if (toggleBtn) toggleBtn.style.display = isMobile() ? 'flex' : 'none';
+            }
+
+            showToggleBtn();
+            window.addEventListener('resize', showToggleBtn);
+
+            if (toggleBtn) {
+                toggleBtn.addEventListener('click', function () {
+                    sidebar.classList.toggle('open');
+                    overlay.classList.toggle('active');
+                    document.body.style.overflow = sidebar.classList.contains('open') ? 'hidden' : '';
+                });
+            }
+
+            if (overlay) {
+                overlay.addEventListener('click', function () {
+                    sidebar.classList.remove('open');
+                    overlay.classList.remove('active');
+                    document.body.style.overflow = '';
+                });
+            }
+
+            // Close sidebar on nav link click (mobile)
+            document.querySelectorAll('.nav-link').forEach(function (link) {
+                link.addEventListener('click', function () {
+                    if (isMobile()) {
+                        sidebar.classList.remove('open');
+                        overlay.classList.remove('active');
+                        document.body.style.overflow = '';
+                    }
+                });
+            });
+        })();
+    </script>
 </body>
 
 </html>

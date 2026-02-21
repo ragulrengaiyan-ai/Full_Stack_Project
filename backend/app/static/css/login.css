@@ -271,18 +271,61 @@ input:focus {
 
 /* Tablet/Mobile Responsive */
 @media (max-width: 900px) {
+    .split-screen {
+        height: auto;
+        min-height: 100vh;
+    }
+
     .left-pane {
         display: none;
     }
 
     .right-pane {
-        background: #f3f4f6;
+        background: linear-gradient(135deg, #f0f4ff 0%, #f8faff 100%);
+        padding: 40px 20px;
+        min-height: 100vh;
+        align-items: flex-start;
+        padding-top: 60px;
     }
 
     .login-wrapper {
         background: white;
         padding: 40px;
         border-radius: 20px;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+        max-width: 480px;
+        width: 100%;
+        margin: 0 auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .right-pane {
+        padding: 24px 12px;
+        padding-top: 40px;
+    }
+
+    .login-wrapper {
+        padding: 28px 20px;
+        border-radius: 16px;
+    }
+
+    .logo-section {
+        margin-bottom: 28px;
+    }
+
+    .logo-section h2 {
+        font-size: 1.5rem;
+    }
+
+    .sign-in-btn {
+        font-size: 0.95rem;
+        padding: 12px;
+    }
+
+    .form-footer {
+        flex-direction: column;
+        gap: 12px;
+        align-items: flex-start;
     }
 }

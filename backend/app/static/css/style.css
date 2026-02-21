@@ -6,6 +6,7 @@
 
 html {
     scroll-behavior: smooth;
+    overflow-x: hidden;
 }
 
 body {
@@ -13,6 +14,7 @@ body {
     color: #1f2937;
     line-height: 1.6;
     overflow-x: hidden;
+    max-width: 100vw;
 }
 
 a {
@@ -332,16 +334,16 @@ nav a:not(#joinNav):not(#signInNav):hover::after {
     max-width: 1400px;
     margin: 40px auto;
     perspective: 2000px;
-    /* Strong perspective for flip */
-    padding: 20px;
+    padding: 20px 0;
+    overflow: hidden;
 }
 
 .services-grid {
     display: flex;
-    gap: 30px;
+    gap: 24px;
     overflow-x: auto;
     scroll-behavior: smooth;
-    padding: 60px 40px;
+    padding: 40px 20px;
     scrollbar-width: none;
     -ms-overflow-style: none;
 }
@@ -351,9 +353,8 @@ nav a:not(#joinNav):not(#signInNav):hover::after {
 }
 
 .service-card {
-    min-width: 320px;
+    min-width: 300px;
     height: 400px;
-    /* Ensure fixed height for better flip */
     perspective: 1000px;
     cursor: pointer;
     flex-shrink: 0;
@@ -586,20 +587,8 @@ nav a:not(#joinNav):not(#signInNav):hover::after {
     right: 5px;
 }
 
-@media (max-width: 768px) {
-    .scroll-btn {
-        display: none;
-    }
+/* Service card mobile handled in the unified 768px block below */
 
-    .services-grid {
-        padding: 40px 20px;
-    }
-
-    .service-card {
-        min-width: 280px;
-        height: 380px;
-    }
-}
 
 .how-it-works {
     padding: 80px 40px;
@@ -608,13 +597,13 @@ nav a:not(#joinNav):not(#signInNav):hover::after {
 
 .steps-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 40px;
     max-width: 1200px;
     margin: 0 auto;
 }
 
-.section-title{
+.section-title {
     text-align: center;
 }
 
@@ -951,34 +940,19 @@ nav a:not(#joinNav):not(#signInNav):hover::after {
 }
 
 @media (max-width: 768px) {
+
+    /* Header now handled by navbar.css hamburger — keep it simple */
     header {
-        flex-direction: column;
-        height: auto;
-        padding: 15px 20px;
-        gap: 15px;
-    }
-
-    .hero h1 {
-        font-size: 1.3rem;
-    }
-
-    nav {
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 15px;
-        font-size: 0.9rem;
-    }
-
-    nav a {
-        font-size: 0.85rem;
+        padding: 0 20px;
+        height: 64px;
     }
 
     .hero-section {
-        padding: 40px 20px;
+        padding: 40px 16px;
     }
 
     .hero-heading {
-        font-size: 2rem;
+        font-size: 2.2rem;
     }
 
     .hero-subheading {
@@ -986,9 +960,14 @@ nav a:not(#joinNav):not(#signInNav):hover::after {
         margin-bottom: 2rem;
     }
 
+    .search-container {
+        margin-bottom: 2.5rem;
+    }
+
     .search-box {
         flex-direction: column;
         padding: 12px;
+        gap: 10px;
     }
 
     .select-wrapper {
@@ -1011,7 +990,7 @@ nav a:not(#joinNav):not(#signInNav):hover::after {
     .search-button {
         width: 100%;
         justify-content: center;
-        padding: 12px 16px;
+        padding: 13px 16px;
     }
 
     .stats {
@@ -1026,7 +1005,7 @@ nav a:not(#joinNav):not(#signInNav):hover::after {
     .services-section,
     .how-it-works,
     .testimonials-section {
-        padding: 50px 20px;
+        padding: 50px 16px;
     }
 
     .section-title {
@@ -1038,13 +1017,17 @@ nav a:not(#joinNav):not(#signInNav):hover::after {
     }
 
     .service-card {
-        min-width: 240px;
+        min-width: 260px;
+        height: 370px;
     }
 
     .scroll-btn {
-        width: 40px;
-        height: 40px;
-        font-size: 20px;
+        display: none;
+    }
+
+    .services-grid {
+        padding: 30px 16px;
+        gap: 20px;
     }
 
     .steps-grid {
@@ -1053,62 +1036,55 @@ nav a:not(#joinNav):not(#signInNav):hover::after {
     }
 
     .step-card {
-        padding: 30px 20px;
+        padding: 28px 20px;
     }
 
     .cta-section {
-        margin: 20px;
-        padding: 40px 20px;
+        margin: 16px;
+        padding: 40px 24px;
+        border-radius: 20px;
     }
 
     .cta-title {
         font-size: 2rem;
     }
 
+    .cta-subtitle {
+        font-size: 1rem;
+    }
+
     .cta-buttons {
         flex-direction: column;
+        align-items: stretch;
     }
 
     .btn-browse,
     .btn-provider {
         width: 100%;
-        padding: 12px 24px;
+        padding: 14px 24px;
+        text-align: center;
     }
 
     .testimonials-grid {
         grid-template-columns: 1fr;
     }
 
+    .stats-section {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
     .footer {
-        padding: 20px;
+        padding: 20px 16px;
     }
 }
 
 @media (max-width: 480px) {
-    header {
-        padding: 10px 15px;
-    }
-
-    .hero h1 {
-        font-size: 1.1rem;
-        letter-spacing: 1px;
-    }
-
-    nav {
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    nav a {
-        font-size: 0.8rem;
-    }
-
     .hero-section {
-        padding: 30px 15px;
+        padding: 32px 14px;
     }
 
     .hero-heading {
-        font-size: 1.6rem;
+        font-size: 1.75rem;
         margin-bottom: 1rem;
     }
 
@@ -1127,11 +1103,11 @@ nav a:not(#joinNav):not(#signInNav):hover::after {
     .service-select,
     .location-input,
     .search-button {
-        font-size: 0.9rem;
+        font-size: 0.92rem;
     }
 
     .stats {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
         gap: 15px;
     }
 
@@ -1146,11 +1122,11 @@ nav a:not(#joinNav):not(#signInNav):hover::after {
     .services-section,
     .how-it-works,
     .testimonials-section {
-        padding: 30px 15px;
+        padding: 32px 14px;
     }
 
     .section-title {
-        font-size: 1.5rem;
+        font-size: 1.6rem;
     }
 
     .section-subtitle {
@@ -1158,25 +1134,21 @@ nav a:not(#joinNav):not(#signInNav):hover::after {
     }
 
     .service-card {
-        min-width: 220px;
+        min-width: calc(100vw - 60px);
+        height: 360px;
     }
 
     .service-title {
         font-size: 1.2rem;
     }
 
-    .service-description {
-        font-size: 0.85rem;
-    }
-
     .service-meta {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
+        flex-direction: row;
+        align-items: center;
     }
 
     .step-card {
-        padding: 20px 15px;
+        padding: 24px 16px;
     }
 
     .step-icon {
@@ -1193,27 +1165,27 @@ nav a:not(#joinNav):not(#signInNav):hover::after {
     }
 
     .cta-section {
-        margin: 15px;
-        padding: 30px 15px;
+        margin: 12px;
+        padding: 30px 16px;
         border-radius: 16px;
     }
 
     .cta-title {
-        font-size: 1.5rem;
+        font-size: 1.6rem;
     }
 
     .cta-subtitle {
-        font-size: 0.95rem;
+        font-size: 0.92rem;
     }
 
     .btn-browse,
     .btn-provider {
-        padding: 10px 20px;
-        font-size: 0.9rem;
+        padding: 12px 20px;
+        font-size: 0.95rem;
     }
 
     .testimonial-card {
-        padding: 1.5rem;
+        padding: 1.25rem;
     }
 
     .testimonial-text {
@@ -1221,7 +1193,8 @@ nav a:not(#joinNav):not(#signInNav):hover::after {
     }
 
     .stats-section {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
     }
 
     .footer-content {
